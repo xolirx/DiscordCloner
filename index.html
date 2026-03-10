@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Server Cloner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            33% { transform: translateY(-5px) translateX(2px); }
+            66% { transform: translateY(3px) translateX(-2px); }
+        }
+
+        @keyframes glow {
+            0%, 100% { opacity: 0.1; filter: blur(8px); }
+            50% { opacity: 0.2; filter: blur(12px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.01); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.25rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .logo {
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 4px;
+            color: #ffffff;
+            opacity: 0.8;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .logo span {
+            color: #444;
+            font-size: 0.7rem;
+            margin-left: 0.5rem;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .logo:hover {
+            opacity: 1;
+            transform: scale(1.02);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-link {
+            color: #444;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 1px;
+            padding: 0.5rem 0;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #aaa;
+        }
+
+        .nav-link.active {
+            color: #fff;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #fff, transparent);
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 100px auto 2rem;
+            padding: 0 2rem;
+            width: 100%;
+        }
+
+        .auth-container {
+            max-width: 400px;
+            margin: 60px auto;
+        }
+
+        .glass-card {
+            background: rgba(15,15,15,0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.02);
+            border-radius: 28px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255,255,255,0.05);
+        }
+
+        .auth-title {
+            font-size: 1.4rem;
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 0.25rem;
+            letter-spacing: 3px;
+            color: #fff;
+            opacity: 0.9;
+        }
+
+        .auth-subtitle {
+            color: #333;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
+
+        .auth-subtitle span {
+            color: #444;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            color: #444;
+            font-size: 0.7rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 14px;
+            padding: 1rem 1.2rem;
+            color: #fff;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+            pointer-events: auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(255,255,255,0.1);
+            background: rgba(20,20,20,0.8);
+            transform: scale(1.01);
+        }
+
+        .form-input::placeholder {
+            color: #222;
+            font-weight: 300;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.05);
+            color: #fff;
+            padding: 1rem 2rem;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        .btn:hover {
+            border-color: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.01);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: rgba(255,255,255,0.02);
+            border-color: rgba(255,255,255,0.06);
+        }
+
+        .btn-primary:hover {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .btn:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .user-profile {
+            background: rgba(15,15,15,0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.02);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            position: relative;
+            z-index: 5;
+        }
+
+        .avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #111;
+            border: 2px solid rgba(255,255,255,0.05);
+            object-fit: cover;
+            transition: all 0.3s;
+        }
+
+        .avatar:hover {
+            transform: scale(1.05);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 0.3rem;
+            color: #fff;
+        }
+
+        .user-id {
+            color: #444;
+            font-size: 0.8rem;
+            font-family: monospace;
+        }
+
+        .user-email {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .email-blur {
+            filter: blur(3px);
+            transition: filter 0.3s;
+            background: rgba(255,255,255,0.02);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .email-blur:hover {
+            filter: blur(1px);
+        }
+
+        .email-blur.unblur {
+            filter: blur(0);
+            color: #888;
+        }
+
+        .email-toggle {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 4px;
+            padding: 0.2rem 0.5rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #888;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .email-toggle:hover {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+        }
+
+        .logout-btn {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.75rem;
+            border-radius: 30px;
+        }
+
+        .clone-card {
+            background: rgba(15,15,15,0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.02);
+            border-radius: 28px;
+            padding: 2.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transition: all 0.4s;
+            position: relative;
+            z-index: 5;
+        }
+
+        .clone-card:hover {
+            border-color: rgba(255,255,255,0.05);
+        }
+
+        .clone-title {
+            font-size: 1.6rem;
+            font-weight: 300;
+            margin-bottom: 0.25rem;
+            letter-spacing: 3px;
+            color: #fff;
+            opacity: 0.9;
+        }
+
+        .clone-subtitle {
+            color: #333;
+            font-size: 0.7rem;
+            margin-bottom: 2rem;
+            letter-spacing: 1px;
+        }
+
+        .clone-subtitle span {
+            color: #444;
+        }
+
+        .input-group {
+            max-width: 400px;
+            margin: 0 auto 1.5rem;
+            text-align: left;
+        }
+
+        .input-label {
+            display: block;
+            color: #444;
+            font-size: 0.65rem;
+            margin-bottom: 0.4rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .clone-input {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 0.9rem 1.2rem;
+            color: #fff;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+            pointer-events: auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .clone-input:focus {
+            outline: none;
+            border-color: rgba(255,255,255,0.1);
+            background: rgba(20,20,20,0.8);
+            transform: scale(1.01);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            max-width: 400px;
+            margin: 1.5rem auto 0;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 1px;
+            background: rgba(255,255,255,0.02);
+            margin: 1.5rem 0;
+            border-radius: 1px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #fff, #444, #fff);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-card {
+            background: rgba(10,10,10,0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.02);
+            border-radius: 18px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .info-card:hover {
+            border-color: rgba(255,255,255,0.05);
+        }
+
+        .info-card-title {
+            color: #444;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .info-list {
+            list-style: none;
+        }
+
+        .info-list li {
+            color: #666;
+            font-size: 0.85rem;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+
+        .log-container {
+            background: rgba(8,8,8,0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.02);
+            border-radius: 20px;
+            padding: 1.5rem;
+            height: 280px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            position: relative;
+            z-index: 5;
+        }
+
+        .log-entry {
+            padding: 0.4rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .log-time {
+            color: #222;
+            min-width: 75px;
+            font-size: 0.75rem;
+        }
+
+        .log-msg {
+            color: #444;
+            word-break: break-word;
+        }
+
+        .log-success .log-msg { color: #6a6; }
+        .log-error .log-msg { color: #a55; }
+        .log-warning .log-msg { color: #ca8; }
+
+        .contact-single {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .contact-single .btn {
+            padding: 1.2rem 3rem;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.02);
+            border-color: rgba(255,255,255,0.1);
+        }
+
+        .contact-single .btn:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(15px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: rgba(18,18,18,0.95);
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 28px;
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 90%;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.4s;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 300;
+            margin-bottom: 1.5rem;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .rules-list {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .rules-list li {
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            color: #666;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rules-list li::before {
+            content: "●";
+            color: #333;
+            font-size: 0.8rem;
+        }
+
+        .checkbox-group {
+            margin: 1.5rem 0;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem;
+            background: rgba(255,255,255,0.01);
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .checkbox-item:hover {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            background: transparent;
+            border: 1px solid #333;
+            accent-color: #666;
+        }
+
+        .checkbox-item label {
+            color: #666;
+            font-size: 0.9rem;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .warning-box {
+            background: rgba(255,80,80,0.03);
+            border: 1px solid rgba(255,80,80,0.05);
+            border-radius: 16px;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            color: #d88;
+            font-size: 0.85rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .instruction-box {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.02);
+            border-radius: 16px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+            position: relative;
+            z-index: 20;
+        }
+
+        .instruction-header {
+            padding: 1rem 1.5rem;
+            background: rgba(255,255,255,0.01);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+            pointer-events: auto;
+            position: relative;
+            z-index: 25;
+        }
+
+        .instruction-header:hover {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .instruction-header span {
+            color: #888;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            pointer-events: none;
+        }
+
+        .instruction-header .arrow {
+            color: #444;
+            transition: transform 0.3s;
+            pointer-events: none;
+        }
+
+        .instruction-header.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        .instruction-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+            background: rgba(0,0,0,0.4);
+        }
+
+        .instruction-content.show {
+            max-height: 300px;
+        }
+
+        .instruction-content ol {
+            padding: 1.5rem 1.5rem 1.5rem 2.5rem;
+            color: #666;
+            line-height: 2;
+            font-size: 0.85rem;
+        }
+
+        .instruction-content li {
+            color: #555;
+            padding: 0.2rem 0;
+        }
+
+        .instruction-content code {
+            background: rgba(0,0,0,0.5);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            color: #6a6;
+            font-family: monospace;
+        }
+
+        .about-section {
+            color: #666;
+            line-height: 1.8;
+        }
+
+        .about-section h3 {
+            color: #888;
+            font-weight: 400;
+            margin: 1.5rem 0 1rem;
+            font-size: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .about-section p {
+            margin-bottom: 1rem;
+            color: #555;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            color: #555;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding: 2rem;
+            text-align: center;
+            color: #222;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            border-top: 1px solid rgba(255,255,255,0.02);
+            position: relative;
+            z-index: 5;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .error-message {
+            color: #d88;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(255,80,80,0.03);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .server-list {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+            position: relative;
+            z-index: 15;
+        }
+
+        .server-item {
+            padding: 0.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .server-item:hover {
+            background: rgba(255,255,255,0.03);
+            color: #888;
+        }
+
+        .server-item:last-child {
+            border-bottom: none;
+        }
+
+        .server-id {
+            color: #333;
+            font-family: monospace;
+        }
+
+        .eye-icon {
+            width: 16px;
+            height: 16px;
+            fill: #888;
+            transition: fill 0.3s;
+        }
+
+        .email-toggle:hover .eye-icon {
+            fill: #fff;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="snowCanvas"></canvas>
+
+    <div class="content">
+        <nav class="navbar">
+            <div class="logo">DISCORD SERVER CLONER <span>by xolirx</span></div>
+            <div class="nav-links">
+                <span class="nav-link active" onclick="switchSection('main')">ГЛАВНАЯ</span>
+                <span class="nav-link" onclick="switchSection('support')">ПОДДЕРЖКА</span>
+                <span class="nav-link" onclick="switchSection('about')">О САЙТЕ</span>
+            </div>
+        </nav>
+
+        <div class="main-container">
+            <div id="authView">
+                <div class="auth-container">
+                    <div class="glass-card">
+                        <div class="auth-title">DISCORD CLONER</div>
+                        <div class="auth-subtitle"><span>by xolirx</span> • 2026</div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">DISCORD TOKEN</label>
+                            <input type="password" class="form-input" id="tokenInput" placeholder="••••••••••••••••••••••">
+                        </div>
+
+                        <div class="instruction-box">
+                            <div class="instruction-header" onclick="toggleInstructions()">
+                                <span>КАК ПОЛУЧИТЬ ТОКЕН?</span>
+                                <span class="arrow">▼</span>
+                            </div>
+                            <div class="instruction-content" id="instructionContent">
+                                <ol>
+                                    <li>Откройте Discord в браузере</li>
+                                    <li>Нажмите <code>F12</code> → Network</li>
+                                    <li>Введите в поиске: <code>/api</code></li>
+                                    <li>Найдите пункт <code>science</code></li>
+                                    <li>Откройте его и скопируйте <code>authorization</code></li>
+                                    <li>Если нет science — нажмите <code>F5</code></li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <div id="authError" class="error-message"></div>
+
+                        <button class="btn btn-primary" onclick="authorize()">ВОЙТИ</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="mainView" class="hidden">
+                <div class="user-profile">
+                    <img id="userAvatar" class="avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23111'/%3E%3Ctext x='32' y='40' text-anchor='middle' fill='%23333' font-family='Arial' font-size='24'%3E●%3C/text%3E%3C/svg%3E">
+                    <div class="user-details">
+                        <div class="user-name" id="userName">ЗАГРУЗКА...</div>
+                        <div class="user-id" id="userId">ID: ...</div>
+                        <div class="user-email">
+                            <span class="email-blur" id="userEmail">••••••@•••••.com</span>
+                            <span class="email-toggle" onclick="toggleEmail()">
+                                <svg class="eye-icon" viewBox="0 0 24 24">
+                                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                    <button class="btn logout-btn" onclick="logout()">ВЫЙТИ</button>
+                </div>
+
+                <div id="mainContent">
+                    <div class="clone-card">
+                        <div class="clone-title">КЛОНИРОВАНИЕ</div>
+                        <div class="clone-subtitle"><span>by xolirx</span> • 2026</div>
+                        
+                        <div class="input-group">
+                            <label class="input-label">ИСХОДНЫЙ СЕРВЕР</label>
+                            <input type="text" class="clone-input" id="sourceId" placeholder="000000000000000000" value="">
+                        </div>
+
+                        <div class="input-group">
+                            <label class="input-label">ЦЕЛЕВОЙ СЕРВЕР</label>
+                            <input type="text" class="clone-input" id="targetId" placeholder="000000000000000000" value="">
+                        </div>
+
+                        <div class="btn-group">
+                            <button class="btn" onclick="showServerList()">ПОЛУЧИТЬ ID</button>
+                            <button class="btn btn-primary" id="cloneBtn" onclick="showAgreement()">НАЧАТЬ</button>
+                        </div>
+
+                        <div id="serverListContainer" class="server-list hidden"></div>
+
+                        <div class="progress-bar" id="progressBar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+
+                        <div id="cloneError" class="error-message"></div>
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <div class="info-card-title">БУДЕТ СКОПИРОВАНО</div>
+                            <ul class="info-list">
+                                <li>НАЗВАНИЕ СЕРВЕРА</li>
+                                <li>ИКОНКА СЕРВЕРА</li>
+                                <li>ВСЕ РОЛИ</li>
+                                <li>КАТЕГОРИИ И КАНАЛЫ</li>
+                                <li>ПРАВА ДОСТУПА</li>
+                            </ul>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-title">НЕ БУДЕТ СКОПИРОВАНО</div>
+                            <ul class="info-list">
+                                <li>СООБЩЕНИЯ</li>
+                                <li>УЧАСТНИКИ</li>
+                                <li>ВЕБХУКИ</li>
+                                <li>ИНТЕГРАЦИИ</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="log-container" id="log"></div>
+                </div>
+
+                <div id="supportContent" class="hidden">
+                    <div class="glass-card">
+                        <div class="auth-title">ПОДДЕРЖКА</div>
+                        <div class="auth-subtitle"><span>by xolirx</span> • 2026</div>
+                        
+                        <div class="contact-single">
+                            <a href="https://t.me/xolirx?text=Привет%20у%20меня%20возникла%20ошибка%20помоги%20пожалуйста" target="_blank" class="btn btn-primary">@xolirx</a>
+                        </div>
+
+                        <div style="margin-top: 2rem; color: #333; font-size: 0.8rem; text-align: center;">
+                            ВРЕМЯ ОТВЕТА: ОБЫЧНО В ТЕЧЕНИЕ ЧАСА
+                        </div>
+                    </div>
+                </div>
+
+                <div id="aboutContent" class="hidden">
+                    <div class="glass-card">
+                        <div class="auth-title">О ПРОЕКТЕ</div>
+                        <div class="auth-subtitle"><span>by xolirx</span> • 2026</div>
+                        
+                        <div class="about-section">
+                            <p>Профессиональный инструмент для полного клонирования структуры Discord серверов. Разработан для создания резервных копий и миграции серверов.</p>
+
+                            <h3>ОСНОВНЫЕ ВОЗМОЖНОСТИ</h3>
+                            <ul class="feature-list">
+                                <li>Полное клонирование - копирование всей структуры сервера</li>
+                                <li>Роли - сохранение всех ролей с правами доступа</li>
+                                <li>Каналы - воссоздание категорий и каналов</li>
+                                <li>Иконка - копирование аватарки сервера</li>
+                                <li>Название - сохранение оригинального названия</li>
+                            </ul>
+
+                            <h3>ТЕХНИЧЕСКИЕ ДЕТАЛИ</h3>
+                            <ul class="feature-list">
+                                <li>Автор: XOLIRX</li>
+                                <li>Лицензия: MIT</li>
+                                <li>API: DISCORD API V10</li>
+                                <li>Год: 2026</li>
+                            </ul>
+
+                            <h3>ОГРАНИЧЕНИЯ</h3>
+                            <ul class="feature-list">
+                                <li>Не копируются сообщения</li>
+                                <li>Не копируются участники</li>
+                                <li>Не копируются вебхуки</li>
+                                <li>Не копируются интеграции</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            DISCORD SERVER CLONER • 2026 • by xolirx
+        </div>
+    </div>
+
+    <div id="agreementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">ПРАВИЛА И ОТВЕТСТВЕННОСТЬ</div>
+            
+            <div class="modal-text">
+                <div style="color: #888; margin-bottom: 1rem;">ВНИМАТЕЛЬНО ОЗНАКОМЬТЕСЬ:</div>
+                
+                <ul class="rules-list">
+                    <li>Я полностью осознаю, что использую программу НА СВОЙ РИСК</li>
+                    <li>Автор (xolirx) НЕ НЕСЕТ ответственности за любые последствия</li>
+                    <li>Я принимаю ответственность за блокировку аккаунта или сервера</li>
+                    <li>Я обязуюсь использовать программу ТОЛЬКО на своих серверах</li>
+                    <li>Я имею права администратора на обоих серверах</li>
+                    <li>Я понимаю, что все каналы и роли будут УДАЛЕНЫ</li>
+                    <li>Я создал резервную копию важных данных</li>
+                    <li>Я не буду использовать программу для нарушения правил Discord</li>
+                    <li>Я не буду предъявлять претензии автору</li>
+                    <li>Я действую в соответствии с законодательством</li>
+                </ul>
+            </div>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule1" onchange="checkAllRules()">
+                    <label for="rule1">Я ПРОЧИТАЛ И ПОНЯЛ ВСЕ ПРАВИЛА</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule2" onchange="checkAllRules()">
+                    <label for="rule2">Я ОСОЗНАЮ ВСЕ РИСКИ</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule3" onchange="checkAllRules()">
+                    <label for="rule3">Я ПРИНИМАЮ ПОЛНУЮ ОТВЕТСТВЕННОСТЬ</label>
+                </div>
+            </div>
+
+            <div class="warning-box">
+                ⚠ НАРУШЕНИЕ ЛЮБОГО ПУНКТА ОСВОБОЖДАЕТ АВТОРА ОТ ОТВЕТСТВЕННОСТИ
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn" onclick="closeModal()">ОТМЕНА</button>
+                <button class="btn btn-primary" onclick="confirmAllRules()" id="confirmBtn" disabled>ПРОДОЛЖИТЬ</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('snowCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const snowflakes = Array.from({ length: 30 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 2 + 0.5,
+            speed: Math.random() * 0.2 + 0.1,
+            opacity: Math.random() * 0.1
+        }));
+
+        function drawSnow() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            snowflakes.forEach(f => {
+                ctx.beginPath();
+                ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255,255,255,${f.opacity})`;
+                ctx.fill();
+                f.y += f.speed;
+                if (f.y > canvas.height) {
+                    f.y = 0;
+                    f.x = Math.random() * canvas.width;
+                }
+            });
+            requestAnimationFrame(drawSnow);
+        }
+        drawSnow();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        function toggleInstructions() {
+            const content = document.getElementById('instructionContent');
+            const header = document.querySelector('.instruction-header');
+            content.classList.toggle('show');
+            header.classList.toggle('active');
+        }
+
+        let token = null;
+        let user = null;
+        let cloning = false;
+        let userGuilds = [];
+        let emailVisible = false;
+
+        function toggleEmail() {
+            const emailEl = document.getElementById('userEmail');
+            emailVisible = !emailVisible;
+            if (emailVisible && user && user.email) {
+                emailEl.textContent = user.email;
+            } else if (user && user.email) {
+                emailEl.textContent = user.email.replace(/./g, '•');
+            }
+            emailEl.classList.toggle('unblur');
+        }
+
+        function showError(elementId, message) {
+            const errorEl = document.getElementById(elementId);
+            if (errorEl) {
+                errorEl.textContent = message;
+                errorEl.classList.add('show');
+                setTimeout(() => errorEl.classList.remove('show'), 5000);
+            }
+        }
+
+        async function authorize() {
+            const t = document.getElementById('tokenInput').value.trim();
+            if (!t) {
+                showError('authError', 'ВВЕДИТЕ ТОКЕН');
+                return;
+            }
+            
+            addLog('ПРОВЕРКА ТОКЕНА...', 'info');
+            
+            try {
+                const r = await fetch('https://discord.com/api/v10/users/@me', {
+                    headers: { 'Authorization': t }
+                });
+                
+                if (r.ok) {
+                    const u = await r.json();
+                    token = t;
+                    user = u;
+                    
+                    localStorage.setItem('discord_token', t);
+                    localStorage.setItem('discord_user', JSON.stringify(u));
+                    
+                    document.getElementById('userName').textContent = u.username;
+                    document.getElementById('userId').textContent = `ID: ${u.id}`;
+                    
+                    if (u.email) {
+                        const emailEl = document.getElementById('userEmail');
+                        emailEl.textContent = u.email.replace(/./g, '•');
+                        emailVisible = false;
+                    }
+                    
+                    if (u.avatar) {
+                        const imgUrl = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=64`;
+                        document.getElementById('userAvatar').src = imgUrl;
+                    }
+                    
+                    document.getElementById('authView').classList.add('hidden');
+                    document.getElementById('mainView').classList.remove('hidden');
+                    
+                    addLog('АВТОРИЗАЦИЯ УСПЕШНА', 'success');
+                    
+                    const savedSource = localStorage.getItem('last_source_id');
+                    const savedTarget = localStorage.getItem('last_target_id');
+                    if (savedSource) document.getElementById('sourceId').value = savedSource;
+                    if (savedTarget) document.getElementById('targetId').value = savedTarget;
+                    
+                    await loadServers();
+                } else {
+                    showError('authError', 'НЕВЕРНЫЙ ТОКЕН');
+                    addLog('ОШИБКА: НЕВЕРНЫЙ ТОКЕН', 'error');
+                }
+            } catch (e) {
+                showError('authError', 'ОШИБКА ПОДКЛЮЧЕНИЯ');
+                addLog('ОШИБКА ПОДКЛЮЧЕНИЯ', 'error');
+            }
+        }
+
+        function logout() {
+            token = null;
+            user = null;
+            localStorage.removeItem('discord_token');
+            localStorage.removeItem('discord_user');
+            document.getElementById('authView').classList.remove('hidden');
+            document.getElementById('mainView').classList.add('hidden');
+            document.getElementById('tokenInput').value = '';
+            document.getElementById('sourceId').value = '';
+            document.getElementById('targetId').value = '';
+            addLog('ВЫХОД ИЗ СИСТЕМЫ', 'info');
+            
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            document.querySelector('.nav-link').classList.add('active');
+        }
+
+        async function loadServers() {
+            if (!token) return;
+            addLog('ЗАГРУЗКА СЕРВЕРОВ...', 'info');
+            try {
+                const r = await fetch('https://discord.com/api/v10/users/@me/guilds', {
+                    headers: { 'Authorization': token }
+                });
+                if (r.ok) {
+                    userGuilds = await r.json();
+                    addLog(`НАЙДЕНО СЕРВЕРОВ: ${userGuilds.length}`, 'success');
+                    return userGuilds;
+                }
+            } catch (e) {
+                addLog('ОШИБКА ЗАГРУЗКИ СЕРВЕРОВ', 'error');
+            }
+            return [];
+        }
+
+        async function showServerList() {
+            const container = document.getElementById('serverListContainer');
+            
+            if (userGuilds.length === 0) {
+                await loadServers();
+            }
+            
+            if (userGuilds.length > 0) {
+                let html = '<div style="color: #444; margin-bottom: 0.5rem; font-size: 0.7rem;">НАЖМИТЕ ДЛЯ ВСТАВКИ ID:</div>';
+                
+                userGuilds.slice(0, 10).forEach(guild => {
+                    html += `
+                        <div class="server-item" onclick="setSourceId('${guild.id}')">
+                            <span>${guild.name}</span>
+                            <span class="server-id">${guild.id}</span>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+                container.classList.remove('hidden');
+            }
+        }
+
+        function setSourceId(id) {
+            document.getElementById('sourceId').value = id;
+            document.getElementById('serverListContainer').classList.add('hidden');
+            addLog(`ID ВСТАВЛЕН: ${id}`, 'info');
+        }
+
+        function checkAllRules() {
+            const rule1 = document.getElementById('rule1').checked;
+            const rule2 = document.getElementById('rule2').checked;
+            const rule3 = document.getElementById('rule3').checked;
+            
+            document.getElementById('confirmBtn').disabled = !(rule1 && rule2 && rule3);
+        }
+
+        function showAgreement() {
+            const s = document.getElementById('sourceId').value.trim();
+            const t = document.getElementById('targetId').value.trim();
+            
+            if (!s || !t) {
+                showError('cloneError', 'ВВЕДИТЕ ID СЕРВЕРОВ');
+                return;
+            }
+            
+            if (s === t) {
+                showError('cloneError', 'СЕРВЕРЫ НЕ МОГУТ БЫТЬ ОДИНАКОВЫМИ');
+                return;
+            }
+            
+            document.getElementById('rule1').checked = false;
+            document.getElementById('rule2').checked = false;
+            document.getElementById('rule3').checked = false;
+            document.getElementById('confirmBtn').disabled = true;
+            
+            document.getElementById('agreementModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('agreementModal').classList.remove('active');
+        }
+
+        function confirmAllRules() {
+            if (!document.getElementById('rule1').checked || 
+                !document.getElementById('rule2').checked || 
+                !document.getElementById('rule3').checked) {
+                return;
+            }
+            
+            closeModal();
+            startRealCloning();
+        }
+
+        async function deleteAllChannels(guildId) {
+            try {
+                const r = await fetch(`https://discord.com/api/v10/guilds/${guildId}/channels`, {
+                    headers: { 'Authorization': token }
+                });
+                if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ КАНАЛЫ');
+                
+                const channels = await r.json();
+                let count = 0;
+                
+                for (const channel of channels) {
+                    try {
+                        const del = await fetch(`https://discord.com/api/v10/channels/${channel.id}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': token }
+                        });
+                        if (del.ok) {
+                            count++;
+                            addLog(`  УДАЛЕН КАНАЛ: ${channel.name}`, 'warning');
+                        }
+                        await sleep(300);
+                    } catch (e) {
+                        addLog(`  ОШИБКА УДАЛЕНИЯ: ${channel.name}`, 'error');
+                    }
+                }
+                return count;
+            } catch (e) {
+                addLog(`ОШИБКА: ${e.message}`, 'error');
+                return 0;
+            }
+        }
+
+        async function deleteAllRoles(guildId) {
+            try {
+                const r = await fetch(`https://discord.com/api/v10/guilds/${guildId}/roles`, {
+                    headers: { 'Authorization': token }
+                });
+                if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ РОЛИ');
+                
+                const roles = await r.json();
+                let count = 0;
+                
+                for (const role of roles) {
+                    if (role.name === '@everyone' || role.managed) continue;
+                    try {
+                        const del = await fetch(`https://discord.com/api/v10/guilds/${guildId}/roles/${role.id}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': token }
+                        });
+                        if (del.ok) {
+                            count++;
+                            addLog(`  УДАЛЕНА РОЛЬ: ${role.name}`, 'warning');
+                        }
+                        await sleep(300);
+                    } catch (e) {
+                        addLog(`  ОШИБКА УДАЛЕНИЯ: ${role.name}`, 'error');
+                    }
+                }
+                return count;
+            } catch (e) {
+                addLog(`ОШИБКА: ${e.message}`, 'error');
+                return 0;
+            }
+        }
+
+        async function createRoles(sourceId, targetId) {
+            try {
+                const r = await fetch(`https://discord.com/api/v10/guilds/${sourceId}/roles`, {
+                    headers: { 'Authorization': token }
+                });
+                if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ РОЛИ');
+                
+                const roles = await r.json();
+                let count = 0;
+                const roleMap = {};
+                
+                const sortedRoles = roles.filter(r => r.name !== '@everyone' && !r.managed)
+                    .sort((a, b) => a.position - b.position);
+                
+                for (const role of sortedRoles) {
+                    const roleData = {
+                        name: role.name,
+                        color: role.color,
+                        hoist: role.hoist,
+                        mentionable: role.mentionable,
+                        permissions: role.permissions
+                    };
+                    
+                    try {
+                        const create = await fetch(`https://discord.com/api/v10/guilds/${targetId}/roles`, {
+                            method: 'POST',
+                            headers: { 
+                                'Authorization': token,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(roleData)
+                        });
+                        
+                        if (create.ok) {
+                            const newRole = await create.json();
+                            roleMap[role.id] = newRole.id;
+                            count++;
+                            addLog(`  СОЗДАНА РОЛЬ: ${role.name}`, 'success');
+                        }
+                        await sleep(500);
+                    } catch (e) {
+                        addLog(`  ОШИБКА СОЗДАНИЯ: ${role.name}`, 'error');
+                    }
+                }
+                return { count, roleMap };
+            } catch (e) {
+                addLog(`ОШИБКА: ${e.message}`, 'error');
+                return { count: 0, roleMap: {} };
+            }
+        }
+
+        async function createChannels(sourceId, targetId, roleMap) {
+            try {
+                const r = await fetch(`https://discord.com/api/v10/guilds/${sourceId}/channels`, {
+                    headers: { 'Authorization': token }
+                });
+                if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ КАНАЛЫ');
+                
+                const channels = await r.json();
+                const categories = channels.filter(c => c.type === 4).sort((a, b) => a.position - b.position);
+                const others = channels.filter(c => c.type !== 4).sort((a, b) => a.position - b.position);
+                const categoryMap = {};
+                let count = 0;
+                
+                for (const cat of categories) {
+                    const catData = {
+                        name: cat.name,
+                        type: 4,
+                        position: cat.position,
+                        permission_overwrites: convertOverwrites(cat.permission_overwrites || [], targetId, roleMap)
+                    };
+                    
+                    try {
+                        const create = await fetch(`https://discord.com/api/v10/guilds/${targetId}/channels`, {
+                            method: 'POST',
+                            headers: { 
+                                'Authorization': token,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(catData)
+                        });
+                        
+                        if (create.ok) {
+                            const newCat = await create.json();
+                            categoryMap[cat.id] = newCat.id;
+                            count++;
+                            addLog(`  СОЗДАНА КАТЕГОРИЯ: ${cat.name}`, 'success');
+                        }
+                        await sleep(500);
+                    } catch (e) {
+                        addLog(`  ОШИБКА СОЗДАНИЯ: ${cat.name}`, 'error');
+                    }
+                }
+                
+                for (const ch of others) {
+                    const chData = {
+                        name: ch.name,
+                        type: ch.type,
+                        position: ch.position,
+                        topic: ch.topic || '',
+                        bitrate: ch.bitrate,
+                        user_limit: ch.user_limit,
+                        rate_limit_per_user: ch.rate_limit_per_user,
+                        nsfw: ch.nsfw,
+                        permission_overwrites: convertOverwrites(ch.permission_overwrites || [], targetId, roleMap)
+                    };
+                    
+                    if (ch.parent_id && categoryMap[ch.parent_id]) {
+                        chData.parent_id = categoryMap[ch.parent_id];
+                    }
+                    
+                    try {
+                        const create = await fetch(`https://discord.com/api/v10/guilds/${targetId}/channels`, {
+                            method: 'POST',
+                            headers: { 
+                                'Authorization': token,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(chData)
+                        });
+                        
+                        if (create.ok) {
+                            count++;
+                            addLog(`  СОЗДАН КАНАЛ: ${ch.name}`, 'success');
+                        }
+                        await sleep(500);
+                    } catch (e) {
+                        addLog(`  ОШИБКА СОЗДАНИЯ: ${ch.name}`, 'error');
+                    }
+                }
+                
+                return count;
+            } catch (e) {
+                addLog(`ОШИБКА: ${e.message}`, 'error');
+                return 0;
+            }
+        }
+
+        function convertOverwrites(overwrites, targetGuildId, roleMap) {
+            return overwrites.map(ow => {
+                let id = ow.id;
+                if (ow.type === 0) {
+                    if (roleMap[ow.id]) {
+                        id = roleMap[ow.id];
+                    } else {
+                        return null;
+                    }
+                } else if (ow.type === 1) {
+                    id = targetGuildId;
+                }
+                return {
+                    id: id,
+                    type: ow.type,
+                    allow: ow.allow,
+                    deny: ow.deny
+                };
+            }).filter(ow => ow !== null);
+        }
+
+        async function updateGuildInfo(sourceId, targetId) {
+            try {
+                const r = await fetch(`https://discord.com/api/v10/guilds/${sourceId}`, {
+                    headers: { 'Authorization': token }
+                });
+                if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ ИНФОРМАЦИЮ');
+                
+                const guild = await r.json();
+                const updateData = { name: guild.name };
+                
+                if (guild.icon) {
+                    const iconUrl = `https://cdn.discordapp.com/icons/${sourceId}/${guild.icon}.png?size=128`;
+                    const iconRes = await fetch(iconUrl);
+                    const iconBlob = await iconRes.blob();
+                    
+                    await new Promise(resolve => {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                            const base64 = reader.result.split(',')[1];
+                            updateData.icon = base64;
+                            resolve();
+                        };
+                        reader.readAsDataURL(iconBlob);
+                    });
+                }
+                
+                const update = await fetch(`https://discord.com/api/v10/guilds/${targetId}`, {
+                    method: 'PATCH',
+                    headers: { 
+                        'Authorization': token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                
+                if (update.ok) {
+                    addLog(`НАЗВАНИЕ СЕРВЕРА: ${guild.name}`, 'success');
+                }
+            } catch (e) {
+                addLog(`ОШИБКА ОБНОВЛЕНИЯ: ${e.message}`, 'error');
+            }
+        }
+
+        async function startRealCloning() {
+            if (cloning) {
+                showError('cloneError', 'КЛОНИРОВАНИЕ УЖЕ ВЫПОЛНЯЕТСЯ');
+                return;
+            }
+            
+            cloning = true;
+            document.getElementById('cloneBtn').disabled = true;
+            
+            const sourceId = document.getElementById('sourceId').value.trim();
+            const targetId = document.getElementById('targetId').value.trim();
+            const progressFill = document.getElementById('progressFill');
+            
+            localStorage.setItem('last_source_id', sourceId);
+            localStorage.setItem('last_target_id', targetId);
+            
+            try {
+                addLog('НАЧАЛО КЛОНИРОВАНИЯ...', 'info');
+                addLog(`ИСХОДНЫЙ: ${sourceId}`, 'info');
+                addLog(`ЦЕЛЕВОЙ: ${targetId}`, 'info');
+                
+                progressFill.style.width = '10%';
+                
+                const sourceCheck = await fetch(`https://discord.com/api/v10/guilds/${sourceId}`, {
+                    headers: { 'Authorization': token }
+                });
+                
+                if (!sourceCheck.ok) {
+                    showError('cloneError', 'ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН');
+                    addLog('ОШИБКА: ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН', 'error');
+                    cloning = false;
+                    document.getElementById('cloneBtn').disabled = false;
+                    return;
+                }
+                
+                const targetCheck = await fetch(`https://discord.com/api/v10/guilds/${targetId}`, {
+                    headers: { 'Authorization': token }
+                });
+                
+                if (!targetCheck.ok) {
+                    showError('cloneError', 'ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН');
+                    addLog('ОШИБКА: ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН', 'error');
+                    cloning = false;
+                    document.getElementById('cloneBtn').disabled = false;
+                    return;
+                }
+                
+                const sourceGuild = await sourceCheck.json();
+                addLog(`ИСХОДНЫЙ СЕРВЕР: ${sourceGuild.name}`, 'success');
+                
+                progressFill.style.width = '20%';
+                
+                addLog('ОЧИСТКА ЦЕЛЕВОГО СЕРВЕРА...', 'warning');
+                const delChannels = await deleteAllChannels(targetId);
+                const delRoles = await deleteAllRoles(targetId);
+                addLog(`УДАЛЕНО КАНАЛОВ: ${delChannels}`, 'success');
+                addLog(`УДАЛЕНО РОЛЕЙ: ${delRoles}`, 'success');
+                
+                progressFill.style.width = '40%';
+                
+                addLog('КОПИРОВАНИЕ ИНФОРМАЦИИ...', 'info');
+                await updateGuildInfo(sourceId, targetId);
+                
+                progressFill.style.width = '50%';
+                
+                addLog('СОЗДАНИЕ РОЛЕЙ...', 'info');
+                const { count: rolesCount, roleMap } = await createRoles(sourceId, targetId);
+                
+                progressFill.style.width = '70%';
+                
+                addLog('СОЗДАНИЕ КАНАЛОВ...', 'info');
+                const channelsCount = await createChannels(sourceId, targetId, roleMap);
+                
+                progressFill.style.width = '100%';
+                
+                addLog('КЛОНИРОВАНИЕ ЗАВЕРШЕНО', 'success');
+                addLog(`СОЗДАНО КАНАЛОВ: ${channelsCount}`, 'success');
+                addLog(`СОЗДАНО РОЛЕЙ: ${rolesCount}`, 'success');
+                
+                setTimeout(() => {
+                    progressFill.style.width = '0%';
+                }, 2000);
+                
+            } catch (e) {
+                showError('cloneError', `ОШИБКА: ${e.message}`);
+                addLog(`ОШИБКА: ${e.message}`, 'error');
+                progressFill.style.width = '0%';
+            } finally {
+                cloning = false;
+                document.getElementById('cloneBtn').disabled = false;
+            }
+        }
+
+        function addLog(msg, type = 'info') {
+            const l = document.getElementById('log');
+            if (!l) return;
+            
+            const t = new Date().toLocaleTimeString('ru-RU', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
+            
+            const e = document.createElement('div');
+            e.className = `log-entry log-${type}`;
+            e.innerHTML = `<span class="log-time">${t}</span><span class="log-msg">${msg}</span>`;
+            l.appendChild(e);
+            l.scrollTop = l.scrollHeight;
+            
+            if (l.children.length > 100) {
+                l.removeChild(l.children[0]);
+            }
+        }
+
+        function sleep(ms) {
+            return new Promise(r => setTimeout(r, ms));
+        }
+
+        function switchSection(s) {
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (!user) return;
+            
+            const contents = ['mainContent', 'supportContent', 'aboutContent'];
+            contents.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (id === s + 'Content') {
+                        el.classList.remove('hidden');
+                        el.classList.add('fade-in');
+                    } else {
+                        el.classList.add('hidden');
+                        el.classList.remove('fade-in');
+                    }
+                }
+            });
+        }
+
+        window.onload = async () => {
+            const savedToken = localStorage.getItem('discord_token');
+            const savedUser = localStorage.getItem('discord_user');
+            
+            if (savedToken && savedUser) {
+                token = savedToken;
+                user = JSON.parse(savedUser);
+                
+                document.getElementById('userName').textContent = user.username;
+                document.getElementById('userId').textContent = `ID: ${user.id}`;
+                
+                if (user.email) {
+                    const emailEl = document.getElementById('userEmail');
+                    emailEl.textContent = user.email.replace(/./g, '•');
+                }
+                
+                if (user.avatar) {
+                    document.getElementById('userAvatar').src = 
+                        `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`;
+                }
+                
+                const savedSource = localStorage.getItem('last_source_id');
+                const savedTarget = localStorage.getItem('last_target_id');
+                if (savedSource) document.getElementById('sourceId').value = savedSource;
+                if (savedTarget) document.getElementById('targetId').value = savedTarget;
+                
+                document.getElementById('authView').classList.add('hidden');
+                document.getElementById('mainView').classList.remove('hidden');
+                
+                addLog('СЕССИЯ ВОССТАНОВЛЕНА', 'success');
+                await loadServers();
+            }
+            
+            addLog('DISCORD SERVER CLONER by xolirx', 'info');
+            addLog('2026', 'info');
+        };
+    </script>
+</body>
+</html>
