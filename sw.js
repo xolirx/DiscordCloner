@@ -45,6 +45,7 @@ function startBackgroundClone(state) {
             
             if (result.progress >= 100) {
                 stopBackgroundClone();
+                const clients = await self.clients.matchAll();
                 if (clients.length > 0) {
                     clients.forEach(client => {
                         client.postMessage({ type: 'CLONE_COMPLETE' });
@@ -54,7 +55,7 @@ function startBackgroundClone(state) {
         } catch (error) {
             console.error('Background clone error:', error);
         }
-    }, 10000);
+    }, 5000);
 }
 
 function stopBackgroundClone() {
@@ -395,15 +396,13 @@ async function getToken() {
 }
 
 function sendStatus() {
-    if (cloneInterval) {
-        self.clients.matchAll().then(clients => {
-            if (clients.length > 0) {
-                clients.forEach(client => {
-                    client.postMessage({ type: 'CLONE_ACTIVE' });
-                });
-            }
-        }).catch(e => console.error('Error sending status:', e));
-    }
+    self.clients.matchAll().then(clients => {
+        if (clients.length > 0) {
+            clients.forEach(client => {
+                client.postMessage({ type: 'CLONE_ACTIVE' });
+            });
+        }
+    }).catch(e => console.error('Error sending status:', e));
 }
 
 function sleep(ms) {
