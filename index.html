@@ -123,12 +123,6 @@
             to { transform: rotate(360deg); }
         }
 
-        @keyframes pulse {
-            0% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.02); }
-            100% { opacity: 0.6; transform: scale(1); }
-        }
-
         .fade-in {
             animation: fadeIn 0.3s ease forwards;
         }
@@ -2027,7 +2021,11 @@
 
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').catch(() => {});
+            navigator.serviceWorker.register('sw.js').then(registration => {
+                console.log('Service Worker зарегистрирован');
+            }).catch(error => {
+                console.log('Ошибка регистрации Service Worker:', error);
+            });
         }
 
         if ('Notification' in window && Notification.permission === 'default') {
@@ -2037,21 +2035,25 @@
         const canvas = document.getElementById('snowCanvas');
         const ctx = canvas.getContext('2d');
         let animationFrame;
+        let snowflakes = [];
+        
+        function initSnow() {
+            resizeCanvas();
+            snowflakes = Array.from({ length: 15 }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 2 + 0.5,
+                speed: Math.random() * 0.2 + 0.1,
+                opacity: Math.random() * 0.1
+            }));
+        }
         
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
         
-        resizeCanvas();
-
-        const snowflakes = Array.from({ length: 20 }, () => ({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            radius: Math.random() * 2 + 0.5,
-            speed: Math.random() * 0.2 + 0.1,
-            opacity: Math.random() * 0.1
-        }));
+        initSnow();
 
         function drawSnow() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -2073,6 +2075,10 @@
 
         window.addEventListener('resize', () => {
             resizeCanvas();
+            snowflakes.forEach(f => {
+                if (f.x > canvas.width) f.x = Math.random() * canvas.width;
+                if (f.y > canvas.height) f.y = Math.random() * canvas.height;
+            });
         });
 
         function toggleInstructions() {
@@ -2089,6 +2095,7 @@
         let userGuilds = [];
         let emailVisible = false;
         let startTime = null;
+        let backgroundSyncInterval = null;
 
         function toggleTheme() {
             const body = document.body;
@@ -2169,9 +2176,14 @@
         function cancelCloning() {
             if (cloning) {
                 cancelRequested = true;
-                addLog('⚠ ОТМЕНА КЛОНИРОВАНИЯ...', 'warning');
+                addLog('ОТМЕНА КЛОНИРОВАНИЯ...', 'warning');
                 document.getElementById('cancelCloneBtn').disabled = true;
                 localStorage.setItem('clone_cancelled', 'true');
+                
+                if (backgroundSyncInterval) {
+                    clearInterval(backgroundSyncInterval);
+                    backgroundSyncInterval = null;
+                }
             }
         }
 
@@ -2187,14 +2199,43 @@
                         document.getElementById('backgroundStatus').classList.add('show');
                         document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: ' + state.progress + '%';
                         
-                        addLog('⚠ ВОССТАНОВЛЕНО ФОНОВОЕ КЛОНИРОВАНИЕ', 'warning');
+                        addLog('ВОССТАНОВЛЕНО ФОНОВОЕ КЛОНИРОВАНИЕ', 'warning');
                         addLog('ИСХОДНЫЙ: ' + state.sourceId, 'info');
                         addLog('ЦЕЛЕВОЙ: ' + state.targetId, 'info');
                         
-                        continueCloning(state);
+                        startBackgroundSync(state);
                     }
                 } catch {}
             }
+        }
+
+        function startBackgroundSync(state) {
+            if (backgroundSyncInterval) {
+                clearInterval(backgroundSyncInterval);
+            }
+            
+            backgroundSyncInterval = setInterval(() => {
+                const savedState = localStorage.getItem('clone_state');
+                if (savedState) {
+                    try {
+                        const currentState = JSON.parse(savedState);
+                        if (currentState.active) {
+                            document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: ' + currentState.progress + '%';
+                            
+                            if (currentState.progress >= 100) {
+                                clearInterval(backgroundSyncInterval);
+                                backgroundSyncInterval = null;
+                            }
+                        } else {
+                            clearInterval(backgroundSyncInterval);
+                            backgroundSyncInterval = null;
+                        }
+                    } catch {}
+                } else {
+                    clearInterval(backgroundSyncInterval);
+                    backgroundSyncInterval = null;
+                }
+            }, 1000);
         }
 
         function getElapsedTime() {
@@ -2226,6 +2267,7 @@
                     if (cancelRequested) throw new Error('CLONING_CANCELLED');
                     state.stage = 'info';
                     state.progress = 40;
+                    localStorage.setItem('clone_state', JSON.stringify(state));
                 }
                 
                 if (state.stage === 'info') {
@@ -2233,6 +2275,7 @@
                     if (cancelRequested) throw new Error('CLONING_CANCELLED');
                     state.stage = 'roles';
                     state.progress = 50;
+                    localStorage.setItem('clone_state', JSON.stringify(state));
                 }
                 
                 if (state.stage === 'roles') {
@@ -2241,27 +2284,40 @@
                     state.roleMap = roleMap;
                     state.stage = 'channels';
                     state.progress = 70;
+                    localStorage.setItem('clone_state', JSON.stringify(state));
                 }
                 
                 if (state.stage === 'channels') {
                     const channelsCount = await createChannels(state.sourceId, state.targetId, state.roleMap || {});
                     if (cancelRequested) throw new Error('CLONING_CANCELLED');
                     state.progress = 100;
+                    localStorage.setItem('clone_state', JSON.stringify(state));
                 }
                 
                 progressFill.style.width = '100%';
-                addLog('✅ КЛОНИРОВАНИЕ ЗАВЕРШЕНО', 'success');
+                addLog('КЛОНИРОВАНИЕ ЗАВЕРШЕНО', 'success');
                 
                 localStorage.removeItem('clone_state');
                 document.getElementById('backgroundStatus').classList.remove('show');
+                
+                if (backgroundSyncInterval) {
+                    clearInterval(backgroundSyncInterval);
+                    backgroundSyncInterval = null;
+                }
+                
                 playSound('success');
                 notifyComplete();
                 
             } catch (e) {
                 if (e.message === 'CLONING_CANCELLED') {
-                    addLog('⚠ КЛОНИРОВАНИЕ ОТМЕНЕНО', 'warning');
+                    addLog('КЛОНИРОВАНИЕ ОТМЕНЕНО', 'warning');
                     localStorage.removeItem('clone_state');
                     document.getElementById('backgroundStatus').classList.remove('show');
+                    
+                    if (backgroundSyncInterval) {
+                        clearInterval(backgroundSyncInterval);
+                        backgroundSyncInterval = null;
+                    }
                 }
             } finally {
                 cloning = false;
@@ -2275,11 +2331,11 @@
             try {
                 const response = await fetch('https://discord.com/api/v10/gateway');
                 if (response.ok) {
-                    addLog('✅ DISCORD API ДОСТУПЕН', 'success');
+                    addLog('DISCORD API ДОСТУПЕН', 'success');
                     return true;
                 }
             } catch {
-                addLog('❌ DISCORD API НЕДОСТУПЕН', 'error');
+                addLog('DISCORD API НЕДОСТУПЕН', 'error');
                 return false;
             }
         }
@@ -2291,8 +2347,15 @@
                     const response = await fetch(url, options);
                     if (response.status === 429) {
                         const retryAfter = response.headers.get('Retry-After') || 2;
-                        addLog(`⚠ ЛИМИТ API, ОЖИДАНИЕ ${retryAfter}С...`, 'warning');
+                        addLog(`ЛИМИТ API, ОЖИДАНИЕ ${retryAfter}С...`, 'warning');
                         await sleep(retryAfter * 1000);
+                        continue;
+                    }
+                    if (!response.ok && i === maxRetries - 1) {
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    if (!response.ok) {
+                        await sleep(500 * (i + 1));
                         continue;
                     }
                     return response;
@@ -2301,6 +2364,7 @@
                     await sleep(500 * (i + 1));
                 }
             }
+            throw new Error('MAX_RETRIES_EXCEEDED');
         }
 
         async function authorize() {
@@ -2349,7 +2413,7 @@
                     document.getElementById('authView').classList.add('hidden');
                     document.getElementById('mainView').classList.remove('hidden');
                     
-                    addLog('✅ АВТОРИЗАЦИЯ УСПЕШНА', 'success');
+                    addLog('АВТОРИЗАЦИЯ УСПЕШНА', 'success');
                     
                     const savedSource = localStorage.getItem('last_source_id');
                     const savedTarget = localStorage.getItem('last_target_id');
@@ -2361,12 +2425,12 @@
                     restoreCloningState();
                 } else {
                     showError('authError', 'НЕВЕРНЫЙ ТОКЕН');
-                    addLog('❌ ОШИБКА: НЕВЕРНЫЙ ТОКЕН', 'error');
+                    addLog('ОШИБКА: НЕВЕРНЫЙ ТОКЕН', 'error');
                     playSound('error');
                 }
             } catch (e) {
                 showError('authError', 'ОШИБКА ПОДКЛЮЧЕНИЯ');
-                addLog('❌ ОШИБКА ПОДКЛЮЧЕНИЯ', 'error');
+                addLog('ОШИБКА ПОДКЛЮЧЕНИЯ', 'error');
                 playSound('error');
             } finally {
                 loginBtn.textContent = originalText;
@@ -2380,12 +2444,20 @@
             localStorage.removeItem('discord_token');
             localStorage.removeItem('discord_user');
             localStorage.removeItem('clone_state');
+            localStorage.removeItem('last_source_id');
+            localStorage.removeItem('last_target_id');
+            
+            if (backgroundSyncInterval) {
+                clearInterval(backgroundSyncInterval);
+                backgroundSyncInterval = null;
+            }
+            
             document.getElementById('authView').classList.remove('hidden');
             document.getElementById('mainView').classList.add('hidden');
             document.getElementById('tokenInput').value = '';
             document.getElementById('sourceId').value = '';
             document.getElementById('targetId').value = '';
-            addLog('👋 ВЫХОД ИЗ СИСТЕМЫ', 'info');
+            addLog('ВЫХОД ИЗ СИСТЕМЫ', 'info');
             
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.querySelector('.nav-link').classList.add('active');
@@ -2393,18 +2465,18 @@
 
         async function loadServers() {
             if (!token) return;
-            addLog('📁 ЗАГРУЗКА СЕРВЕРОВ...', 'info');
+            addLog('ЗАГРУЗКА СЕРВЕРОВ...', 'info');
             try {
                 const r = await fetch('https://discord.com/api/v10/users/@me/guilds', {
                     headers: { 'Authorization': token }
                 });
                 if (r.ok) {
                     userGuilds = await r.json();
-                    addLog(`✅ НАЙДЕНО СЕРВЕРОВ: ${userGuilds.length}`, 'success');
+                    addLog(`НАЙДЕНО СЕРВЕРОВ: ${userGuilds.length}`, 'success');
                     return userGuilds;
                 }
             } catch (e) {
-                addLog('❌ ОШИБКА ЗАГРУЗКИ СЕРВЕРОВ', 'error');
+                addLog('ОШИБКА ЗАГРУЗКИ СЕРВЕРОВ', 'error');
             }
             return [];
         }
@@ -2436,7 +2508,7 @@
         function setSourceId(id) {
             document.getElementById('sourceId').value = id;
             document.getElementById('serverListContainer').classList.add('hidden');
-            addLog(`📋 ID ВСТАВЛЕН: ${id}`, 'info');
+            addLog(`ID ВСТАВЛЕН: ${id}`, 'info');
         }
 
         function checkAllRules() {
@@ -2520,7 +2592,7 @@
                         });
                         if (del.ok) {
                             count++;
-                            addLog(`  🗑️ УДАЛЕН КАНАЛ: ${channel.name}`, 'warning');
+                            addLog(`  УДАЛЕН КАНАЛ: ${channel.name}`, 'warning');
                         }
                         await sleep(200);
                     } catch (e) {
@@ -2554,7 +2626,7 @@
                         });
                         if (del.ok) {
                             count++;
-                            addLog(`  🗑️ УДАЛЕНА РОЛЬ: ${role.name}`, 'warning');
+                            addLog(`  УДАЛЕНА РОЛЬ: ${role.name}`, 'warning');
                         }
                         await sleep(200);
                     } catch (e) {
@@ -2608,7 +2680,7 @@
                             const newRole = await create.json();
                             roleMap[role.id] = newRole.id;
                             count++;
-                            addLog(`  ✅ СОЗДАНА РОЛЬ: ${role.name}`, 'success');
+                            addLog(`  СОЗДАНА РОЛЬ: ${role.name}`, 'success');
                         }
                         await sleep(300);
                     } catch (e) {
@@ -2686,7 +2758,7 @@
                             const newCat = await create.json();
                             categoryMap[cat.id] = newCat.id;
                             count++;
-                            addLog(`  ✅ СОЗДАНА КАТЕГОРИЯ: ${cat.name}`, 'success');
+                            addLog(`  СОЗДАНА КАТЕГОРИЯ: ${cat.name}`, 'success');
                         }
                         await sleep(300);
                     } catch (e) {
@@ -2725,7 +2797,7 @@
                         
                         if (create.ok) {
                             count++;
-                            addLog(`  ✅ СОЗДАН КАНАЛ: ${ch.name}`, 'success');
+                            addLog(`  СОЗДАН КАНАЛ: ${ch.name}`, 'success');
                         }
                         await sleep(300);
                     } catch (e) {
@@ -2766,7 +2838,7 @@
                             reader.readAsDataURL(iconBlob);
                         });
                     } else {
-                        addLog('⚠ ИКОНКА СЛИШКОМ БОЛЬШАЯ, ПРОПУСК', 'warning');
+                        addLog('ИКОНКА СЛИШКОМ БОЛЬШАЯ, ПРОПУСК', 'warning');
                     }
                 }
                 
@@ -2780,7 +2852,7 @@
                 });
                 
                 if (update.ok) {
-                    addLog(`✅ НАЗВАНИЕ СЕРВЕРА: ${guild.name}`, 'success');
+                    addLog(`НАЗВАНИЕ СЕРВЕРА: ${guild.name}`, 'success');
                 }
             } catch (e) {
                 if (e.message === 'CLONING_CANCELLED') throw e;
@@ -2832,15 +2904,14 @@
             };
             
             try {
-                addLog('🚀 НАЧАЛО КЛОНИРОВАНИЯ...', 'info');
-                addLog('📌 ИСХОДНЫЙ: ' + sourceId, 'info');
-                addLog('🎯 ЦЕЛЕВОЙ: ' + targetId, 'info');
+                addLog('НАЧАЛО КЛОНИРОВАНИЯ...', 'info');
+                addLog('ИСХОДНЫЙ: ' + sourceId, 'info');
+                addLog('ЦЕЛЕВОЙ: ' + targetId, 'info');
                 
-                if ('SyncManager' in window) {
-                    addLog('⚠ РЕЖИМ ФОНОВОГО КЛОНИРОВАНИЯ АКТИВИРОВАН', 'warning');
-                    addLog('⚠ МОЖНО ЗАКРЫТЬ САЙТ - ПРОЦЕСС ПРОДОЛЖИТСЯ', 'warning');
-                    document.getElementById('backgroundStatus').classList.add('show');
-                }
+                addLog('РЕЖИМ ФОНОВОГО КЛОНИРОВАНИЯ АКТИВИРОВАН', 'warning');
+                addLog('МОЖНО ЗАКРЫТЬ САЙТ - ПРОЦЕСС ПРОДОЛЖИТСЯ', 'warning');
+                document.getElementById('backgroundStatus').classList.add('show');
+                startBackgroundSync(cloneState);
                 
                 updateStageProgress('cleaning', 0);
                 cloneState.progress = 5;
@@ -2849,7 +2920,7 @@
                 const hasAdmin = await checkPermissions(targetId);
                 if (!hasAdmin) {
                     showError('cloneError', 'НЕТ ПРАВ АДМИНИСТРАТОРА НА ЦЕЛЕВОМ СЕРВЕРЕ');
-                    addLog('❌ ОШИБКА: НЕТ ПРАВ АДМИНИСТРАТОРА', 'error');
+                    addLog('ОШИБКА: НЕТ ПРАВ АДМИНИСТРАТОРА', 'error');
                     throw new Error('NO_ADMIN_PERMISSIONS');
                 }
                 
@@ -2863,7 +2934,7 @@
                 
                 if (!sourceCheck.ok) {
                     showError('cloneError', 'ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН');
-                    addLog('❌ ОШИБКА: ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН', 'error');
+                    addLog('ОШИБКА: ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН', 'error');
                     throw new Error('SOURCE_NOT_FOUND');
                 }
                 
@@ -2873,31 +2944,31 @@
                 
                 if (!targetCheck.ok) {
                     showError('cloneError', 'ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН');
-                    addLog('❌ ОШИБКА: ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН', 'error');
+                    addLog('ОШИБКА: ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН', 'error');
                     throw new Error('TARGET_NOT_FOUND');
                 }
                 
                 const sourceGuild = await sourceCheck.json();
-                addLog('✅ ИСХОДНЫЙ СЕРВЕР: ' + sourceGuild.name, 'success');
+                addLog('ИСХОДНЫЙ СЕРВЕР: ' + sourceGuild.name, 'success');
                 
                 updateStageProgress('cleaning', 30);
                 cloneState.progress = 15;
                 localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
-                addLog('🧹 ОЧИСТКА ЦЕЛЕВОГО СЕРВЕРА...', 'warning');
+                addLog('ОЧИСТКА ЦЕЛЕВОГО СЕРВЕРА...', 'warning');
                 const delChannels = await deleteAllChannels(targetId);
                 if (cancelRequested) throw new Error('CLONING_CANCELLED');
                 const delRoles = await deleteAllRoles(targetId);
                 if (cancelRequested) throw new Error('CLONING_CANCELLED');
-                addLog(`✅ УДАЛЕНО КАНАЛОВ: ${delChannels}`, 'success');
-                addLog(`✅ УДАЛЕНО РОЛЕЙ: ${delRoles}`, 'success');
+                addLog(`УДАЛЕНО КАНАЛОВ: ${delChannels}`, 'success');
+                addLog(`УДАЛЕНО РОЛЕЙ: ${delRoles}`, 'success');
                 
                 updateStageProgress('cleaning', 100);
                 cloneState.stage = 'info';
                 cloneState.progress = 25;
                 localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
-                addLog('📋 КОПИРОВАНИЕ ИНФОРМАЦИИ...', 'info');
+                addLog('КОПИРОВАНИЕ ИНФОРМАЦИИ...', 'info');
                 await updateGuildInfo(sourceId, targetId);
                 if (cancelRequested) throw new Error('CLONING_CANCELLED');
                 
@@ -2906,7 +2977,7 @@
                 cloneState.progress = 40;
                 localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
-                addLog('👥 СОЗДАНИЕ РОЛЕЙ...', 'info');
+                addLog('СОЗДАНИЕ РОЛЕЙ...', 'info');
                 const { count: rolesCount, roleMap } = await createRoles(sourceId, targetId);
                 if (cancelRequested) throw new Error('CLONING_CANCELLED');
                 cloneState.roleMap = roleMap;
@@ -2916,7 +2987,7 @@
                 cloneState.progress = 75;
                 localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
-                addLog('📢 СОЗДАНИЕ КАНАЛОВ...', 'info');
+                addLog('СОЗДАНИЕ КАНАЛОВ...', 'info');
                 const channelsCount = await createChannels(sourceId, targetId, roleMap);
                 if (cancelRequested) throw new Error('CLONING_CANCELLED');
                 
@@ -2924,10 +2995,10 @@
                 cloneState.progress = 100;
                 localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
-                addLog('✅ КЛОНИРОВАНИЕ ЗАВЕРШЕНО', 'success');
-                addLog(`✅ СОЗДАНО КАНАЛОВ: ${channelsCount}`, 'success');
-                addLog(`✅ СОЗДАНО РОЛЕЙ: ${rolesCount}`, 'success');
-                addLog(`⏱️ ВРЕМЯ: ${getElapsedTime()}`, 'info');
+                addLog('КЛОНИРОВАНИЕ ЗАВЕРШЕНО', 'success');
+                addLog(`СОЗДАНО КАНАЛОВ: ${channelsCount}`, 'success');
+                addLog(`СОЗДАНО РОЛЕЙ: ${rolesCount}`, 'success');
+                addLog(`ВРЕМЯ: ${getElapsedTime()}`, 'info');
                 
                 setTimeout(() => {
                     progressFill.style.width = '0%';
@@ -2935,21 +3006,38 @@
                 
                 localStorage.removeItem('clone_state');
                 document.getElementById('backgroundStatus').classList.remove('show');
+                
+                if (backgroundSyncInterval) {
+                    clearInterval(backgroundSyncInterval);
+                    backgroundSyncInterval = null;
+                }
+                
                 playSound('success');
                 notifyComplete();
                 
             } catch (e) {
                 if (e.message === 'CLONING_CANCELLED') {
-                    addLog('⚠ КЛОНИРОВАНИЕ ОТМЕНЕНО', 'warning');
+                    addLog('КЛОНИРОВАНИЕ ОТМЕНЕНО', 'warning');
                     progressFill.style.width = '0%';
                     localStorage.removeItem('clone_state');
                     document.getElementById('backgroundStatus').classList.remove('show');
+                    
+                    if (backgroundSyncInterval) {
+                        clearInterval(backgroundSyncInterval);
+                        backgroundSyncInterval = null;
+                    }
                 } else if (e.message !== 'NO_ADMIN_PERMISSIONS' && e.message !== 'SOURCE_NOT_FOUND' && e.message !== 'TARGET_NOT_FOUND') {
                     showError('cloneError', 'ОШИБКА: ' + e.message);
-                    addLog('❌ ОШИБКА: ' + e.message, 'error');
+                    addLog('ОШИБКА: ' + e.message, 'error');
                     progressFill.style.width = '0%';
                     localStorage.removeItem('clone_state');
                     document.getElementById('backgroundStatus').classList.remove('show');
+                    
+                    if (backgroundSyncInterval) {
+                        clearInterval(backgroundSyncInterval);
+                        backgroundSyncInterval = null;
+                    }
+                    
                     playSound('error');
                 }
             } finally {
@@ -3065,7 +3153,7 @@
                 document.getElementById('authView').classList.add('hidden');
                 document.getElementById('mainView').classList.remove('hidden');
                 
-                addLog('🔄 СЕССИЯ ВОССТАНОВЛЕНА', 'success');
+                addLog('СЕССИЯ ВОССТАНОВЛЕНА', 'success');
                 await loadServers();
                 restoreCloningState();
             }
@@ -3073,6 +3161,20 @@
             addLog('DISCORD SERVER CLONER by xolirx', 'info');
             addLog('2026', 'info');
         };
+        
+        window.addEventListener('beforeunload', () => {
+            if (cloning && !cancelRequested) {
+                const savedState = localStorage.getItem('clone_state');
+                if (savedState) {
+                    try {
+                        const state = JSON.parse(savedState);
+                        if (state.active) {
+                            addLog('КЛОНИРОВАНИЕ ПРОДОЛЖАЕТСЯ В ФОНЕ...', 'info');
+                        }
+                    } catch {}
+                }
+            }
+        });
     </script>
 </body>
 </html>
