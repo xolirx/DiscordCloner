@@ -77,7 +77,7 @@
         }
 
         body.light-theme .log-msg {
-            color: #666;
+            color: #0066cc;
         }
 
         body.light-theme .auth-subtitle span,
@@ -90,7 +90,7 @@
         }
 
         body.light-theme .footer {
-            color: #999;
+            color: #0066cc;
             border-top-color: rgba(0,0,0,0.05);
         }
 
@@ -118,13 +118,34 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
 
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px rgba(0,102,255,0.2); }
+            50% { box-shadow: 0 0 20px rgba(0,102,255,0.4); }
+            100% { box-shadow: 0 0 5px rgba(0,102,255,0.2); }
+        }
+
         .fade-in {
             animation: fadeIn 0.3s ease forwards;
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease forwards;
         }
 
         .navbar {
@@ -249,11 +270,11 @@
             left: 0;
             width: 100%;
             height: 1px;
-            background: linear-gradient(90deg, transparent, #fff, transparent);
+            background: linear-gradient(90deg, transparent, #0066ff, transparent);
         }
 
         body.light-theme .nav-link.active::after {
-            background: linear-gradient(90deg, transparent, #1a1a1a, transparent);
+            background: linear-gradient(90deg, transparent, #0066cc, transparent);
         }
 
         .main-container {
@@ -398,9 +419,10 @@
 
         .form-input:focus {
             outline: none;
-            border-color: rgba(255,255,255,0.1);
+            border-color: rgba(0,102,255,0.5);
             background: rgba(20,20,20,0.8);
             transform: scale(1.01);
+            animation: glow 2s infinite;
         }
 
         .form-input::placeholder {
@@ -456,13 +478,13 @@
             width: 0;
             height: 0;
             border-radius: 50%;
-            background: rgba(255,255,255,0.1);
+            background: rgba(0,102,255,0.1);
             transform: translate(-50%, -50%);
             transition: width 0.3s, height 0.3s;
         }
 
         body.light-theme .btn::after {
-            background: rgba(0,0,0,0.05);
+            background: rgba(0,102,204,0.05);
         }
 
         .btn:active::after {
@@ -471,32 +493,32 @@
         }
 
         .btn:hover {
-            border-color: rgba(255,255,255,0.15);
-            background: rgba(255,255,255,0.01);
+            border-color: rgba(0,102,255,0.5);
+            background: rgba(0,102,255,0.02);
             transform: translateY(-1px);
         }
 
         body.light-theme .btn:hover {
-            border-color: rgba(0,0,0,0.2);
-            background: rgba(0,0,0,0.02);
+            border-color: rgba(0,102,204,0.3);
+            background: rgba(0,102,204,0.02);
         }
 
         .btn-primary {
-            background: rgba(255,255,255,0.02);
-            border-color: rgba(255,255,255,0.06);
+            background: rgba(0,102,255,0.05);
+            border-color: rgba(0,102,255,0.3);
         }
 
         body.light-theme .btn-primary {
-            background: rgba(0,0,0,0.02);
-            border-color: rgba(0,0,0,0.1);
+            background: rgba(0,102,204,0.05);
+            border-color: rgba(0,102,204,0.3);
         }
 
         .btn-primary:hover {
-            background: rgba(255,255,255,0.03);
+            background: rgba(0,102,255,0.1);
         }
 
         body.light-theme .btn-primary:hover {
-            background: rgba(0,0,0,0.03);
+            background: rgba(0,102,204,0.1);
         }
 
         .btn-danger {
@@ -550,7 +572,7 @@
             height: 48px;
             border-radius: 50%;
             background: #111;
-            border: 2px solid rgba(255,255,255,0.05);
+            border: 2px solid rgba(0,102,255,0.3);
             object-fit: cover;
             transition: all 0.3s;
         }
@@ -708,7 +730,7 @@
         }
 
         .clone-card:hover {
-            border-color: rgba(255,255,255,0.05);
+            border-color: rgba(0,102,255,0.2);
         }
 
         .clone-title {
@@ -807,7 +829,7 @@
 
         .clone-input:focus {
             outline: none;
-            border-color: rgba(255,255,255,0.1);
+            border-color: rgba(0,102,255,0.5);
             background: rgba(20,20,20,0.8);
             transform: scale(1.01);
         }
@@ -863,7 +885,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #fff, #444, #fff);
+            background: linear-gradient(90deg, #0066ff, #00aaff, #0066ff);
             width: 0%;
             transition: width 0.2s ease;
         }
@@ -900,7 +922,7 @@
         }
 
         .info-card:hover {
-            border-color: rgba(255,255,255,0.05);
+            border-color: rgba(0,102,255,0.2);
         }
 
         body.light-theme .info-card {
@@ -997,11 +1019,11 @@
         }
 
         .log-entry:active {
-            background: rgba(255,255,255,0.02);
+            background: rgba(0,102,255,0.05);
         }
 
         body.light-theme .log-entry:active {
-            background: rgba(0,0,0,0.02);
+            background: rgba(0,102,204,0.05);
         }
 
         .log-time {
@@ -1018,7 +1040,7 @@
         }
 
         .log-msg {
-            color: #444;
+            color: #0066ff;
             word-break: break-word;
         }
 
@@ -1041,8 +1063,8 @@
         .contact-single .btn {
             padding: 1rem 2rem;
             font-size: 0.9rem;
-            background: rgba(255,255,255,0.02);
-            border-color: rgba(255,255,255,0.1);
+            background: rgba(0,102,255,0.05);
+            border-color: rgba(0,102,255,0.3);
         }
 
         @media (min-width: 768px) {
@@ -1053,8 +1075,8 @@
         }
 
         .contact-single .btn:active {
-            background: rgba(255,255,255,0.05);
-            border-color: rgba(255,255,255,0.2);
+            background: rgba(0,102,255,0.1);
+            border-color: rgba(0,102,255,0.5);
         }
 
         .modal {
@@ -1081,7 +1103,7 @@
 
         .modal-content {
             background: rgba(18,18,18,0.95);
-            border: 1px solid rgba(255,255,255,0.03);
+            border: 1px solid rgba(0,102,255,0.2);
             border-radius: 24px;
             padding: 1.5rem;
             max-width: 600px;
@@ -1102,7 +1124,7 @@
 
         body.light-theme .modal-content {
             background: rgba(255,255,255,0.95);
-            border-color: rgba(0,0,0,0.1);
+            border-color: rgba(0,102,204,0.2);
         }
 
         .modal.active .modal-content {
@@ -1163,12 +1185,12 @@
 
         .rules-list li::before {
             content: "●";
-            color: #333;
+            color: #0066ff;
             font-size: 0.8rem;
         }
 
         body.light-theme .rules-list li::before {
-            color: #999;
+            color: #0066cc;
         }
 
         .checkbox-group {
@@ -1201,7 +1223,7 @@
         }
 
         .checkbox-item:active {
-            background: rgba(255,255,255,0.03);
+            background: rgba(0,102,255,0.05);
         }
 
         body.light-theme .checkbox-item {
@@ -1209,7 +1231,7 @@
         }
 
         body.light-theme .checkbox-item:active {
-            background: rgba(0,0,0,0.04);
+            background: rgba(0,102,204,0.05);
         }
 
         .checkbox-item input[type="checkbox"] {
@@ -1218,7 +1240,7 @@
             cursor: pointer;
             background: transparent;
             border: 1px solid #333;
-            accent-color: #666;
+            accent-color: #0066ff;
             flex-shrink: 0;
         }
 
@@ -1312,7 +1334,7 @@
         }
 
         .instruction-header:active {
-            background: rgba(255,255,255,0.03);
+            background: rgba(0,102,255,0.05);
         }
 
         .instruction-header span {
@@ -1469,10 +1491,10 @@
             margin-top: 2rem;
             padding: 1.5rem;
             text-align: center;
-            color: #222;
+            color: #0066ff;
             font-size: 0.65rem;
             letter-spacing: 1px;
-            border-top: 1px solid rgba(255,255,255,0.02);
+            border-top: 1px solid rgba(0,102,255,0.2);
             position: relative;
             z-index: 5;
         }
@@ -1487,8 +1509,8 @@
         }
 
         body.light-theme .footer {
-            color: #999;
-            border-top-color: rgba(0,0,0,0.05);
+            color: #0066cc;
+            border-top-color: rgba(0,102,204,0.2);
         }
 
         .hidden {
@@ -1554,7 +1576,7 @@
         }
 
         .server-item:active {
-            background: rgba(255,255,255,0.03);
+            background: rgba(0,102,255,0.05);
             color: #888;
         }
 
@@ -1582,7 +1604,7 @@
         }
 
         .email-toggle:active .eye-icon {
-            fill: #fff;
+            fill: #0066ff;
         }
 
         .background-status {
@@ -1590,7 +1612,7 @@
             border-radius: 10px;
             padding: 0.8rem;
             margin-top: 1rem;
-            border-left: 2px solid #6a6;
+            border-left: 2px solid #0066ff;
             display: none;
         }
 
@@ -1606,7 +1628,7 @@
         }
 
         .background-status-title {
-            color: #6a6;
+            color: #0066ff;
             font-size: 0.75rem;
             margin-bottom: 0.5rem;
             display: flex;
@@ -1623,7 +1645,7 @@
         .spinner {
             width: 14px;
             height: 14px;
-            border: 2px solid #6a6;
+            border: 2px solid #0066ff;
             border-top-color: transparent;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
@@ -1709,7 +1731,7 @@
             width: 0;
             height: 0;
             border-radius: 50%;
-            background: rgba(255,255,255,0.1);
+            background: rgba(0,102,255,0.1);
             transform: translate(-50%, -50%);
             transition: width 0.2s, height 0.2s;
         }
@@ -1769,12 +1791,85 @@
             height: 20px;
             border: 2px solid rgba(255,255,255,0.3);
             border-radius: 50%;
-            border-top-color: #fff;
+            border-top-color: #0066ff;
             animation: spin 0.6s linear infinite;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s;
+        }
+
+        .loading-overlay.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-logo {
+            font-size: 2rem;
+            letter-spacing: 5px;
+            color: #0066ff;
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 2px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #0066ff, #00aaff);
+            animation: loading 1.5s ease-in-out forwards;
+        }
+
+        @keyframes loading {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        .warning-message {
+            background: rgba(255,165,0,0.1);
+            border: 1px solid rgba(255,165,0,0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            color: #fa0;
+            font-size: 0.85rem;
+            text-align: center;
+            animation: pulse 2s infinite;
         }
     </style>
 </head>
 <body class="dark-theme">
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-logo">DISCORD CLONER</div>
+            <div class="loading-bar">
+                <div class="loading-bar-fill"></div>
+            </div>
+        </div>
+    </div>
+
     <canvas id="snowCanvas"></canvas>
 
     <div class="content">
@@ -1841,10 +1936,10 @@
                     <button class="btn logout-btn" onclick="logout()">ВЫЙТИ</button>
                 </div>
 
-                <div id="backgroundStatus" class="background-status">
+                <div id="backgroundStatus" class="background-status hidden">
                     <div class="background-status-title">
                         <div class="spinner"></div>
-                        <span>КЛОНИРОВАНИЕ ВЫПОЛНЯЕТСЯ В ФОНЕ</span>
+                        <span>КЛОНИРОВАНИЕ ВЫПОЛНЯЕТСЯ</span>
                     </div>
                     <div id="backgroundProgress">ПРОГРЕСС: 0%</div>
                 </div>
@@ -1874,6 +1969,10 @@
                         </div>
 
                         <div id="serverListContainer" class="server-list hidden"></div>
+
+                        <div class="warning-message" id="closeWarning">
+                            ⚠ НЕ ЗАКРЫВАЙТЕ СТРАНИЦУ ВО ВРЕМЯ КЛОНИРОВАНИЯ
+                        </div>
 
                         <div class="progress-bar" id="progressBar">
                             <div class="progress-fill" id="progressFill"></div>
@@ -1909,15 +2008,15 @@
 
                 <div id="supportContent" class="hidden">
                     <div class="glass-card">
-                        <div class="auth-title">ПОДДЕРЖКА</div>
+                        <div class="auth-title">ПОДДЕРЖКА РАЗРАБОТЧИКА</div>
                         <div class="auth-subtitle"><span>by xolirx</span> • 2026</div>
                         
                         <div class="contact-single">
-                            <a href="https://t.me/xolirx?text=Привет%20у%20меня%20возникла%20ошибка%20помоги%20пожалуйста" target="_blank" class="btn btn-primary">@xolirx</a>
+                            <a href="https://t.me/xolirx" target="_blank" class="btn btn-primary">НАПИСАТЬ В TELEGRAM</a>
                         </div>
 
                         <div style="margin-top: 2rem; color: #333; font-size: 0.8rem; text-align: center;">
-                            ВРЕМЯ ОТВЕТА: ОБЫЧНО В ТЕЧЕНИЕ ЧАСА
+                            ОТВЕЧАЮ В ТЕЧЕНИЕ ЧАСА
                         </div>
                     </div>
                 </div>
@@ -1937,7 +2036,6 @@
                                 <li>Каналы - воссоздание категорий и каналов</li>
                                 <li>Иконка - копирование аватарки сервера</li>
                                 <li>Название - сохранение оригинального названия</li>
-                                <li>Фоновое выполнение - клонирование продолжается после закрытия сайта</li>
                             </ul>
 
                             <h3>ТЕХНИЧЕСКИЕ ДЕТАЛИ</h3>
@@ -2021,16 +2119,16 @@
 
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(registration => {
-                console.log('Service Worker зарегистрирован');
-            }).catch(error => {
-                console.log('Ошибка регистрации Service Worker:', error);
-            });
+            navigator.serviceWorker.register('sw.js').catch(error => {});
         }
 
         if ('Notification' in window && Notification.permission === 'default') {
             Notification.requestPermission();
         }
+
+        setTimeout(() => {
+            document.getElementById('loadingOverlay').classList.add('fade-out');
+        }, 1500);
 
         const canvas = document.getElementById('snowCanvas');
         const ctx = canvas.getContext('2d');
@@ -2095,7 +2193,6 @@
         let userGuilds = [];
         let emailVisible = false;
         let startTime = null;
-        let backgroundSyncInterval = null;
 
         function toggleTheme() {
             const body = document.body;
@@ -2178,68 +2275,8 @@
                 cancelRequested = true;
                 addLog('ОТМЕНА КЛОНИРОВАНИЯ...', 'warning');
                 document.getElementById('cancelCloneBtn').disabled = true;
-                localStorage.setItem('clone_cancelled', 'true');
-                
-                if (backgroundSyncInterval) {
-                    clearInterval(backgroundSyncInterval);
-                    backgroundSyncInterval = null;
-                }
-                
-                if (navigator.serviceWorker.controller) {
-                    navigator.serviceWorker.controller.postMessage({ type: 'STOP_CLONE' });
-                }
+                document.getElementById('closeWarning').style.display = 'block';
             }
-        }
-
-        function restoreCloningState() {
-            const savedState = localStorage.getItem('clone_state');
-            if (savedState) {
-                try {
-                    const state = JSON.parse(savedState);
-                    if (state.active) {
-                        cloning = true;
-                        document.getElementById('cloneBtn').disabled = true;
-                        document.getElementById('cancelCloneBtn').disabled = false;
-                        document.getElementById('backgroundStatus').classList.add('show');
-                        document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: ' + state.progress + '%';
-                        
-                        addLog('ВОССТАНОВЛЕНО ФОНОВОЕ КЛОНИРОВАНИЕ', 'warning');
-                        addLog('ИСХОДНЫЙ: ' + state.sourceId, 'info');
-                        addLog('ЦЕЛЕВОЙ: ' + state.targetId, 'info');
-                        
-                        startBackgroundSync(state);
-                    }
-                } catch {}
-            }
-        }
-
-        function startBackgroundSync(state) {
-            if (backgroundSyncInterval) {
-                clearInterval(backgroundSyncInterval);
-            }
-            
-            backgroundSyncInterval = setInterval(() => {
-                const savedState = localStorage.getItem('clone_state');
-                if (savedState) {
-                    try {
-                        const currentState = JSON.parse(savedState);
-                        if (currentState.active) {
-                            document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: ' + currentState.progress + '%';
-                            
-                            if (currentState.progress >= 100) {
-                                clearInterval(backgroundSyncInterval);
-                                backgroundSyncInterval = null;
-                            }
-                        } else {
-                            clearInterval(backgroundSyncInterval);
-                            backgroundSyncInterval = null;
-                        }
-                    } catch {}
-                } else {
-                    clearInterval(backgroundSyncInterval);
-                    backgroundSyncInterval = null;
-                }
-            }, 1000);
         }
 
         function getElapsedTime() {
@@ -2348,7 +2385,6 @@
                     
                     await loadServers();
                     await checkDiscordStatus();
-                    restoreCloningState();
                 } else {
                     showError('authError', 'НЕВЕРНЫЙ ТОКЕН');
                     addLog('ОШИБКА: НЕВЕРНЫЙ ТОКЕН', 'error');
@@ -2369,18 +2405,8 @@
             user = null;
             localStorage.removeItem('discord_token');
             localStorage.removeItem('discord_user');
-            localStorage.removeItem('clone_state');
             localStorage.removeItem('last_source_id');
             localStorage.removeItem('last_target_id');
-            
-            if (backgroundSyncInterval) {
-                clearInterval(backgroundSyncInterval);
-                backgroundSyncInterval = null;
-            }
-            
-            if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({ type: 'STOP_CLONE' });
-            }
             
             document.getElementById('authView').classList.remove('hidden');
             document.getElementById('mainView').classList.add('hidden');
@@ -2812,6 +2838,8 @@
             startTime = Date.now();
             document.getElementById('cloneBtn').disabled = true;
             document.getElementById('cancelCloneBtn').disabled = false;
+            document.getElementById('closeWarning').style.display = 'block';
+            document.getElementById('backgroundStatus').classList.remove('hidden');
             
             const sourceId = document.getElementById('sourceId').value.trim();
             const targetId = document.getElementById('targetId').value.trim();
@@ -2820,28 +2848,15 @@
             localStorage.setItem('last_source_id', sourceId);
             localStorage.setItem('last_target_id', targetId);
             
-            const cloneState = {
-                active: true,
-                sourceId: sourceId,
-                targetId: targetId,
-                stage: 'cleaning',
-                progress: 0,
-                roleMap: {}
-            };
-            
             try {
                 addLog('НАЧАЛО КЛОНИРОВАНИЯ...', 'info');
                 addLog('ИСХОДНЫЙ: ' + sourceId, 'info');
                 addLog('ЦЕЛЕВОЙ: ' + targetId, 'info');
+                addLog('⚠ НЕ ЗАКРЫВАЙТЕ СТРАНИЦУ', 'warning');
                 
-                addLog('РЕЖИМ ФОНОВОГО КЛОНИРОВАНИЯ АКТИВИРОВАН', 'warning');
-                addLog('МОЖНО ЗАКРЫТЬ САЙТ - ПРОЦЕСС ПРОДОЛЖИТСЯ', 'warning');
-                document.getElementById('backgroundStatus').classList.add('show');
-                startBackgroundSync(cloneState);
+                document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: 0%';
                 
                 updateStageProgress('cleaning', 0);
-                cloneState.progress = 5;
-                localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
                 const hasAdmin = await checkPermissions(targetId);
                 if (!hasAdmin) {
@@ -2851,8 +2866,7 @@
                 }
                 
                 updateStageProgress('cleaning', 10);
-                cloneState.progress = 10;
-                localStorage.setItem('clone_state', JSON.stringify(cloneState));
+                document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: 10%';
                 
                 const sourceCheck = await fetchWithRetry(`https://discord.com/api/v10/guilds/${sourceId}`, {
                     headers: { 'Authorization': token }
@@ -2878,8 +2892,7 @@
                 addLog('ИСХОДНЫЙ СЕРВЕР: ' + sourceGuild.name, 'success');
                 
                 updateStageProgress('cleaning', 30);
-                cloneState.progress = 15;
-                localStorage.setItem('clone_state', JSON.stringify(cloneState));
+                document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: 15%';
                 
                 addLog('ОЧИСТКА ЦЕЛЕВОГО СЕРВЕРА...', 'warning');
                 const delChannels = await deleteAllChannels(targetId);
@@ -2890,41 +2903,29 @@
                 addLog(`УДАЛЕНО РОЛЕЙ: ${delRoles}`, 'success');
                 
                 updateStageProgress('cleaning', 100);
-                cloneState.stage = 'info';
-                cloneState.progress = 25;
-                localStorage.setItem('clone_state', JSON.stringify(cloneState));
-                
-                if (navigator.serviceWorker.controller) {
-                    await saveCloneStateToSW(cloneState);
-                    navigator.serviceWorker.controller.postMessage({ type: 'START_CLONE', state: cloneState });
-                }
+                document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: 25%';
                 
                 addLog('КОПИРОВАНИЕ ИНФОРМАЦИИ...', 'info');
                 await updateGuildInfo(sourceId, targetId);
                 if (cancelRequested) throw new Error('CLONING_CANCELLED');
                 
                 updateStageProgress('info', 100);
-                cloneState.stage = 'roles';
-                cloneState.progress = 40;
-                localStorage.setItem('clone_state', JSON.stringify(cloneState));
+                document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: 40%';
                 
                 addLog('СОЗДАНИЕ РОЛЕЙ...', 'info');
                 const { count: rolesCount, roleMap } = await createRoles(sourceId, targetId);
                 if (cancelRequested) throw new Error('CLONING_CANCELLED');
-                cloneState.roleMap = roleMap;
                 
                 updateStageProgress('roles', 100);
-                cloneState.stage = 'channels';
-                cloneState.progress = 75;
-                localStorage.setItem('clone_state', JSON.stringify(cloneState));
+                document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: 75%';
                 
                 addLog('СОЗДАНИЕ КАНАЛОВ...', 'info');
                 const channelsCount = await createChannels(sourceId, targetId, roleMap);
                 if (cancelRequested) throw new Error('CLONING_CANCELLED');
                 
                 updateStageProgress('channels', 100);
-                cloneState.progress = 100;
-                localStorage.setItem('clone_state', JSON.stringify(cloneState));
+                document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: 100%';
+                progressFill.style.width = '100%';
                 
                 addLog('КЛОНИРОВАНИЕ ЗАВЕРШЕНО', 'success');
                 addLog(`СОЗДАНО КАНАЛОВ: ${channelsCount}`, 'success');
@@ -2935,13 +2936,7 @@
                     progressFill.style.width = '0%';
                 }, 2000);
                 
-                localStorage.removeItem('clone_state');
-                document.getElementById('backgroundStatus').classList.remove('show');
-                
-                if (backgroundSyncInterval) {
-                    clearInterval(backgroundSyncInterval);
-                    backgroundSyncInterval = null;
-                }
+                document.getElementById('backgroundStatus').classList.add('hidden');
                 
                 playSound('success');
                 notifyComplete();
@@ -2950,25 +2945,12 @@
                 if (e.message === 'CLONING_CANCELLED') {
                     addLog('КЛОНИРОВАНИЕ ОТМЕНЕНО', 'warning');
                     progressFill.style.width = '0%';
-                    localStorage.removeItem('clone_state');
-                    document.getElementById('backgroundStatus').classList.remove('show');
-                    
-                    if (backgroundSyncInterval) {
-                        clearInterval(backgroundSyncInterval);
-                        backgroundSyncInterval = null;
-                    }
+                    document.getElementById('backgroundStatus').classList.add('hidden');
                 } else if (e.message !== 'NO_ADMIN_PERMISSIONS' && e.message !== 'SOURCE_NOT_FOUND' && e.message !== 'TARGET_NOT_FOUND') {
                     showError('cloneError', 'ОШИБКА: ' + e.message);
                     addLog('ОШИБКА: ' + e.message, 'error');
                     progressFill.style.width = '0%';
-                    localStorage.removeItem('clone_state');
-                    document.getElementById('backgroundStatus').classList.remove('show');
-                    
-                    if (backgroundSyncInterval) {
-                        clearInterval(backgroundSyncInterval);
-                        backgroundSyncInterval = null;
-                    }
-                    
+                    document.getElementById('backgroundStatus').classList.add('hidden');
                     playSound('error');
                 }
             } finally {
@@ -2976,20 +2958,7 @@
                 cancelRequested = false;
                 document.getElementById('cloneBtn').disabled = false;
                 document.getElementById('cancelCloneBtn').disabled = true;
-            }
-        }
-
-        async function saveCloneStateToSW(state) {
-            try {
-                const cache = await caches.open('clone-state');
-                await cache.put('/clone-state', new Response(JSON.stringify(state), {
-                    headers: { 'Content-Type': 'application/json' }
-                }));
-                
-                const tokenCache = await caches.open('clone-data');
-                await tokenCache.put('/token', new Response(token));
-            } catch (e) {
-                console.error('Ошибка сохранения состояния для SW:', e);
+                document.getElementById('closeWarning').style.display = 'none';
             }
         }
 
@@ -3003,10 +2972,23 @@
 
         function exportLogs() {
             const logs = Array.from(document.getElementById('log').children)
-                .map(entry => entry.textContent)
+                .map(entry => {
+                    const time = entry.querySelector('.log-time').textContent;
+                    const msg = entry.querySelector('.log-msg').textContent;
+                    const type = entry.classList.contains('log-success') ? '✓' : 
+                                entry.classList.contains('log-error') ? '✗' : 
+                                entry.classList.contains('log-warning') ? '⚠' : 'ℹ';
+                    return `[${time}] ${type} ${msg}`;
+                })
                 .join('\n');
             
-            const blob = new Blob([logs], { type: 'text/plain' });
+            const header = 'DISCORD SERVER CLONER - LOGS\n';
+            const date = 'Дата: ' + new Date().toLocaleString('ru-RU') + '\n';
+            const separator = '═'.repeat(50) + '\n\n';
+            
+            const content = header + date + separator + logs;
+            
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -3033,7 +3015,7 @@
             l.appendChild(e);
             l.scrollTop = l.scrollHeight;
             
-            if (l.children.length > 50) {
+            if (l.children.length > 100) {
                 l.removeChild(l.children[0]);
             }
             
@@ -3050,7 +3032,10 @@
 
         function switchSection(sectionId, element) {
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            if (element) element.classList.add('active');
+            if (element) {
+                element.classList.add('active');
+                element.classList.add('slide-in');
+            }
             
             if (!user) return;
             
@@ -3072,6 +3057,10 @@
         window.onload = async () => {
             const savedToken = localStorage.getItem('discord_token');
             const savedUser = localStorage.getItem('discord_user');
+            
+            document.getElementById('log').innerHTML = '';
+            addLog('DISCORD SERVER CLONER by xolirx', 'info');
+            addLog('2026', 'info');
             
             if (savedToken && savedUser) {
                 token = savedToken;
@@ -3100,24 +3089,14 @@
                 
                 addLog('СЕССИЯ ВОССТАНОВЛЕНА', 'success');
                 await loadServers();
-                restoreCloningState();
             }
-            
-            addLog('DISCORD SERVER CLONER by xolirx', 'info');
-            addLog('2026', 'info');
         };
 
-        window.addEventListener('beforeunload', () => {
+        window.addEventListener('beforeunload', (e) => {
             if (cloning && !cancelRequested) {
-                const savedState = localStorage.getItem('clone_state');
-                if (savedState) {
-                    try {
-                        const state = JSON.parse(savedState);
-                        if (state.active) {
-                            addLog('КЛОНИРОВАНИЕ ПРОДОЛЖАЕТСЯ В ФОНЕ...', 'info');
-                        }
-                    } catch {}
-                }
+                e.preventDefault();
+                e.returnValue = 'Клонирование выполняется! Если закроете страницу - процесс прервется.';
+                return e.returnValue;
             }
         });
     </script>
