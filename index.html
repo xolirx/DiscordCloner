@@ -65,6 +65,11 @@
             animation: fadeIn 0.4s ease forwards;
         }
 
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         .navbar {
             position: fixed;
             top: 0;
@@ -260,6 +265,17 @@
             background: rgba(255,255,255,0.03);
         }
 
+        .btn-danger {
+            background: rgba(255,80,80,0.05);
+            border-color: rgba(255,80,80,0.1);
+            color: #d88;
+        }
+
+        .btn-danger:hover {
+            background: rgba(255,80,80,0.1);
+            border-color: rgba(255,80,80,0.2);
+        }
+
         .btn:disabled {
             opacity: 0.2;
             cursor: not-allowed;
@@ -372,7 +388,7 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255,255,255,0.02);
             border-radius: 28px;
-            padding: 2.5rem;
+            padding: 2.5rem 2.5rem 1.5rem 2.5rem;
             text-align: center;
             margin-bottom: 2rem;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
@@ -445,18 +461,23 @@
             display: flex;
             gap: 1rem;
             max-width: 400px;
-            margin: 1.5rem auto 0;
+            margin: 1.5rem auto 0.5rem auto;
         }
 
         .btn-group .btn {
             flex: 1;
         }
 
+        .cancel-btn-container {
+            max-width: 400px;
+            margin: 0.5rem auto 1.5rem auto;
+        }
+
         .progress-bar {
             width: 100%;
             height: 1px;
             background: rgba(255,255,255,0.02);
-            margin: 1.5rem 0;
+            margin: 2rem 0 1rem 0;
             border-radius: 1px;
             overflow: hidden;
         }
@@ -865,6 +886,37 @@
         .email-toggle:hover .eye-icon {
             fill: #fff;
         }
+
+        .background-status {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-left: 2px solid #6a6;
+            display: none;
+        }
+
+        .background-status.show {
+            display: block;
+        }
+
+        .background-status-title {
+            color: #6a6;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #6a6;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
     </style>
 </head>
 <body>
@@ -874,9 +926,9 @@
         <nav class="navbar">
             <div class="logo">DISCORD SERVER CLONER <span>by xolirx</span></div>
             <div class="nav-links">
-                <span class="nav-link active" onclick="switchSection('main')">ГЛАВНАЯ</span>
-                <span class="nav-link" onclick="switchSection('support')">ПОДДЕРЖКА</span>
-                <span class="nav-link" onclick="switchSection('about')">О САЙТЕ</span>
+                <span class="nav-link active" onclick="switchSection('main', this)">ГЛАВНАЯ</span>
+                <span class="nav-link" onclick="switchSection('support', this)">ПОДДЕРЖКА</span>
+                <span class="nav-link" onclick="switchSection('about', this)">О САЙТЕ</span>
             </div>
         </nav>
 
@@ -934,6 +986,14 @@
                     <button class="btn logout-btn" onclick="logout()">ВЫЙТИ</button>
                 </div>
 
+                <div id="backgroundStatus" class="background-status">
+                    <div class="background-status-title">
+                        <div class="spinner"></div>
+                        <span>КЛОНИРОВАНИЕ ВЫПОЛНЯЕТСЯ В ФОНЕ</span>
+                    </div>
+                    <div id="backgroundProgress">ПРОГРЕСС: 0%</div>
+                </div>
+
                 <div id="mainContent">
                     <div class="clone-card">
                         <div class="clone-title">КЛОНИРОВАНИЕ</div>
@@ -954,6 +1014,10 @@
                             <button class="btn btn-primary" id="cloneBtn" onclick="showAgreement()">НАЧАТЬ</button>
                         </div>
 
+                        <div class="cancel-btn-container">
+                            <button class="btn btn-danger" id="cancelCloneBtn" onclick="cancelCloning()" style="width: 100%;" disabled>ОТМЕНИТЬ КЛОНИРОВАНИЕ</button>
+                        </div>
+
                         <div id="serverListContainer" class="server-list hidden"></div>
 
                         <div class="progress-bar" id="progressBar">
@@ -969,7 +1033,7 @@
                             <ul class="info-list">
                                 <li>НАЗВАНИЕ СЕРВЕРА</li>
                                 <li>ИКОНКА СЕРВЕРА</li>
-                                <li>ВСЕ РОЛИ</li>
+                                <li>ВСЕ РОЛИ (С ПРАВАМИ)</li>
                                 <li>КАТЕГОРИИ И КАНАЛЫ</li>
                                 <li>ПРАВА ДОСТУПА</li>
                             </ul>
@@ -1018,6 +1082,7 @@
                                 <li>Каналы - воссоздание категорий и каналов</li>
                                 <li>Иконка - копирование аватарки сервера</li>
                                 <li>Название - сохранение оригинального названия</li>
+                                <li>Фоновое выполнение - клонирование продолжается после закрытия сайта</li>
                             </ul>
 
                             <h3>ТЕХНИЧЕСКИЕ ДЕТАЛИ</h3>
@@ -1094,6 +1159,13 @@
     </div>
 
     <script>
+        // Регистрация Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(reg => {
+                console.log('Service Worker registered');
+            });
+        }
+
         const canvas = document.getElementById('snowCanvas');
         const ctx = canvas.getContext('2d');
         
@@ -1141,8 +1213,15 @@
         let token = null;
         let user = null;
         let cloning = false;
+        let cancelRequested = false;
         let userGuilds = [];
         let emailVisible = false;
+        let backgroundSyncEnabled = false;
+
+        // Проверка поддержки фоновой синхронизации
+        if ('serviceWorker' in navigator && 'SyncManager' in window) {
+            backgroundSyncEnabled = true;
+        }
 
         function toggleEmail() {
             const emailEl = document.getElementById('userEmail');
@@ -1161,6 +1240,124 @@
                 errorEl.textContent = message;
                 errorEl.classList.add('show');
                 setTimeout(() => errorEl.classList.remove('show'), 5000);
+            }
+        }
+
+        function cancelCloning() {
+            if (cloning) {
+                cancelRequested = true;
+                addLog('ОТМЕНА КЛОНИРОВАНИЯ...', 'warning');
+                document.getElementById('cancelCloneBtn').disabled = true;
+                
+                // Сохраняем статус отмены
+                localStorage.setItem('clone_cancelled', 'true');
+            }
+        }
+
+        // Восстановление состояния при загрузке
+        function restoreCloningState() {
+            const savedState = localStorage.getItem('clone_state');
+            if (savedState) {
+                try {
+                    const state = JSON.parse(savedState);
+                    if (state.active) {
+                        cloning = true;
+                        document.getElementById('cloneBtn').disabled = true;
+                        document.getElementById('cancelCloneBtn').disabled = false;
+                        document.getElementById('backgroundStatus').classList.add('show');
+                        document.getElementById('backgroundProgress').textContent = `ПРОГРЕСС: ${state.progress}%`;
+                        
+                        addLog('⚠ ВОССТАНОВЛЕНО ФОНОВОЕ КЛОНИРОВАНИЕ', 'warning');
+                        addLog(`ИСХОДНЫЙ: ${state.sourceId}`, 'info');
+                        addLog(`ЦЕЛЕВОЙ: ${state.targetId}`, 'info');
+                        
+                        // Запускаем продолжение клонирования
+                        continueCloning(state);
+                    }
+                } catch (e) {
+                    console.error('Failed to restore state', e);
+                }
+            }
+        }
+
+        async function continueCloning(state) {
+            token = localStorage.getItem('discord_token');
+            if (!token) {
+                addLog('ОШИБКА: ТОКЕН НЕ НАЙДЕН', 'error');
+                return;
+            }
+
+            try {
+                const progressFill = document.getElementById('progressFill');
+                progressFill.style.width = state.progress + '%';
+                
+                // Продолжаем с того места, где остановились
+                if (state.stage === 'cleaning') {
+                    await deleteAllChannels(state.targetId);
+                    if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                    await deleteAllRoles(state.targetId);
+                    if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                    state.stage = 'info';
+                    state.progress = 40;
+                }
+                
+                if (state.stage === 'info') {
+                    await updateGuildInfo(state.sourceId, state.targetId);
+                    if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                    state.stage = 'roles';
+                    state.progress = 50;
+                }
+                
+                if (state.stage === 'roles') {
+                    const { count: rolesCount, roleMap } = await createRoles(state.sourceId, state.targetId);
+                    if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                    state.roleMap = roleMap;
+                    state.stage = 'channels';
+                    state.progress = 70;
+                }
+                
+                if (state.stage === 'channels') {
+                    const channelsCount = await createChannels(state.sourceId, state.targetId, state.roleMap || {});
+                    if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                    state.progress = 100;
+                }
+                
+                progressFill.style.width = '100%';
+                addLog('КЛОНИРОВАНИЕ ЗАВЕРШЕНО', 'success');
+                
+                localStorage.removeItem('clone_state');
+                document.getElementById('backgroundStatus').classList.remove('show');
+                
+            } catch (e) {
+                if (e.message === 'CLONING_CANCELLED') {
+                    addLog('⚠ КЛОНИРОВАНИЕ ОТМЕНЕНО', 'warning');
+                    localStorage.removeItem('clone_state');
+                    document.getElementById('backgroundStatus').classList.remove('show');
+                }
+            } finally {
+                cloning = false;
+                cancelRequested = false;
+                document.getElementById('cloneBtn').disabled = false;
+                document.getElementById('cancelCloneBtn').disabled = true;
+            }
+        }
+
+        async function fetchWithRetry(url, options, maxRetries = 3) {
+            for (let i = 0; i < maxRetries; i++) {
+                if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                try {
+                    const response = await fetch(url, options);
+                    if (response.status === 429) {
+                        const retryAfter = response.headers.get('Retry-After') || 5;
+                        addLog(`⚠ ЛИМИТ API, ОЖИДАНИЕ ${retryAfter}С...`, 'warning');
+                        await sleep(retryAfter * 1000);
+                        continue;
+                    }
+                    return response;
+                } catch (e) {
+                    if (i === maxRetries - 1) throw e;
+                    await sleep(1000 * (i + 1));
+                }
             }
         }
 
@@ -1211,6 +1408,9 @@
                     if (savedTarget) document.getElementById('targetId').value = savedTarget;
                     
                     await loadServers();
+                    
+                    // Восстанавливаем состояние клонирования
+                    restoreCloningState();
                 } else {
                     showError('authError', 'НЕВЕРНЫЙ ТОКЕН');
                     addLog('ОШИБКА: НЕВЕРНЫЙ ТОКЕН', 'error');
@@ -1226,6 +1426,7 @@
             user = null;
             localStorage.removeItem('discord_token');
             localStorage.removeItem('discord_user');
+            localStorage.removeItem('clone_state');
             document.getElementById('authView').classList.remove('hidden');
             document.getElementById('mainView').classList.add('hidden');
             document.getElementById('tokenInput').value = '';
@@ -1330,9 +1531,26 @@
             startRealCloning();
         }
 
+        async function checkPermissions(guildId) {
+            try {
+                const r = await fetch(`https://discord.com/api/v10/users/@me/guilds`, {
+                    headers: { 'Authorization': token }
+                });
+                const guilds = await r.json();
+                const targetGuild = guilds.find(g => g.id === guildId);
+                if (!targetGuild) return false;
+                
+                const permissions = BigInt(targetGuild.permissions);
+                const ADMIN_PERMISSION = 0x8n;
+                return (permissions & ADMIN_PERMISSION) === ADMIN_PERMISSION;
+            } catch {
+                return false;
+            }
+        }
+
         async function deleteAllChannels(guildId) {
             try {
-                const r = await fetch(`https://discord.com/api/v10/guilds/${guildId}/channels`, {
+                const r = await fetchWithRetry(`https://discord.com/api/v10/guilds/${guildId}/channels`, {
                     headers: { 'Authorization': token }
                 });
                 if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ КАНАЛЫ');
@@ -1341,8 +1559,9 @@
                 let count = 0;
                 
                 for (const channel of channels) {
+                    if (cancelRequested) throw new Error('CLONING_CANCELLED');
                     try {
-                        const del = await fetch(`https://discord.com/api/v10/channels/${channel.id}`, {
+                        const del = await fetchWithRetry(`https://discord.com/api/v10/channels/${channel.id}`, {
                             method: 'DELETE',
                             headers: { 'Authorization': token }
                         });
@@ -1352,11 +1571,13 @@
                         }
                         await sleep(300);
                     } catch (e) {
+                        if (e.message === 'CLONING_CANCELLED') throw e;
                         addLog(`  ОШИБКА УДАЛЕНИЯ: ${channel.name}`, 'error');
                     }
                 }
                 return count;
             } catch (e) {
+                if (e.message === 'CLONING_CANCELLED') throw e;
                 addLog(`ОШИБКА: ${e.message}`, 'error');
                 return 0;
             }
@@ -1364,7 +1585,7 @@
 
         async function deleteAllRoles(guildId) {
             try {
-                const r = await fetch(`https://discord.com/api/v10/guilds/${guildId}/roles`, {
+                const r = await fetchWithRetry(`https://discord.com/api/v10/guilds/${guildId}/roles`, {
                     headers: { 'Authorization': token }
                 });
                 if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ РОЛИ');
@@ -1373,9 +1594,10 @@
                 let count = 0;
                 
                 for (const role of roles) {
+                    if (cancelRequested) throw new Error('CLONING_CANCELLED');
                     if (role.name === '@everyone' || role.managed) continue;
                     try {
-                        const del = await fetch(`https://discord.com/api/v10/guilds/${guildId}/roles/${role.id}`, {
+                        const del = await fetchWithRetry(`https://discord.com/api/v10/guilds/${guildId}/roles/${role.id}`, {
                             method: 'DELETE',
                             headers: { 'Authorization': token }
                         });
@@ -1385,11 +1607,13 @@
                         }
                         await sleep(300);
                     } catch (e) {
+                        if (e.message === 'CLONING_CANCELLED') throw e;
                         addLog(`  ОШИБКА УДАЛЕНИЯ: ${role.name}`, 'error');
                     }
                 }
                 return count;
             } catch (e) {
+                if (e.message === 'CLONING_CANCELLED') throw e;
                 addLog(`ОШИБКА: ${e.message}`, 'error');
                 return 0;
             }
@@ -1397,7 +1621,7 @@
 
         async function createRoles(sourceId, targetId) {
             try {
-                const r = await fetch(`https://discord.com/api/v10/guilds/${sourceId}/roles`, {
+                const r = await fetchWithRetry(`https://discord.com/api/v10/guilds/${sourceId}/roles`, {
                     headers: { 'Authorization': token }
                 });
                 if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ РОЛИ');
@@ -1406,20 +1630,23 @@
                 let count = 0;
                 const roleMap = {};
                 
-                const sortedRoles = roles.filter(r => r.name !== '@everyone' && !r.managed)
-                    .sort((a, b) => a.position - b.position);
+                const sortedRoles = roles
+                    .filter(r => r.name !== '@everyone' && !r.managed)
+                    .sort((a, b) => b.position - a.position);
                 
                 for (const role of sortedRoles) {
+                    if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                    
                     const roleData = {
                         name: role.name,
                         color: role.color,
-                        hoist: role.hoist,
-                        mentionable: role.mentionable,
-                        permissions: role.permissions
+                        hoist: role.hoist || false,
+                        mentionable: role.mentionable || false,
+                        permissions: role.permissions?.toString() || '0'
                     };
                     
                     try {
-                        const create = await fetch(`https://discord.com/api/v10/guilds/${targetId}/roles`, {
+                        const create = await fetchWithRetry(`https://discord.com/api/v10/guilds/${targetId}/roles`, {
                             method: 'POST',
                             headers: { 
                                 'Authorization': token,
@@ -1433,22 +1660,54 @@
                             roleMap[role.id] = newRole.id;
                             count++;
                             addLog(`  СОЗДАНА РОЛЬ: ${role.name}`, 'success');
+                        } else {
+                            const error = await create.text();
+                            addLog(`  ОШИБКА СОЗДАНИЯ ${role.name}: ${error}`, 'error');
                         }
                         await sleep(500);
                     } catch (e) {
+                        if (e.message === 'CLONING_CANCELLED') throw e;
                         addLog(`  ОШИБКА СОЗДАНИЯ: ${role.name}`, 'error');
                     }
                 }
                 return { count, roleMap };
             } catch (e) {
+                if (e.message === 'CLONING_CANCELLED') throw e;
                 addLog(`ОШИБКА: ${e.message}`, 'error');
                 return { count: 0, roleMap: {} };
             }
         }
 
+        function convertOverwrites(overwrites, targetGuildId, roleMap) {
+            if (!overwrites || !Array.isArray(overwrites)) return [];
+            
+            return overwrites.map(ow => {
+                if (!ow || !ow.id) return null;
+                
+                let id = ow.id;
+                
+                if (ow.type === 0) {
+                    if (roleMap && roleMap[ow.id]) {
+                        id = roleMap[ow.id];
+                    } else {
+                        return null;
+                    }
+                } else if (ow.type === 1) {
+                    id = targetGuildId;
+                }
+                
+                return {
+                    id: id,
+                    type: ow.type,
+                    allow: ow.allow?.toString() || '0',
+                    deny: ow.deny?.toString() || '0'
+                };
+            }).filter(ow => ow !== null);
+        }
+
         async function createChannels(sourceId, targetId, roleMap) {
             try {
-                const r = await fetch(`https://discord.com/api/v10/guilds/${sourceId}/channels`, {
+                const r = await fetchWithRetry(`https://discord.com/api/v10/guilds/${sourceId}/channels`, {
                     headers: { 'Authorization': token }
                 });
                 if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ КАНАЛЫ');
@@ -1460,6 +1719,8 @@
                 let count = 0;
                 
                 for (const cat of categories) {
+                    if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                    
                     const catData = {
                         name: cat.name,
                         type: 4,
@@ -1468,7 +1729,7 @@
                     };
                     
                     try {
-                        const create = await fetch(`https://discord.com/api/v10/guilds/${targetId}/channels`, {
+                        const create = await fetchWithRetry(`https://discord.com/api/v10/guilds/${targetId}/channels`, {
                             method: 'POST',
                             headers: { 
                                 'Authorization': token,
@@ -1482,14 +1743,20 @@
                             categoryMap[cat.id] = newCat.id;
                             count++;
                             addLog(`  СОЗДАНА КАТЕГОРИЯ: ${cat.name}`, 'success');
+                        } else {
+                            const error = await create.text();
+                            addLog(`  ОШИБКА СОЗДАНИЯ ${cat.name}: ${error}`, 'error');
                         }
                         await sleep(500);
                     } catch (e) {
+                        if (e.message === 'CLONING_CANCELLED') throw e;
                         addLog(`  ОШИБКА СОЗДАНИЯ: ${cat.name}`, 'error');
                     }
                 }
                 
                 for (const ch of others) {
+                    if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                    
                     const chData = {
                         name: ch.name,
                         type: ch.type,
@@ -1498,7 +1765,7 @@
                         bitrate: ch.bitrate,
                         user_limit: ch.user_limit,
                         rate_limit_per_user: ch.rate_limit_per_user,
-                        nsfw: ch.nsfw,
+                        nsfw: ch.nsfw || false,
                         permission_overwrites: convertOverwrites(ch.permission_overwrites || [], targetId, roleMap)
                     };
                     
@@ -1507,7 +1774,7 @@
                     }
                     
                     try {
-                        const create = await fetch(`https://discord.com/api/v10/guilds/${targetId}/channels`, {
+                        const create = await fetchWithRetry(`https://discord.com/api/v10/guilds/${targetId}/channels`, {
                             method: 'POST',
                             headers: { 
                                 'Authorization': token,
@@ -1519,44 +1786,28 @@
                         if (create.ok) {
                             count++;
                             addLog(`  СОЗДАН КАНАЛ: ${ch.name}`, 'success');
+                        } else {
+                            const error = await create.text();
+                            addLog(`  ОШИБКА СОЗДАНИЯ ${ch.name}: ${error}`, 'error');
                         }
                         await sleep(500);
                     } catch (e) {
+                        if (e.message === 'CLONING_CANCELLED') throw e;
                         addLog(`  ОШИБКА СОЗДАНИЯ: ${ch.name}`, 'error');
                     }
                 }
                 
                 return count;
             } catch (e) {
+                if (e.message === 'CLONING_CANCELLED') throw e;
                 addLog(`ОШИБКА: ${e.message}`, 'error');
                 return 0;
             }
         }
 
-        function convertOverwrites(overwrites, targetGuildId, roleMap) {
-            return overwrites.map(ow => {
-                let id = ow.id;
-                if (ow.type === 0) {
-                    if (roleMap[ow.id]) {
-                        id = roleMap[ow.id];
-                    } else {
-                        return null;
-                    }
-                } else if (ow.type === 1) {
-                    id = targetGuildId;
-                }
-                return {
-                    id: id,
-                    type: ow.type,
-                    allow: ow.allow,
-                    deny: ow.deny
-                };
-            }).filter(ow => ow !== null);
-        }
-
         async function updateGuildInfo(sourceId, targetId) {
             try {
-                const r = await fetch(`https://discord.com/api/v10/guilds/${sourceId}`, {
+                const r = await fetchWithRetry(`https://discord.com/api/v10/guilds/${sourceId}`, {
                     headers: { 'Authorization': token }
                 });
                 if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ ИНФОРМАЦИЮ');
@@ -1569,18 +1820,22 @@
                     const iconRes = await fetch(iconUrl);
                     const iconBlob = await iconRes.blob();
                     
-                    await new Promise(resolve => {
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                            const base64 = reader.result.split(',')[1];
-                            updateData.icon = base64;
-                            resolve();
-                        };
-                        reader.readAsDataURL(iconBlob);
-                    });
+                    if (iconBlob.size <= 256 * 1024) {
+                        await new Promise(resolve => {
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                                const base64 = reader.result.split(',')[1];
+                                updateData.icon = base64;
+                                resolve();
+                            };
+                            reader.readAsDataURL(iconBlob);
+                        });
+                    } else {
+                        addLog('⚠ ИКОНКА СЛИШКОМ БОЛЬШАЯ, ПРОПУСК', 'warning');
+                    }
                 }
                 
-                const update = await fetch(`https://discord.com/api/v10/guilds/${targetId}`, {
+                const update = await fetchWithRetry(`https://discord.com/api/v10/guilds/${targetId}`, {
                     method: 'PATCH',
                     headers: { 
                         'Authorization': token,
@@ -1591,8 +1846,12 @@
                 
                 if (update.ok) {
                     addLog(`НАЗВАНИЕ СЕРВЕРА: ${guild.name}`, 'success');
+                } else {
+                    const error = await update.text();
+                    addLog(`ОШИБКА ОБНОВЛЕНИЯ: ${error}`, 'error');
                 }
             } catch (e) {
+                if (e.message === 'CLONING_CANCELLED') throw e;
                 addLog(`ОШИБКА ОБНОВЛЕНИЯ: ${e.message}`, 'error');
             }
         }
@@ -1604,7 +1863,9 @@
             }
             
             cloning = true;
+            cancelRequested = false;
             document.getElementById('cloneBtn').disabled = true;
+            document.getElementById('cancelCloneBtn').disabled = false;
             
             const sourceId = document.getElementById('sourceId').value.trim();
             const targetId = document.getElementById('targetId').value.trim();
@@ -1613,64 +1874,108 @@
             localStorage.setItem('last_source_id', sourceId);
             localStorage.setItem('last_target_id', targetId);
             
+            // Создаем состояние для фонового выполнения
+            const cloneState = {
+                active: true,
+                sourceId: sourceId,
+                targetId: targetId,
+                stage: 'cleaning',
+                progress: 0,
+                roleMap: {}
+            };
+            
             try {
                 addLog('НАЧАЛО КЛОНИРОВАНИЯ...', 'info');
                 addLog(`ИСХОДНЫЙ: ${sourceId}`, 'info');
                 addLog(`ЦЕЛЕВОЙ: ${targetId}`, 'info');
                 
-                progressFill.style.width = '10%';
+                if (backgroundSyncEnabled) {
+                    addLog('⚠ РЕЖИМ ФОНОВОГО КЛОНИРОВАНИЯ АКТИВИРОВАН', 'warning');
+                    addLog('⚠ МОЖНО ЗАКРЫТЬ САЙТ - ПРОЦЕСС ПРОДОЛЖИТСЯ', 'warning');
+                    document.getElementById('backgroundStatus').classList.add('show');
+                }
                 
-                const sourceCheck = await fetch(`https://discord.com/api/v10/guilds/${sourceId}`, {
+                progressFill.style.width = '5%';
+                cloneState.progress = 5;
+                localStorage.setItem('clone_state', JSON.stringify(cloneState));
+                
+                const hasAdmin = await checkPermissions(targetId);
+                if (!hasAdmin) {
+                    showError('cloneError', 'НЕТ ПРАВ АДМИНИСТРАТОРА НА ЦЕЛЕВОМ СЕРВЕРЕ');
+                    addLog('ОШИБКА: НЕТ ПРАВ АДМИНИСТРАТОРА', 'error');
+                    throw new Error('NO_ADMIN_PERMISSIONS');
+                }
+                
+                progressFill.style.width = '10%';
+                cloneState.progress = 10;
+                localStorage.setItem('clone_state', JSON.stringify(cloneState));
+                
+                const sourceCheck = await fetchWithRetry(`https://discord.com/api/v10/guilds/${sourceId}`, {
                     headers: { 'Authorization': token }
                 });
                 
                 if (!sourceCheck.ok) {
                     showError('cloneError', 'ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН');
                     addLog('ОШИБКА: ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН', 'error');
-                    cloning = false;
-                    document.getElementById('cloneBtn').disabled = false;
-                    return;
+                    throw new Error('SOURCE_NOT_FOUND');
                 }
                 
-                const targetCheck = await fetch(`https://discord.com/api/v10/guilds/${targetId}`, {
+                const targetCheck = await fetchWithRetry(`https://discord.com/api/v10/guilds/${targetId}`, {
                     headers: { 'Authorization': token }
                 });
                 
                 if (!targetCheck.ok) {
                     showError('cloneError', 'ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН');
                     addLog('ОШИБКА: ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН', 'error');
-                    cloning = false;
-                    document.getElementById('cloneBtn').disabled = false;
-                    return;
+                    throw new Error('TARGET_NOT_FOUND');
                 }
                 
                 const sourceGuild = await sourceCheck.json();
                 addLog(`ИСХОДНЫЙ СЕРВЕР: ${sourceGuild.name}`, 'success');
                 
                 progressFill.style.width = '20%';
+                cloneState.progress = 20;
+                localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
                 addLog('ОЧИСТКА ЦЕЛЕВОГО СЕРВЕРА...', 'warning');
                 const delChannels = await deleteAllChannels(targetId);
+                if (cancelRequested) throw new Error('CLONING_CANCELLED');
                 const delRoles = await deleteAllRoles(targetId);
+                if (cancelRequested) throw new Error('CLONING_CANCELLED');
                 addLog(`УДАЛЕНО КАНАЛОВ: ${delChannels}`, 'success');
                 addLog(`УДАЛЕНО РОЛЕЙ: ${delRoles}`, 'success');
                 
                 progressFill.style.width = '40%';
+                cloneState.stage = 'info';
+                cloneState.progress = 40;
+                localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
                 addLog('КОПИРОВАНИЕ ИНФОРМАЦИИ...', 'info');
                 await updateGuildInfo(sourceId, targetId);
+                if (cancelRequested) throw new Error('CLONING_CANCELLED');
                 
                 progressFill.style.width = '50%';
+                cloneState.stage = 'roles';
+                cloneState.progress = 50;
+                localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
                 addLog('СОЗДАНИЕ РОЛЕЙ...', 'info');
                 const { count: rolesCount, roleMap } = await createRoles(sourceId, targetId);
+                if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                cloneState.roleMap = roleMap;
                 
                 progressFill.style.width = '70%';
+                cloneState.stage = 'channels';
+                cloneState.progress = 70;
+                localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
                 addLog('СОЗДАНИЕ КАНАЛОВ...', 'info');
                 const channelsCount = await createChannels(sourceId, targetId, roleMap);
+                if (cancelRequested) throw new Error('CLONING_CANCELLED');
                 
                 progressFill.style.width = '100%';
+                cloneState.progress = 100;
+                localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
                 addLog('КЛОНИРОВАНИЕ ЗАВЕРШЕНО', 'success');
                 addLog(`СОЗДАНО КАНАЛОВ: ${channelsCount}`, 'success');
@@ -1680,13 +1985,27 @@
                     progressFill.style.width = '0%';
                 }, 2000);
                 
+                localStorage.removeItem('clone_state');
+                document.getElementById('backgroundStatus').classList.remove('show');
+                
             } catch (e) {
-                showError('cloneError', `ОШИБКА: ${e.message}`);
-                addLog(`ОШИБКА: ${e.message}`, 'error');
-                progressFill.style.width = '0%';
+                if (e.message === 'CLONING_CANCELLED') {
+                    addLog('⚠ КЛОНИРОВАНИЕ ОТМЕНЕНО ПОЛЬЗОВАТЕЛЕМ', 'warning');
+                    progressFill.style.width = '0%';
+                    localStorage.removeItem('clone_state');
+                    document.getElementById('backgroundStatus').classList.remove('show');
+                } else if (e.message !== 'NO_ADMIN_PERMISSIONS' && e.message !== 'SOURCE_NOT_FOUND' && e.message !== 'TARGET_NOT_FOUND') {
+                    showError('cloneError', `ОШИБКА: ${e.message}`);
+                    addLog(`ОШИБКА: ${e.message}`, 'error');
+                    progressFill.style.width = '0%';
+                    localStorage.removeItem('clone_state');
+                    document.getElementById('backgroundStatus').classList.remove('show');
+                }
             } finally {
                 cloning = false;
+                cancelRequested = false;
                 document.getElementById('cloneBtn').disabled = false;
+                document.getElementById('cancelCloneBtn').disabled = true;
             }
         }
 
@@ -1709,15 +2028,22 @@
             if (l.children.length > 100) {
                 l.removeChild(l.children[0]);
             }
+            
+            // Обновляем фоновый статус
+            const bgProgress = document.getElementById('backgroundProgress');
+            if (bgProgress && cloning) {
+                const progressFill = document.getElementById('progressFill');
+                bgProgress.textContent = `ПРОГРЕСС: ${progressFill.style.width}`;
+            }
         }
 
         function sleep(ms) {
             return new Promise(r => setTimeout(r, ms));
         }
 
-        function switchSection(s) {
+        function switchSection(sectionId, element) {
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            event.target.classList.add('active');
+            if (element) element.classList.add('active');
             
             if (!user) return;
             
@@ -1725,7 +2051,7 @@
             contents.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
-                    if (id === s + 'Content') {
+                    if (id === sectionId + 'Content') {
                         el.classList.remove('hidden');
                         el.classList.add('fade-in');
                     } else {
@@ -1767,6 +2093,9 @@
                 
                 addLog('СЕССИЯ ВОССТАНОВЛЕНА', 'success');
                 await loadServers();
+                
+                // Восстанавливаем состояние клонирования
+                restoreCloningState();
             }
             
             addLog('DISCORD SERVER CLONER by xolirx', 'info');
