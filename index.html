@@ -20,6 +20,72 @@
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body.light-theme {
+            background: #f0f2f5;
+            color: #1a1a1a;
+        }
+
+        body.light-theme .glass-card {
+            background: rgba(255,255,255,0.8);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        body.light-theme .clone-card {
+            background: rgba(255,255,255,0.8);
+        }
+
+        body.light-theme .user-profile {
+            background: rgba(255,255,255,0.8);
+        }
+
+        body.light-theme .info-card {
+            background: rgba(255,255,255,0.6);
+        }
+
+        body.light-theme .log-container {
+            background: rgba(255,255,255,0.7);
+        }
+
+        body.light-theme .form-input,
+        body.light-theme .clone-input {
+            background: rgba(0,0,0,0.05);
+            color: #1a1a1a;
+            border-color: rgba(0,0,0,0.1);
+        }
+
+        body.light-theme .form-input:focus,
+        body.light-theme .clone-input:focus {
+            background: rgba(0,0,0,0.1);
+        }
+
+        body.light-theme .form-label,
+        body.light-theme .input-label {
+            color: #666;
+        }
+
+        body.light-theme .log-time {
+            color: #999;
+        }
+
+        body.light-theme .log-msg {
+            color: #666;
+        }
+
+        body.light-theme .auth-subtitle span,
+        body.light-theme .clone-subtitle span {
+            color: #888;
+        }
+
+        body.light-theme .instruction-header span {
+            color: #666;
+        }
+
+        body.light-theme .footer {
+            color: #999;
+            border-top-color: rgba(0,0,0,0.05);
         }
 
         canvas {
@@ -70,6 +136,14 @@
             to { transform: rotate(360deg); }
         }
 
+        @keyframes ripple {
+            to {
+                width: 300px;
+                height: 300px;
+                opacity: 0;
+            }
+        }
+
         .navbar {
             position: fixed;
             top: 0;
@@ -84,6 +158,11 @@
             border-bottom: 1px solid rgba(255,255,255,0.03);
         }
 
+        body.light-theme .navbar {
+            background: rgba(255,255,255,0.8);
+            border-bottom-color: rgba(0,0,0,0.05);
+        }
+
         .logo {
             font-size: 1rem;
             font-weight: 400;
@@ -94,12 +173,20 @@
             position: relative;
         }
 
+        body.light-theme .logo {
+            color: #1a1a1a;
+        }
+
         .logo span {
             color: #444;
             font-size: 0.7rem;
             margin-left: 0.5rem;
             letter-spacing: 1px;
             transition: color 0.3s;
+        }
+
+        body.light-theme .logo span {
+            color: #888;
         }
 
         .logo:hover {
@@ -124,12 +211,24 @@
             position: relative;
         }
 
+        body.light-theme .nav-link {
+            color: #888;
+        }
+
         .nav-link:hover {
             color: #aaa;
         }
 
+        body.light-theme .nav-link:hover {
+            color: #666;
+        }
+
         .nav-link.active {
             color: #fff;
+        }
+
+        body.light-theme .nav-link.active {
+            color: #1a1a1a;
         }
 
         .nav-link.active::after {
@@ -140,6 +239,10 @@
             width: 100%;
             height: 1px;
             background: linear-gradient(90deg, transparent, #fff, transparent);
+        }
+
+        body.light-theme .nav-link.active::after {
+            background: linear-gradient(90deg, transparent, #1a1a1a, transparent);
         }
 
         .main-container {
@@ -170,6 +273,10 @@
             border-color: rgba(255,255,255,0.05);
         }
 
+        body.light-theme .glass-card:hover {
+            border-color: rgba(0,0,0,0.1);
+        }
+
         .auth-title {
             font-size: 1.4rem;
             font-weight: 300;
@@ -180,12 +287,20 @@
             opacity: 0.9;
         }
 
+        body.light-theme .auth-title {
+            color: #1a1a1a;
+        }
+
         .auth-subtitle {
             color: #333;
             text-align: center;
             margin-bottom: 2rem;
             font-size: 0.7rem;
             letter-spacing: 1px;
+        }
+
+        body.light-theme .auth-subtitle {
+            color: #999;
         }
 
         .auth-subtitle span {
@@ -232,6 +347,10 @@
             font-weight: 300;
         }
 
+        body.light-theme .form-input::placeholder {
+            color: #999;
+        }
+
         .btn {
             background: transparent;
             border: 1px solid rgba(255,255,255,0.05);
@@ -250,10 +369,42 @@
             z-index: 10;
         }
 
+        body.light-theme .btn {
+            color: #1a1a1a;
+            border-color: rgba(0,0,0,0.1);
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        body.light-theme .btn::after {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .btn:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
         .btn:hover {
             border-color: rgba(255,255,255,0.15);
             background: rgba(255,255,255,0.01);
             transform: translateY(-1px);
+        }
+
+        body.light-theme .btn:hover {
+            border-color: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.02);
         }
 
         .btn-primary {
@@ -261,14 +412,28 @@
             border-color: rgba(255,255,255,0.06);
         }
 
+        body.light-theme .btn-primary {
+            background: rgba(0,0,0,0.02);
+            border-color: rgba(0,0,0,0.1);
+        }
+
         .btn-primary:hover {
             background: rgba(255,255,255,0.03);
+        }
+
+        body.light-theme .btn-primary:hover {
+            background: rgba(0,0,0,0.03);
         }
 
         .btn-danger {
             background: rgba(255,80,80,0.05);
             border-color: rgba(255,80,80,0.1);
             color: #d88;
+        }
+
+        body.light-theme .btn-danger {
+            color: #c66;
+            border-color: rgba(255,80,80,0.2);
         }
 
         .btn-danger:hover {
@@ -324,10 +489,18 @@
             color: #fff;
         }
 
+        body.light-theme .user-name {
+            color: #1a1a1a;
+        }
+
         .user-id {
             color: #444;
             font-size: 0.8rem;
             font-family: monospace;
+        }
+
+        body.light-theme .user-id {
+            color: #888;
         }
 
         .user-email {
@@ -347,6 +520,11 @@
             color: #666;
         }
 
+        body.light-theme .email-blur {
+            background: rgba(0,0,0,0.02);
+            color: #999;
+        }
+
         .email-blur:hover {
             filter: blur(1px);
         }
@@ -354,6 +532,10 @@
         .email-blur.unblur {
             filter: blur(0);
             color: #888;
+        }
+
+        body.light-theme .email-blur.unblur {
+            color: #666;
         }
 
         .email-toggle {
@@ -410,11 +592,19 @@
             opacity: 0.9;
         }
 
+        body.light-theme .clone-title {
+            color: #1a1a1a;
+        }
+
         .clone-subtitle {
             color: #333;
             font-size: 0.7rem;
             margin-bottom: 2rem;
             letter-spacing: 1px;
+        }
+
+        body.light-theme .clone-subtitle {
+            color: #999;
         }
 
         .clone-subtitle span {
@@ -455,6 +645,10 @@
             border-color: rgba(255,255,255,0.1);
             background: rgba(20,20,20,0.8);
             transform: scale(1.01);
+        }
+
+        body.light-theme .clone-input::placeholder {
+            color: #999;
         }
 
         .btn-group {
@@ -509,12 +703,21 @@
             border-color: rgba(255,255,255,0.05);
         }
 
+        body.light-theme .info-card {
+            background: rgba(255,255,255,0.6);
+            border-color: rgba(0,0,0,0.05);
+        }
+
         .info-card-title {
             color: #444;
             font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 1rem;
+        }
+
+        body.light-theme .info-card-title {
+            color: #666;
         }
 
         .info-list {
@@ -526,6 +729,11 @@
             font-size: 0.85rem;
             padding: 0.4rem 0;
             border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+
+        body.light-theme .info-list li {
+            color: #888;
+            border-bottom-color: rgba(0,0,0,0.05);
         }
 
         .info-list li:last-child {
@@ -552,6 +760,16 @@
             display: flex;
             align-items: center;
             gap: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .log-entry:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        body.light-theme .log-entry:hover {
+            background: rgba(0,0,0,0.02);
         }
 
         .log-time {
@@ -622,6 +840,11 @@
             overflow-y: auto;
         }
 
+        body.light-theme .modal-content {
+            background: rgba(255,255,255,0.95);
+            border-color: rgba(0,0,0,0.1);
+        }
+
         .modal.active .modal-content {
             transform: scale(1) translateY(0);
         }
@@ -632,6 +855,10 @@
             margin-bottom: 1.5rem;
             letter-spacing: 1px;
             color: #fff;
+        }
+
+        body.light-theme .modal-title {
+            color: #1a1a1a;
         }
 
         .rules-list {
@@ -649,10 +876,19 @@
             gap: 0.5rem;
         }
 
+        body.light-theme .rules-list li {
+            color: #888;
+            border-bottom-color: rgba(0,0,0,0.05);
+        }
+
         .rules-list li::before {
             content: "●";
             color: #333;
             font-size: 0.8rem;
+        }
+
+        body.light-theme .rules-list li::before {
+            color: #999;
         }
 
         .checkbox-group {
@@ -674,6 +910,14 @@
             background: rgba(255,255,255,0.03);
         }
 
+        body.light-theme .checkbox-item {
+            background: rgba(0,0,0,0.02);
+        }
+
+        body.light-theme .checkbox-item:hover {
+            background: rgba(0,0,0,0.04);
+        }
+
         .checkbox-item input[type="checkbox"] {
             width: 18px;
             height: 18px;
@@ -690,6 +934,10 @@
             flex: 1;
         }
 
+        body.light-theme .checkbox-item label {
+            color: #888;
+        }
+
         .warning-box {
             background: rgba(255,80,80,0.03);
             border: 1px solid rgba(255,80,80,0.05);
@@ -698,6 +946,10 @@
             margin: 1.5rem 0;
             color: #d88;
             font-size: 0.85rem;
+        }
+
+        body.light-theme .warning-box {
+            color: #c66;
         }
 
         .modal-buttons {
@@ -786,6 +1038,10 @@
             line-height: 1.8;
         }
 
+        body.light-theme .about-section {
+            color: #888;
+        }
+
         .about-section h3 {
             color: #888;
             font-weight: 400;
@@ -795,9 +1051,17 @@
             text-transform: uppercase;
         }
 
+        body.light-theme .about-section h3 {
+            color: #666;
+        }
+
         .about-section p {
             margin-bottom: 1rem;
             color: #555;
+        }
+
+        body.light-theme .about-section p {
+            color: #888;
         }
 
         .feature-list {
@@ -810,6 +1074,11 @@
             border-bottom: 1px solid rgba(255,255,255,0.02);
         }
 
+        body.light-theme .feature-list li {
+            color: #888;
+            border-bottom-color: rgba(0,0,0,0.05);
+        }
+
         .footer {
             margin-top: 4rem;
             padding: 2rem;
@@ -820,6 +1089,11 @@
             border-top: 1px solid rgba(255,255,255,0.02);
             position: relative;
             z-index: 5;
+        }
+
+        body.light-theme .footer {
+            color: #999;
+            border-top-color: rgba(0,0,0,0.05);
         }
 
         .hidden {
@@ -917,9 +1191,123 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 10000;
+            animation: fadeIn 0.3s;
+        }
+
+        .bottom-controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(15,15,15,0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body.light-theme .control-btn {
+            background: rgba(255,255,255,0.8);
+            color: #1a1a1a;
+            border-color: rgba(0,0,0,0.1);
+        }
+
+        .control-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
+
+        .control-btn:hover::after {
+            width: 80px;
+            height: 80px;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        body.light-theme .control-btn:hover {
+            border-color: rgba(0,0,0,0.2);
+        }
+
+        .flag-icon {
+            width: 24px;
+            height: 16px;
+            border-radius: 2px;
+        }
+
+        .export-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(15,15,15,0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.05);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        body.light-theme .export-btn {
+            background: rgba(255,255,255,0.8);
+            color: #1a1a1a;
+            border-color: rgba(0,0,0,0.1);
+        }
+
+        .export-btn:hover {
+            transform: scale(1.1);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        body.light-theme .export-btn:hover {
+            border-color: rgba(0,0,0,0.2);
+        }
     </style>
 </head>
-<body>
+<body class="dark-theme">
     <canvas id="snowCanvas"></canvas>
 
     <div class="content">
@@ -940,30 +1328,30 @@
                         <div class="auth-subtitle"><span>by xolirx</span> • 2026</div>
                         
                         <div class="form-group">
-                            <label class="form-label">DISCORD TOKEN</label>
+                            <label class="form-label" data-i18n="token">DISCORD TOKEN</label>
                             <input type="password" class="form-input" id="tokenInput" placeholder="••••••••••••••••••••••">
                         </div>
 
                         <div class="instruction-box">
                             <div class="instruction-header" onclick="toggleInstructions()">
-                                <span>КАК ПОЛУЧИТЬ ТОКЕН?</span>
+                                <span data-i18n="howToGetToken">КАК ПОЛУЧИТЬ ТОКЕН?</span>
                                 <span class="arrow">▼</span>
                             </div>
                             <div class="instruction-content" id="instructionContent">
                                 <ol>
-                                    <li>Откройте Discord в браузере</li>
-                                    <li>Нажмите <code>F12</code> → Network</li>
-                                    <li>Введите в поиске: <code>/api</code></li>
-                                    <li>Найдите пункт <code>science</code></li>
-                                    <li>Откройте его и скопируйте <code>authorization</code></li>
-                                    <li>Если нет science — нажмите <code>F5</code></li>
+                                    <li data-i18n="instruction1">Откройте Discord в браузере</li>
+                                    <li data-i18n="instruction2">Нажмите <code>F12</code> → Network</li>
+                                    <li data-i18n="instruction3">Введите в поиске: <code>/api</code></li>
+                                    <li data-i18n="instruction4">Найдите пункт <code>science</code></li>
+                                    <li data-i18n="instruction5">Откройте его и скопируйте <code>authorization</code></li>
+                                    <li data-i18n="instruction6">Если нет science — нажмите <code>F5</code></li>
                                 </ol>
                             </div>
                         </div>
 
                         <div id="authError" class="error-message"></div>
 
-                        <button class="btn btn-primary" onclick="authorize()">ВОЙТИ</button>
+                        <button class="btn btn-primary" onclick="authorize()" data-i18n="login">ВОЙТИ</button>
                     </div>
                 </div>
             </div>
@@ -983,39 +1371,39 @@
                             </span>
                         </div>
                     </div>
-                    <button class="btn logout-btn" onclick="logout()">ВЫЙТИ</button>
+                    <button class="btn logout-btn" onclick="logout()" data-i18n="logout">ВЫЙТИ</button>
                 </div>
 
                 <div id="backgroundStatus" class="background-status">
                     <div class="background-status-title">
                         <div class="spinner"></div>
-                        <span>КЛОНИРОВАНИЕ ВЫПОЛНЯЕТСЯ В ФОНЕ</span>
+                        <span data-i18n="backgroundCloning">КЛОНИРОВАНИЕ ВЫПОЛНЯЕТСЯ В ФОНЕ</span>
                     </div>
-                    <div id="backgroundProgress">ПРОГРЕСС: 0%</div>
+                    <div id="backgroundProgress" data-i18n="progress">ПРОГРЕСС: 0%</div>
                 </div>
 
                 <div id="mainContent">
                     <div class="clone-card">
-                        <div class="clone-title">КЛОНИРОВАНИЕ</div>
+                        <div class="clone-title" data-i18n="cloning">КЛОНИРОВАНИЕ</div>
                         <div class="clone-subtitle"><span>by xolirx</span> • 2026</div>
                         
                         <div class="input-group">
-                            <label class="input-label">ИСХОДНЫЙ СЕРВЕР</label>
-                            <input type="text" class="clone-input" id="sourceId" placeholder="000000000000000000" value="">
+                            <label class="input-label" data-i18n="sourceServer">ИСХОДНЫЙ СЕРВЕР</label>
+                            <input type="text" class="clone-input" id="sourceId" placeholder="000000000000000000">
                         </div>
 
                         <div class="input-group">
-                            <label class="input-label">ЦЕЛЕВОЙ СЕРВЕР</label>
-                            <input type="text" class="clone-input" id="targetId" placeholder="000000000000000000" value="">
+                            <label class="input-label" data-i18n="targetServer">ЦЕЛЕВОЙ СЕРВЕР</label>
+                            <input type="text" class="clone-input" id="targetId" placeholder="000000000000000000">
                         </div>
 
                         <div class="btn-group">
-                            <button class="btn" onclick="showServerList()">ПОЛУЧИТЬ ID</button>
-                            <button class="btn btn-primary" id="cloneBtn" onclick="showAgreement()">НАЧАТЬ</button>
+                            <button class="btn" onclick="showServerList()" data-i18n="getIds">ПОЛУЧИТЬ ID</button>
+                            <button class="btn btn-primary" id="cloneBtn" onclick="showAgreement()" data-i18n="start">НАЧАТЬ</button>
                         </div>
 
                         <div class="cancel-btn-container">
-                            <button class="btn btn-danger" id="cancelCloneBtn" onclick="cancelCloning()" style="width: 100%;" disabled>ОТМЕНИТЬ КЛОНИРОВАНИЕ</button>
+                            <button class="btn btn-danger" id="cancelCloneBtn" onclick="cancelCloning()" style="width: 100%;" disabled data-i18n="cancel">ОТМЕНИТЬ КЛОНИРОВАНИЕ</button>
                         </div>
 
                         <div id="serverListContainer" class="server-list hidden"></div>
@@ -1029,22 +1417,22 @@
 
                     <div class="info-grid">
                         <div class="info-card">
-                            <div class="info-card-title">БУДЕТ СКОПИРОВАНО</div>
+                            <div class="info-card-title" data-i18n="willBeCopied">БУДЕТ СКОПИРОВАНО</div>
                             <ul class="info-list">
-                                <li>НАЗВАНИЕ СЕРВЕРА</li>
-                                <li>ИКОНКА СЕРВЕРА</li>
-                                <li>ВСЕ РОЛИ (С ПРАВАМИ)</li>
-                                <li>КАТЕГОРИИ И КАНАЛЫ</li>
-                                <li>ПРАВА ДОСТУПА</li>
+                                <li data-i18n="serverName">НАЗВАНИЕ СЕРВЕРА</li>
+                                <li data-i18n="serverIcon">ИКОНКА СЕРВЕРА</li>
+                                <li data-i18n="roles">ВСЕ РОЛИ (С ПРАВАМИ)</li>
+                                <li data-i18n="categories">КАТЕГОРИИ И КАНАЛЫ</li>
+                                <li data-i18n="permissions">ПРАВА ДОСТУПА</li>
                             </ul>
                         </div>
                         <div class="info-card">
-                            <div class="info-card-title">НЕ БУДЕТ СКОПИРОВАНО</div>
+                            <div class="info-card-title" data-i18n="notCopied">НЕ БУДЕТ СКОПИРОВАНО</div>
                             <ul class="info-list">
-                                <li>СООБЩЕНИЯ</li>
-                                <li>УЧАСТНИКИ</li>
-                                <li>ВЕБХУКИ</li>
-                                <li>ИНТЕГРАЦИИ</li>
+                                <li data-i18n="messages">СООБЩЕНИЯ</li>
+                                <li data-i18n="members">УЧАСТНИКИ</li>
+                                <li data-i18n="webhooks">ВЕБХУКИ</li>
+                                <li data-i18n="integrations">ИНТЕГРАЦИИ</li>
                             </ul>
                         </div>
                     </div>
@@ -1054,14 +1442,14 @@
 
                 <div id="supportContent" class="hidden">
                     <div class="glass-card">
-                        <div class="auth-title">ПОДДЕРЖКА</div>
+                        <div class="auth-title" data-i18n="support">ПОДДЕРЖКА</div>
                         <div class="auth-subtitle"><span>by xolirx</span> • 2026</div>
                         
                         <div class="contact-single">
                             <a href="https://t.me/xolirx?text=Привет%20у%20меня%20возникла%20ошибка%20помоги%20пожалуйста" target="_blank" class="btn btn-primary">@xolirx</a>
                         </div>
 
-                        <div style="margin-top: 2rem; color: #333; font-size: 0.8rem; text-align: center;">
+                        <div style="margin-top: 2rem; color: #333; font-size: 0.8rem; text-align: center;" data-i18n="responseTime">
                             ВРЕМЯ ОТВЕТА: ОБЫЧНО В ТЕЧЕНИЕ ЧАСА
                         </div>
                     </div>
@@ -1069,23 +1457,23 @@
 
                 <div id="aboutContent" class="hidden">
                     <div class="glass-card">
-                        <div class="auth-title">О ПРОЕКТЕ</div>
+                        <div class="auth-title" data-i18n="about">О ПРОЕКТЕ</div>
                         <div class="auth-subtitle"><span>by xolirx</span> • 2026</div>
                         
                         <div class="about-section">
-                            <p>Профессиональный инструмент для полного клонирования структуры Discord серверов. Разработан для создания резервных копий и миграции серверов.</p>
+                            <p data-i18n="aboutText">Профессиональный инструмент для полного клонирования структуры Discord серверов. Разработан для создания резервных копий и миграции серверов.</p>
 
-                            <h3>ОСНОВНЫЕ ВОЗМОЖНОСТИ</h3>
+                            <h3 data-i18n="features">ОСНОВНЫЕ ВОЗМОЖНОСТИ</h3>
                             <ul class="feature-list">
-                                <li>Полное клонирование - копирование всей структуры сервера</li>
-                                <li>Роли - сохранение всех ролей с правами доступа</li>
-                                <li>Каналы - воссоздание категорий и каналов</li>
-                                <li>Иконка - копирование аватарки сервера</li>
-                                <li>Название - сохранение оригинального названия</li>
-                                <li>Фоновое выполнение - клонирование продолжается после закрытия сайта</li>
+                                <li data-i18n="feature1">Полное клонирование - копирование всей структуры сервера</li>
+                                <li data-i18n="feature2">Роли - сохранение всех ролей с правами доступа</li>
+                                <li data-i18n="feature3">Каналы - воссоздание категорий и каналов</li>
+                                <li data-i18n="feature4">Иконка - копирование аватарки сервера</li>
+                                <li data-i18n="feature5">Название - сохранение оригинального названия</li>
+                                <li data-i18n="feature6">Фоновое выполнение - клонирование продолжается после закрытия сайта</li>
                             </ul>
 
-                            <h3>ТЕХНИЧЕСКИЕ ДЕТАЛИ</h3>
+                            <h3 data-i18n="techDetails">ТЕХНИЧЕСКИЕ ДЕТАЛИ</h3>
                             <ul class="feature-list">
                                 <li>Автор: XOLIRX</li>
                                 <li>Лицензия: MIT</li>
@@ -1093,12 +1481,12 @@
                                 <li>Год: 2026</li>
                             </ul>
 
-                            <h3>ОГРАНИЧЕНИЯ</h3>
+                            <h3 data-i18n="limitations">ОГРАНИЧЕНИЯ</h3>
                             <ul class="feature-list">
-                                <li>Не копируются сообщения</li>
-                                <li>Не копируются участники</li>
-                                <li>Не копируются вебхуки</li>
-                                <li>Не копируются интеграции</li>
+                                <li data-i18n="limitation1">Не копируются сообщения</li>
+                                <li data-i18n="limitation2">Не копируются участники</li>
+                                <li data-i18n="limitation3">Не копируются вебхуки</li>
+                                <li data-i18n="limitation4">Не копируются интеграции</li>
                             </ul>
                         </div>
                     </div>
@@ -1111,59 +1499,68 @@
         </div>
     </div>
 
+    <div class="bottom-controls">
+        <button class="control-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+        <button class="control-btn" onclick="switchLanguage('ru')" id="langRu">🇷🇺</button>
+        <button class="control-btn" onclick="switchLanguage('en')" id="langEn">🇺🇸</button>
+    </div>
+
+    <button class="export-btn" onclick="exportLogs()" title="Экспорт логов">📥</button>
+
     <div id="agreementModal" class="modal">
         <div class="modal-content">
-            <div class="modal-title">ПРАВИЛА И ОТВЕТСТВЕННОСТЬ</div>
+            <div class="modal-title" data-i18n="rules">ПРАВИЛА И ОТВЕТСТВЕННОСТЬ</div>
             
             <div class="modal-text">
-                <div style="color: #888; margin-bottom: 1rem;">ВНИМАТЕЛЬНО ОЗНАКОМЬТЕСЬ:</div>
+                <div style="color: #888; margin-bottom: 1rem;" data-i18n="readCarefully">ВНИМАТЕЛЬНО ОЗНАКОМЬТЕСЬ:</div>
                 
                 <ul class="rules-list">
-                    <li>Я полностью осознаю, что использую программу НА СВОЙ РИСК</li>
-                    <li>Автор (xolirx) НЕ НЕСЕТ ответственности за любые последствия</li>
-                    <li>Я принимаю ответственность за блокировку аккаунта или сервера</li>
-                    <li>Я обязуюсь использовать программу ТОЛЬКО на своих серверах</li>
-                    <li>Я имею права администратора на обоих серверах</li>
-                    <li>Я понимаю, что все каналы и роли будут УДАЛЕНЫ</li>
-                    <li>Я создал резервную копию важных данных</li>
-                    <li>Я не буду использовать программу для нарушения правил Discord</li>
-                    <li>Я не буду предъявлять претензии автору</li>
-                    <li>Я действую в соответствии с законодательством</li>
+                    <li data-i18n="rule1">Я полностью осознаю, что использую программу НА СВОЙ РИСК</li>
+                    <li data-i18n="rule2">Автор (xolirx) НЕ НЕСЕТ ответственности за любые последствия</li>
+                    <li data-i18n="rule3">Я принимаю ответственность за блокировку аккаунта или сервера</li>
+                    <li data-i18n="rule4">Я обязуюсь использовать программу ТОЛЬКО на своих серверах</li>
+                    <li data-i18n="rule5">Я имею права администратора на обоих серверах</li>
+                    <li data-i18n="rule6">Я понимаю, что все каналы и роли будут УДАЛЕНЫ</li>
+                    <li data-i18n="rule7">Я создал резервную копию важных данных</li>
+                    <li data-i18n="rule8">Я не буду использовать программу для нарушения правил Discord</li>
+                    <li data-i18n="rule9">Я не буду предъявлять претензии автору</li>
+                    <li data-i18n="rule10">Я действую в соответствии с законодательством</li>
                 </ul>
             </div>
 
             <div class="checkbox-group">
                 <div class="checkbox-item">
                     <input type="checkbox" id="rule1" onchange="checkAllRules()">
-                    <label for="rule1">Я ПРОЧИТАЛ И ПОНЯЛ ВСЕ ПРАВИЛА</label>
+                    <label for="rule1" data-i18n="agree1">Я ПРОЧИТАЛ И ПОНЯЛ ВСЕ ПРАВИЛА</label>
                 </div>
                 <div class="checkbox-item">
                     <input type="checkbox" id="rule2" onchange="checkAllRules()">
-                    <label for="rule2">Я ОСОЗНАЮ ВСЕ РИСКИ</label>
+                    <label for="rule2" data-i18n="agree2">Я ОСОЗНАЮ ВСЕ РИСКИ</label>
                 </div>
                 <div class="checkbox-item">
                     <input type="checkbox" id="rule3" onchange="checkAllRules()">
-                    <label for="rule3">Я ПРИНИМАЮ ПОЛНУЮ ОТВЕТСТВЕННОСТЬ</label>
+                    <label for="rule3" data-i18n="agree3">Я ПРИНИМАЮ ПОЛНУЮ ОТВЕТСТВЕННОСТЬ</label>
                 </div>
             </div>
 
-            <div class="warning-box">
+            <div class="warning-box" data-i18n="warning">
                 ⚠ НАРУШЕНИЕ ЛЮБОГО ПУНКТА ОСВОБОЖДАЕТ АВТОРА ОТ ОТВЕТСТВЕННОСТИ
             </div>
 
             <div class="modal-buttons">
-                <button class="btn" onclick="closeModal()">ОТМЕНА</button>
-                <button class="btn btn-primary" onclick="confirmAllRules()" id="confirmBtn" disabled>ПРОДОЛЖИТЬ</button>
+                <button class="btn" onclick="closeModal()" data-i18n="cancelBtn">ОТМЕНА</button>
+                <button class="btn btn-primary" onclick="confirmAllRules()" id="confirmBtn" disabled data-i18n="continue">ПРОДОЛЖИТЬ</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Регистрация Service Worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js').then(reg => {
-                console.log('Service Worker registered');
-            });
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
         }
 
         const canvas = document.getElementById('snowCanvas');
@@ -1217,10 +1614,176 @@
         let userGuilds = [];
         let emailVisible = false;
         let backgroundSyncEnabled = false;
+        let startTime = null;
+        let currentLanguage = 'ru';
 
-        // Проверка поддержки фоновой синхронизации
-        if ('serviceWorker' in navigator && 'SyncManager' in window) {
+        const translations = {
+            ru: {
+                token: 'DISCORD TOKEN',
+                login: 'ВОЙТИ',
+                logout: 'ВЫЙТИ',
+                start: 'НАЧАТЬ',
+                cancel: 'ОТМЕНИТЬ КЛОНИРОВАНИЕ',
+                getIds: 'ПОЛУЧИТЬ ID',
+                sourceServer: 'ИСХОДНЫЙ СЕРВЕР',
+                targetServer: 'ЦЕЛЕВОЙ СЕРВЕР',
+                willBeCopied: 'БУДЕТ СКОПИРОВАНО',
+                notCopied: 'НЕ БУДЕТ СКОПИРОВАНО',
+                serverName: 'НАЗВАНИЕ СЕРВЕРА',
+                serverIcon: 'ИКОНКА СЕРВЕРА',
+                roles: 'ВСЕ РОЛИ (С ПРАВАМИ)',
+                categories: 'КАТЕГОРИИ И КАНАЛЫ',
+                permissions: 'ПРАВА ДОСТУПА',
+                messages: 'СООБЩЕНИЯ',
+                members: 'УЧАСТНИКИ',
+                webhooks: 'ВЕБХУКИ',
+                integrations: 'ИНТЕГРАЦИИ',
+                support: 'ПОДДЕРЖКА',
+                about: 'О ПРОЕКТЕ',
+                aboutText: 'Профессиональный инструмент для полного клонирования структуры Discord серверов. Разработан для создания резервных копий и миграции серверов.',
+                features: 'ОСНОВНЫЕ ВОЗМОЖНОСТИ',
+                feature1: 'Полное клонирование - копирование всей структуры сервера',
+                feature2: 'Роли - сохранение всех ролей с правами доступа',
+                feature3: 'Каналы - воссоздание категорий и каналов',
+                feature4: 'Иконка - копирование аватарки сервера',
+                feature5: 'Название - сохранение оригинального названия',
+                feature6: 'Фоновое выполнение - клонирование продолжается после закрытия сайта',
+                techDetails: 'ТЕХНИЧЕСКИЕ ДЕТАЛИ',
+                limitations: 'ОГРАНИЧЕНИЯ',
+                limitation1: 'Не копируются сообщения',
+                limitation2: 'Не копируются участники',
+                limitation3: 'Не копируются вебхуки',
+                limitation4: 'Не копируются интеграции',
+                rules: 'ПРАВИЛА И ОТВЕТСТВЕННОСТЬ',
+                readCarefully: 'ВНИМАТЕЛЬНО ОЗНАКОМЬТЕСЬ:',
+                rule1: 'Я полностью осознаю, что использую программу НА СВОЙ РИСК',
+                rule2: 'Автор (xolirx) НЕ НЕСЕТ ответственности за любые последствия',
+                rule3: 'Я принимаю ответственность за блокировку аккаунта или сервера',
+                rule4: 'Я обязуюсь использовать программу ТОЛЬКО на своих серверах',
+                rule5: 'Я имею права администратора на обоих серверах',
+                rule6: 'Я понимаю, что все каналы и роли будут УДАЛЕНЫ',
+                rule7: 'Я создал резервную копию важных данных',
+                rule8: 'Я не буду использовать программу для нарушения правил Discord',
+                rule9: 'Я не буду предъявлять претензии автору',
+                rule10: 'Я действую в соответствии с законодательством',
+                agree1: 'Я ПРОЧИТАЛ И ПОНЯЛ ВСЕ ПРАВИЛА',
+                agree2: 'Я ОСОЗНАЮ ВСЕ РИСКИ',
+                agree3: 'Я ПРИНИМАЮ ПОЛНУЮ ОТВЕТСТВЕННОСТЬ',
+                warning: '⚠ НАРУШЕНИЕ ЛЮБОГО ПУНКТА ОСВОБОЖДАЕТ АВТОРА ОТ ОТВЕТСТВЕННОСТИ',
+                cancelBtn: 'ОТМЕНА',
+                continue: 'ПРОДОЛЖИТЬ',
+                howToGetToken: 'КАК ПОЛУЧИТЬ ТОКЕН?',
+                instruction1: 'Откройте Discord в браузере',
+                instruction2: 'Нажмите F12 → Network',
+                instruction3: 'Введите в поиске: /api',
+                instruction4: 'Найдите пункт science',
+                instruction5: 'Откройте его и скопируйте authorization',
+                instruction6: 'Если нет science — нажмите F5',
+                backgroundCloning: 'КЛОНИРОВАНИЕ ВЫПОЛНЯЕТСЯ В ФОНЕ',
+                progress: 'ПРОГРЕСС: 0%',
+                responseTime: 'ВРЕМЯ ОТВЕТА: ОБЫЧНО В ТЕЧЕНИЕ ЧАСА',
+                cloning: 'КЛОНИРОВАНИЕ'
+            },
+            en: {
+                token: 'DISCORD TOKEN',
+                login: 'LOGIN',
+                logout: 'LOGOUT',
+                start: 'START',
+                cancel: 'CANCEL CLONING',
+                getIds: 'GET IDS',
+                sourceServer: 'SOURCE SERVER',
+                targetServer: 'TARGET SERVER',
+                willBeCopied: 'WILL BE COPIED',
+                notCopied: 'WILL NOT BE COPIED',
+                serverName: 'SERVER NAME',
+                serverIcon: 'SERVER ICON',
+                roles: 'ALL ROLES (WITH PERMS)',
+                categories: 'CATEGORIES & CHANNELS',
+                permissions: 'PERMISSIONS',
+                messages: 'MESSAGES',
+                members: 'MEMBERS',
+                webhooks: 'WEBHOOKS',
+                integrations: 'INTEGRATIONS',
+                support: 'SUPPORT',
+                about: 'ABOUT',
+                aboutText: 'Professional tool for complete Discord server structure cloning. Designed for backup creation and server migration.',
+                features: 'MAIN FEATURES',
+                feature1: 'Full cloning - copying entire server structure',
+                feature2: 'Roles - saving all roles with permissions',
+                feature3: 'Channels - recreating categories and channels',
+                feature4: 'Icon - copying server avatar',
+                feature5: 'Name - preserving original name',
+                feature6: 'Background execution - cloning continues after site closure',
+                techDetails: 'TECHNICAL DETAILS',
+                limitations: 'LIMITATIONS',
+                limitation1: 'Messages are not copied',
+                limitation2: 'Members are not copied',
+                limitation3: 'Webhooks are not copied',
+                limitation4: 'Integrations are not copied',
+                rules: 'RULES AND RESPONSIBILITY',
+                readCarefully: 'READ CAREFULLY:',
+                rule1: 'I fully understand that I use the program AT MY OWN RISK',
+                rule2: 'Author (xolirx) IS NOT responsible for any consequences',
+                rule3: 'I accept responsibility for account or server ban',
+                rule4: 'I undertake to use the program ONLY on my servers',
+                rule5: 'I have administrator rights on both servers',
+                rule6: 'I understand that all channels and roles will be DELETED',
+                rule7: 'I have created a backup of important data',
+                rule8: 'I will not use the program to violate Discord rules',
+                rule9: 'I will not make claims against the author',
+                rule10: 'I act in accordance with the law',
+                agree1: 'I HAVE READ AND UNDERSTOOD ALL RULES',
+                agree2: 'I AM AWARE OF ALL RISKS',
+                agree3: 'I ACCEPT FULL RESPONSIBILITY',
+                warning: '⚠ VIOLATION OF ANY CLAUSE RELEASES THE AUTHOR FROM LIABILITY',
+                cancelBtn: 'CANCEL',
+                continue: 'CONTINUE',
+                howToGetToken: 'HOW TO GET TOKEN?',
+                instruction1: 'Open Discord in browser',
+                instruction2: 'Press F12 → Network',
+                instruction3: 'Search for: /api',
+                instruction4: 'Find science item',
+                instruction5: 'Open it and copy authorization',
+                instruction6: 'If no science — press F5',
+                backgroundCloning: 'CLONING IN BACKGROUND',
+                progress: 'PROGRESS: 0%',
+                responseTime: 'RESPONSE TIME: USUALLY WITHIN AN HOUR',
+                cloning: 'CLONING'
+            }
+        };
+
+        function updateLanguage(lang) {
+            currentLanguage = lang;
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = translations[lang][key];
+                    } else {
+                        el.textContent = translations[lang][key];
+                    }
+                }
+            });
+        }
+
+        function switchLanguage(lang) {
+            updateLanguage(lang);
+        }
+
+        if ('SyncManager' in window) {
             backgroundSyncEnabled = true;
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const themeBtn = document.getElementById('themeBtn');
+            if (body.classList.contains('light-theme')) {
+                body.classList.remove('light-theme');
+                themeBtn.textContent = '🌙';
+            } else {
+                body.classList.add('light-theme');
+                themeBtn.textContent = '☀️';
+            }
         }
 
         function toggleEmail() {
@@ -1243,18 +1806,59 @@
             }
         }
 
+        function maskToken(t) {
+            return t.substring(0, 5) + '...' + t.substring(t.length - 5);
+        }
+
+        function playSound(type) {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                if (type === 'success') {
+                    oscillator.frequency.value = 800;
+                    gainNode.gain.value = 0.1;
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                } else if (type === 'error') {
+                    oscillator.frequency.value = 200;
+                    gainNode.gain.value = 0.1;
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                }
+            } catch {}
+        }
+
+        function notifyComplete() {
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification('Discord Cloner', {
+                    body: currentLanguage === 'ru' ? 'Клонирование завершено!' : 'Cloning completed!',
+                    icon: 'https://cdn.discordapp.com/avatars/1/1.png'
+                });
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+
         function cancelCloning() {
             if (cloning) {
                 cancelRequested = true;
-                addLog('ОТМЕНА КЛОНИРОВАНИЯ...', 'warning');
+                addLog(currentLanguage === 'ru' ? 'ОТМЕНА КЛОНИРОВАНИЯ...' : 'CANCELLING CLONING...', 'warning');
                 document.getElementById('cancelCloneBtn').disabled = true;
-                
-                // Сохраняем статус отмены
                 localStorage.setItem('clone_cancelled', 'true');
             }
         }
 
-        // Восстановление состояния при загрузке
         function restoreCloningState() {
             const savedState = localStorage.getItem('clone_state');
             if (savedState) {
@@ -1265,25 +1869,34 @@
                         document.getElementById('cloneBtn').disabled = true;
                         document.getElementById('cancelCloneBtn').disabled = false;
                         document.getElementById('backgroundStatus').classList.add('show');
-                        document.getElementById('backgroundProgress').textContent = `ПРОГРЕСС: ${state.progress}%`;
+                        document.getElementById('backgroundProgress').textContent = 
+                            (currentLanguage === 'ru' ? 'ПРОГРЕСС: ' : 'PROGRESS: ') + state.progress + '%';
                         
-                        addLog('⚠ ВОССТАНОВЛЕНО ФОНОВОЕ КЛОНИРОВАНИЕ', 'warning');
-                        addLog(`ИСХОДНЫЙ: ${state.sourceId}`, 'info');
-                        addLog(`ЦЕЛЕВОЙ: ${state.targetId}`, 'info');
+                        addLog(currentLanguage === 'ru' ? '⚠ ВОССТАНОВЛЕНО ФОНОВОЕ КЛОНИРОВАНИЕ' : '⚠ BACKGROUND CLONING RESTORED', 'warning');
+                        addLog((currentLanguage === 'ru' ? 'ИСХОДНЫЙ: ' : 'SOURCE: ') + state.sourceId, 'info');
+                        addLog((currentLanguage === 'ru' ? 'ЦЕЛЕВОЙ: ' : 'TARGET: ') + state.targetId, 'info');
                         
-                        // Запускаем продолжение клонирования
                         continueCloning(state);
                     }
-                } catch (e) {
-                    console.error('Failed to restore state', e);
-                }
+                } catch {}
             }
+        }
+
+        function getElapsedTime() {
+            if (!startTime) return '';
+            const seconds = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            
+            if (hours > 0) return `${hours}h ${minutes % 60}m`;
+            if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
+            return `${seconds}s`;
         }
 
         async function continueCloning(state) {
             token = localStorage.getItem('discord_token');
             if (!token) {
-                addLog('ОШИБКА: ТОКЕН НЕ НАЙДЕН', 'error');
+                addLog(currentLanguage === 'ru' ? 'ОШИБКА: ТОКЕН НЕ НАЙДЕН' : 'ERROR: TOKEN NOT FOUND', 'error');
                 return;
             }
 
@@ -1291,7 +1904,6 @@
                 const progressFill = document.getElementById('progressFill');
                 progressFill.style.width = state.progress + '%';
                 
-                // Продолжаем с того места, где остановились
                 if (state.stage === 'cleaning') {
                     await deleteAllChannels(state.targetId);
                     if (cancelRequested) throw new Error('CLONING_CANCELLED');
@@ -1323,14 +1935,16 @@
                 }
                 
                 progressFill.style.width = '100%';
-                addLog('КЛОНИРОВАНИЕ ЗАВЕРШЕНО', 'success');
+                addLog(currentLanguage === 'ru' ? 'КЛОНИРОВАНИЕ ЗАВЕРШЕНО' : 'CLONING COMPLETED', 'success');
                 
                 localStorage.removeItem('clone_state');
                 document.getElementById('backgroundStatus').classList.remove('show');
+                playSound('success');
+                notifyComplete();
                 
             } catch (e) {
                 if (e.message === 'CLONING_CANCELLED') {
-                    addLog('⚠ КЛОНИРОВАНИЕ ОТМЕНЕНО', 'warning');
+                    addLog(currentLanguage === 'ru' ? '⚠ КЛОНИРОВАНИЕ ОТМЕНЕНО' : '⚠ CLONING CANCELLED', 'warning');
                     localStorage.removeItem('clone_state');
                     document.getElementById('backgroundStatus').classList.remove('show');
                 }
@@ -1342,6 +1956,19 @@
             }
         }
 
+        async function checkDiscordStatus() {
+            try {
+                const response = await fetch('https://discord.com/api/v10/gateway');
+                if (response.ok) {
+                    addLog(currentLanguage === 'ru' ? '✅ DISCORD API ДОСТУПЕН' : '✅ DISCORD API AVAILABLE', 'success');
+                    return true;
+                }
+            } catch {
+                addLog(currentLanguage === 'ru' ? '❌ DISCORD API НЕДОСТУПЕН' : '❌ DISCORD API UNAVAILABLE', 'error');
+                return false;
+            }
+        }
+
         async function fetchWithRetry(url, options, maxRetries = 3) {
             for (let i = 0; i < maxRetries; i++) {
                 if (cancelRequested) throw new Error('CLONING_CANCELLED');
@@ -1349,7 +1976,7 @@
                     const response = await fetch(url, options);
                     if (response.status === 429) {
                         const retryAfter = response.headers.get('Retry-After') || 5;
-                        addLog(`⚠ ЛИМИТ API, ОЖИДАНИЕ ${retryAfter}С...`, 'warning');
+                        addLog(currentLanguage === 'ru' ? `⚠ ЛИМИТ API, ОЖИДАНИЕ ${retryAfter}С...` : `⚠ API LIMIT, WAITING ${retryAfter}S...`, 'warning');
                         await sleep(retryAfter * 1000);
                         continue;
                     }
@@ -1364,11 +1991,11 @@
         async function authorize() {
             const t = document.getElementById('tokenInput').value.trim();
             if (!t) {
-                showError('authError', 'ВВЕДИТЕ ТОКЕН');
+                showError('authError', currentLanguage === 'ru' ? 'ВВЕДИТЕ ТОКЕН' : 'ENTER TOKEN');
                 return;
             }
             
-            addLog('ПРОВЕРКА ТОКЕНА...', 'info');
+            addLog((currentLanguage === 'ru' ? 'ПРОВЕРКА ТОКЕНА...' : 'CHECKING TOKEN...') + ' ' + maskToken(t), 'info');
             
             try {
                 const r = await fetch('https://discord.com/api/v10/users/@me', {
@@ -1400,7 +2027,7 @@
                     document.getElementById('authView').classList.add('hidden');
                     document.getElementById('mainView').classList.remove('hidden');
                     
-                    addLog('АВТОРИЗАЦИЯ УСПЕШНА', 'success');
+                    addLog(currentLanguage === 'ru' ? 'АВТОРИЗАЦИЯ УСПЕШНА' : 'AUTHORIZATION SUCCESSFUL', 'success');
                     
                     const savedSource = localStorage.getItem('last_source_id');
                     const savedTarget = localStorage.getItem('last_target_id');
@@ -1408,16 +2035,17 @@
                     if (savedTarget) document.getElementById('targetId').value = savedTarget;
                     
                     await loadServers();
-                    
-                    // Восстанавливаем состояние клонирования
+                    await checkDiscordStatus();
                     restoreCloningState();
                 } else {
-                    showError('authError', 'НЕВЕРНЫЙ ТОКЕН');
-                    addLog('ОШИБКА: НЕВЕРНЫЙ ТОКЕН', 'error');
+                    showError('authError', currentLanguage === 'ru' ? 'НЕВЕРНЫЙ ТОКЕН' : 'INVALID TOKEN');
+                    addLog(currentLanguage === 'ru' ? 'ОШИБКА: НЕВЕРНЫЙ ТОКЕН' : 'ERROR: INVALID TOKEN', 'error');
+                    playSound('error');
                 }
             } catch (e) {
-                showError('authError', 'ОШИБКА ПОДКЛЮЧЕНИЯ');
-                addLog('ОШИБКА ПОДКЛЮЧЕНИЯ', 'error');
+                showError('authError', currentLanguage === 'ru' ? 'ОШИБКА ПОДКЛЮЧЕНИЯ' : 'CONNECTION ERROR');
+                addLog(currentLanguage === 'ru' ? 'ОШИБКА ПОДКЛЮЧЕНИЯ' : 'CONNECTION ERROR', 'error');
+                playSound('error');
             }
         }
 
@@ -1432,7 +2060,7 @@
             document.getElementById('tokenInput').value = '';
             document.getElementById('sourceId').value = '';
             document.getElementById('targetId').value = '';
-            addLog('ВЫХОД ИЗ СИСТЕМЫ', 'info');
+            addLog(currentLanguage === 'ru' ? 'ВЫХОД ИЗ СИСТЕМЫ' : 'LOGGED OUT', 'info');
             
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             document.querySelector('.nav-link').classList.add('active');
@@ -1440,18 +2068,18 @@
 
         async function loadServers() {
             if (!token) return;
-            addLog('ЗАГРУЗКА СЕРВЕРОВ...', 'info');
+            addLog(currentLanguage === 'ru' ? 'ЗАГРУЗКА СЕРВЕРОВ...' : 'LOADING SERVERS...', 'info');
             try {
                 const r = await fetch('https://discord.com/api/v10/users/@me/guilds', {
                     headers: { 'Authorization': token }
                 });
                 if (r.ok) {
                     userGuilds = await r.json();
-                    addLog(`НАЙДЕНО СЕРВЕРОВ: ${userGuilds.length}`, 'success');
+                    addLog((currentLanguage === 'ru' ? `НАЙДЕНО СЕРВЕРОВ: ${userGuilds.length}` : `SERVERS FOUND: ${userGuilds.length}`), 'success');
                     return userGuilds;
                 }
             } catch (e) {
-                addLog('ОШИБКА ЗАГРУЗКИ СЕРВЕРОВ', 'error');
+                addLog(currentLanguage === 'ru' ? 'ОШИБКА ЗАГРУЗКИ СЕРВЕРОВ' : 'ERROR LOADING SERVERS', 'error');
             }
             return [];
         }
@@ -1464,7 +2092,8 @@
             }
             
             if (userGuilds.length > 0) {
-                let html = '<div style="color: #444; margin-bottom: 0.5rem; font-size: 0.7rem;">НАЖМИТЕ ДЛЯ ВСТАВКИ ID:</div>';
+                let html = '<div style="color: #444; margin-bottom: 0.5rem; font-size: 0.7rem;">' + 
+                    (currentLanguage === 'ru' ? 'НАЖМИТЕ ДЛЯ ВСТАВКИ ID:' : 'CLICK TO INSERT ID:') + '</div>';
                 
                 userGuilds.slice(0, 10).forEach(guild => {
                     html += `
@@ -1483,7 +2112,7 @@
         function setSourceId(id) {
             document.getElementById('sourceId').value = id;
             document.getElementById('serverListContainer').classList.add('hidden');
-            addLog(`ID ВСТАВЛЕН: ${id}`, 'info');
+            addLog(currentLanguage === 'ru' ? `ID ВСТАВЛЕН: ${id}` : `ID INSERTED: ${id}`, 'info');
         }
 
         function checkAllRules() {
@@ -1499,12 +2128,12 @@
             const t = document.getElementById('targetId').value.trim();
             
             if (!s || !t) {
-                showError('cloneError', 'ВВЕДИТЕ ID СЕРВЕРОВ');
+                showError('cloneError', currentLanguage === 'ru' ? 'ВВЕДИТЕ ID СЕРВЕРОВ' : 'ENTER SERVER IDS');
                 return;
             }
             
             if (s === t) {
-                showError('cloneError', 'СЕРВЕРЫ НЕ МОГУТ БЫТЬ ОДИНАКОВЫМИ');
+                showError('cloneError', currentLanguage === 'ru' ? 'СЕРВЕРЫ НЕ МОГУТ БЫТЬ ОДИНАКОВЫМИ' : 'SERVERS CANNOT BE THE SAME');
                 return;
             }
             
@@ -1553,7 +2182,7 @@
                 const r = await fetchWithRetry(`https://discord.com/api/v10/guilds/${guildId}/channels`, {
                     headers: { 'Authorization': token }
                 });
-                if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ КАНАЛЫ');
+                if (!r.ok) throw new Error(currentLanguage === 'ru' ? 'НЕ УДАЛОСЬ ПОЛУЧИТЬ КАНАЛЫ' : 'FAILED TO GET CHANNELS');
                 
                 const channels = await r.json();
                 let count = 0;
@@ -1567,18 +2196,18 @@
                         });
                         if (del.ok) {
                             count++;
-                            addLog(`  УДАЛЕН КАНАЛ: ${channel.name}`, 'warning');
+                            addLog(`  ${currentLanguage === 'ru' ? 'УДАЛЕН КАНАЛ:' : 'DELETED CHANNEL:'} ${channel.name}`, 'warning');
                         }
                         await sleep(300);
                     } catch (e) {
                         if (e.message === 'CLONING_CANCELLED') throw e;
-                        addLog(`  ОШИБКА УДАЛЕНИЯ: ${channel.name}`, 'error');
+                        addLog(`  ${currentLanguage === 'ru' ? 'ОШИБКА УДАЛЕНИЯ:' : 'DELETE ERROR:'} ${channel.name}`, 'error');
                     }
                 }
                 return count;
             } catch (e) {
                 if (e.message === 'CLONING_CANCELLED') throw e;
-                addLog(`ОШИБКА: ${e.message}`, 'error');
+                addLog(`${currentLanguage === 'ru' ? 'ОШИБКА:' : 'ERROR:'} ${e.message}`, 'error');
                 return 0;
             }
         }
@@ -1588,7 +2217,7 @@
                 const r = await fetchWithRetry(`https://discord.com/api/v10/guilds/${guildId}/roles`, {
                     headers: { 'Authorization': token }
                 });
-                if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ РОЛИ');
+                if (!r.ok) throw new Error(currentLanguage === 'ru' ? 'НЕ УДАЛОСЬ ПОЛУЧИТЬ РОЛИ' : 'FAILED TO GET ROLES');
                 
                 const roles = await r.json();
                 let count = 0;
@@ -1603,18 +2232,18 @@
                         });
                         if (del.ok) {
                             count++;
-                            addLog(`  УДАЛЕНА РОЛЬ: ${role.name}`, 'warning');
+                            addLog(`  ${currentLanguage === 'ru' ? 'УДАЛЕНА РОЛЬ:' : 'DELETED ROLE:'} ${role.name}`, 'warning');
                         }
                         await sleep(300);
                     } catch (e) {
                         if (e.message === 'CLONING_CANCELLED') throw e;
-                        addLog(`  ОШИБКА УДАЛЕНИЯ: ${role.name}`, 'error');
+                        addLog(`  ${currentLanguage === 'ru' ? 'ОШИБКА УДАЛЕНИЯ:' : 'DELETE ERROR:'} ${role.name}`, 'error');
                     }
                 }
                 return count;
             } catch (e) {
                 if (e.message === 'CLONING_CANCELLED') throw e;
-                addLog(`ОШИБКА: ${e.message}`, 'error');
+                addLog(`${currentLanguage === 'ru' ? 'ОШИБКА:' : 'ERROR:'} ${e.message}`, 'error');
                 return 0;
             }
         }
@@ -1624,7 +2253,7 @@
                 const r = await fetchWithRetry(`https://discord.com/api/v10/guilds/${sourceId}/roles`, {
                     headers: { 'Authorization': token }
                 });
-                if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ РОЛИ');
+                if (!r.ok) throw new Error(currentLanguage === 'ru' ? 'НЕ УДАЛОСЬ ПОЛУЧИТЬ РОЛИ' : 'FAILED TO GET ROLES');
                 
                 const roles = await r.json();
                 let count = 0;
@@ -1659,21 +2288,21 @@
                             const newRole = await create.json();
                             roleMap[role.id] = newRole.id;
                             count++;
-                            addLog(`  СОЗДАНА РОЛЬ: ${role.name}`, 'success');
+                            addLog(`  ${currentLanguage === 'ru' ? 'СОЗДАНА РОЛЬ:' : 'ROLE CREATED:'} ${role.name}`, 'success');
                         } else {
                             const error = await create.text();
-                            addLog(`  ОШИБКА СОЗДАНИЯ ${role.name}: ${error}`, 'error');
+                            addLog(`  ${currentLanguage === 'ru' ? 'ОШИБКА СОЗДАНИЯ' : 'CREATE ERROR'} ${role.name}: ${error}`, 'error');
                         }
                         await sleep(500);
                     } catch (e) {
                         if (e.message === 'CLONING_CANCELLED') throw e;
-                        addLog(`  ОШИБКА СОЗДАНИЯ: ${role.name}`, 'error');
+                        addLog(`  ${currentLanguage === 'ru' ? 'ОШИБКА СОЗДАНИЯ:' : 'CREATE ERROR:'} ${role.name}`, 'error');
                     }
                 }
                 return { count, roleMap };
             } catch (e) {
                 if (e.message === 'CLONING_CANCELLED') throw e;
-                addLog(`ОШИБКА: ${e.message}`, 'error');
+                addLog(`${currentLanguage === 'ru' ? 'ОШИБКА:' : 'ERROR:'} ${e.message}`, 'error');
                 return { count: 0, roleMap: {} };
             }
         }
@@ -1710,7 +2339,7 @@
                 const r = await fetchWithRetry(`https://discord.com/api/v10/guilds/${sourceId}/channels`, {
                     headers: { 'Authorization': token }
                 });
-                if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ КАНАЛЫ');
+                if (!r.ok) throw new Error(currentLanguage === 'ru' ? 'НЕ УДАЛОСЬ ПОЛУЧИТЬ КАНАЛЫ' : 'FAILED TO GET CHANNELS');
                 
                 const channels = await r.json();
                 const categories = channels.filter(c => c.type === 4).sort((a, b) => a.position - b.position);
@@ -1742,15 +2371,15 @@
                             const newCat = await create.json();
                             categoryMap[cat.id] = newCat.id;
                             count++;
-                            addLog(`  СОЗДАНА КАТЕГОРИЯ: ${cat.name}`, 'success');
+                            addLog(`  ${currentLanguage === 'ru' ? 'СОЗДАНА КАТЕГОРИЯ:' : 'CATEGORY CREATED:'} ${cat.name}`, 'success');
                         } else {
                             const error = await create.text();
-                            addLog(`  ОШИБКА СОЗДАНИЯ ${cat.name}: ${error}`, 'error');
+                            addLog(`  ${currentLanguage === 'ru' ? 'ОШИБКА СОЗДАНИЯ' : 'CREATE ERROR'} ${cat.name}: ${error}`, 'error');
                         }
                         await sleep(500);
                     } catch (e) {
                         if (e.message === 'CLONING_CANCELLED') throw e;
-                        addLog(`  ОШИБКА СОЗДАНИЯ: ${cat.name}`, 'error');
+                        addLog(`  ${currentLanguage === 'ru' ? 'ОШИБКА СОЗДАНИЯ:' : 'CREATE ERROR:'} ${cat.name}`, 'error');
                     }
                 }
                 
@@ -1785,22 +2414,22 @@
                         
                         if (create.ok) {
                             count++;
-                            addLog(`  СОЗДАН КАНАЛ: ${ch.name}`, 'success');
+                            addLog(`  ${currentLanguage === 'ru' ? 'СОЗДАН КАНАЛ:' : 'CHANNEL CREATED:'} ${ch.name}`, 'success');
                         } else {
                             const error = await create.text();
-                            addLog(`  ОШИБКА СОЗДАНИЯ ${ch.name}: ${error}`, 'error');
+                            addLog(`  ${currentLanguage === 'ru' ? 'ОШИБКА СОЗДАНИЯ' : 'CREATE ERROR'} ${ch.name}: ${error}`, 'error');
                         }
                         await sleep(500);
                     } catch (e) {
                         if (e.message === 'CLONING_CANCELLED') throw e;
-                        addLog(`  ОШИБКА СОЗДАНИЯ: ${ch.name}`, 'error');
+                        addLog(`  ${currentLanguage === 'ru' ? 'ОШИБКА СОЗДАНИЯ:' : 'CREATE ERROR:'} ${ch.name}`, 'error');
                     }
                 }
                 
                 return count;
             } catch (e) {
                 if (e.message === 'CLONING_CANCELLED') throw e;
-                addLog(`ОШИБКА: ${e.message}`, 'error');
+                addLog(`${currentLanguage === 'ru' ? 'ОШИБКА:' : 'ERROR:'} ${e.message}`, 'error');
                 return 0;
             }
         }
@@ -1810,7 +2439,7 @@
                 const r = await fetchWithRetry(`https://discord.com/api/v10/guilds/${sourceId}`, {
                     headers: { 'Authorization': token }
                 });
-                if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ ИНФОРМАЦИЮ');
+                if (!r.ok) throw new Error(currentLanguage === 'ru' ? 'НЕ УДАЛОСЬ ПОЛУЧИТЬ ИНФОРМАЦИЮ' : 'FAILED TO GET INFO');
                 
                 const guild = await r.json();
                 const updateData = { name: guild.name };
@@ -1831,7 +2460,7 @@
                             reader.readAsDataURL(iconBlob);
                         });
                     } else {
-                        addLog('⚠ ИКОНКА СЛИШКОМ БОЛЬШАЯ, ПРОПУСК', 'warning');
+                        addLog(currentLanguage === 'ru' ? '⚠ ИКОНКА СЛИШКОМ БОЛЬШАЯ, ПРОПУСК' : '⚠ ICON TOO LARGE, SKIPPING', 'warning');
                     }
                 }
                 
@@ -1845,25 +2474,42 @@
                 });
                 
                 if (update.ok) {
-                    addLog(`НАЗВАНИЕ СЕРВЕРА: ${guild.name}`, 'success');
+                    addLog(`${currentLanguage === 'ru' ? 'НАЗВАНИЕ СЕРВЕРА:' : 'SERVER NAME:'} ${guild.name}`, 'success');
                 } else {
                     const error = await update.text();
-                    addLog(`ОШИБКА ОБНОВЛЕНИЯ: ${error}`, 'error');
+                    addLog(`${currentLanguage === 'ru' ? 'ОШИБКА ОБНОВЛЕНИЯ:' : 'UPDATE ERROR:'} ${error}`, 'error');
                 }
             } catch (e) {
                 if (e.message === 'CLONING_CANCELLED') throw e;
-                addLog(`ОШИБКА ОБНОВЛЕНИЯ: ${e.message}`, 'error');
+                addLog(`${currentLanguage === 'ru' ? 'ОШИБКА ОБНОВЛЕНИЯ:' : 'UPDATE ERROR:'} ${e.message}`, 'error');
             }
+        }
+
+        function updateStageProgress(stage, percent) {
+            const stageProgress = {
+                cleaning: { start: 0, end: 20 },
+                info: { start: 20, end: 30 },
+                roles: { start: 30, end: 60 },
+                channels: { start: 60, end: 90 },
+                final: { start: 90, end: 100 }
+            };
+            
+            const stageRange = stageProgress[stage];
+            if (!stageRange) return;
+            
+            const totalProgress = stageRange.start + (percent / 100) * (stageRange.end - stageRange.start);
+            document.getElementById('progressFill').style.width = totalProgress + '%';
         }
 
         async function startRealCloning() {
             if (cloning) {
-                showError('cloneError', 'КЛОНИРОВАНИЕ УЖЕ ВЫПОЛНЯЕТСЯ');
+                showError('cloneError', currentLanguage === 'ru' ? 'КЛОНИРОВАНИЕ УЖЕ ВЫПОЛНЯЕТСЯ' : 'CLONING ALREADY IN PROGRESS');
                 return;
             }
             
             cloning = true;
             cancelRequested = false;
+            startTime = Date.now();
             document.getElementById('cloneBtn').disabled = true;
             document.getElementById('cancelCloneBtn').disabled = false;
             
@@ -1874,7 +2520,6 @@
             localStorage.setItem('last_source_id', sourceId);
             localStorage.setItem('last_target_id', targetId);
             
-            // Создаем состояние для фонового выполнения
             const cloneState = {
                 active: true,
                 sourceId: sourceId,
@@ -1885,28 +2530,28 @@
             };
             
             try {
-                addLog('НАЧАЛО КЛОНИРОВАНИЯ...', 'info');
-                addLog(`ИСХОДНЫЙ: ${sourceId}`, 'info');
-                addLog(`ЦЕЛЕВОЙ: ${targetId}`, 'info');
+                addLog(currentLanguage === 'ru' ? 'НАЧАЛО КЛОНИРОВАНИЯ...' : 'STARTING CLONING...', 'info');
+                addLog((currentLanguage === 'ru' ? 'ИСХОДНЫЙ: ' : 'SOURCE: ') + sourceId, 'info');
+                addLog((currentLanguage === 'ru' ? 'ЦЕЛЕВОЙ: ' : 'TARGET: ') + targetId, 'info');
                 
                 if (backgroundSyncEnabled) {
-                    addLog('⚠ РЕЖИМ ФОНОВОГО КЛОНИРОВАНИЯ АКТИВИРОВАН', 'warning');
-                    addLog('⚠ МОЖНО ЗАКРЫТЬ САЙТ - ПРОЦЕСС ПРОДОЛЖИТСЯ', 'warning');
+                    addLog(currentLanguage === 'ru' ? '⚠ РЕЖИМ ФОНОВОГО КЛОНИРОВАНИЯ АКТИВИРОВАН' : '⚠ BACKGROUND CLONING MODE ACTIVATED', 'warning');
+                    addLog(currentLanguage === 'ru' ? '⚠ МОЖНО ЗАКРЫТЬ САЙТ - ПРОЦЕСС ПРОДОЛЖИТСЯ' : '⚠ YOU CAN CLOSE THE SITE - PROCESS WILL CONTINUE', 'warning');
                     document.getElementById('backgroundStatus').classList.add('show');
                 }
                 
-                progressFill.style.width = '5%';
+                updateStageProgress('cleaning', 0);
                 cloneState.progress = 5;
                 localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
                 const hasAdmin = await checkPermissions(targetId);
                 if (!hasAdmin) {
-                    showError('cloneError', 'НЕТ ПРАВ АДМИНИСТРАТОРА НА ЦЕЛЕВОМ СЕРВЕРЕ');
-                    addLog('ОШИБКА: НЕТ ПРАВ АДМИНИСТРАТОРА', 'error');
+                    showError('cloneError', currentLanguage === 'ru' ? 'НЕТ ПРАВ АДМИНИСТРАТОРА НА ЦЕЛЕВОМ СЕРВЕРЕ' : 'NO ADMIN RIGHTS ON TARGET SERVER');
+                    addLog(currentLanguage === 'ru' ? 'ОШИБКА: НЕТ ПРАВ АДМИНИСТРАТОРА' : 'ERROR: NO ADMIN RIGHTS', 'error');
                     throw new Error('NO_ADMIN_PERMISSIONS');
                 }
                 
-                progressFill.style.width = '10%';
+                updateStageProgress('cleaning', 10);
                 cloneState.progress = 10;
                 localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
@@ -1915,8 +2560,8 @@
                 });
                 
                 if (!sourceCheck.ok) {
-                    showError('cloneError', 'ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН');
-                    addLog('ОШИБКА: ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН', 'error');
+                    showError('cloneError', currentLanguage === 'ru' ? 'ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН' : 'SOURCE SERVER NOT FOUND');
+                    addLog(currentLanguage === 'ru' ? 'ОШИБКА: ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН' : 'ERROR: SOURCE SERVER NOT FOUND', 'error');
                     throw new Error('SOURCE_NOT_FOUND');
                 }
                 
@@ -1925,61 +2570,62 @@
                 });
                 
                 if (!targetCheck.ok) {
-                    showError('cloneError', 'ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН');
-                    addLog('ОШИБКА: ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН', 'error');
+                    showError('cloneError', currentLanguage === 'ru' ? 'ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН' : 'TARGET SERVER NOT FOUND');
+                    addLog(currentLanguage === 'ru' ? 'ОШИБКА: ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН' : 'ERROR: TARGET SERVER NOT FOUND', 'error');
                     throw new Error('TARGET_NOT_FOUND');
                 }
                 
                 const sourceGuild = await sourceCheck.json();
-                addLog(`ИСХОДНЫЙ СЕРВЕР: ${sourceGuild.name}`, 'success');
+                addLog((currentLanguage === 'ru' ? 'ИСХОДНЫЙ СЕРВЕР: ' : 'SOURCE SERVER: ') + sourceGuild.name, 'success');
                 
-                progressFill.style.width = '20%';
-                cloneState.progress = 20;
+                updateStageProgress('cleaning', 30);
+                cloneState.progress = 15;
                 localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
-                addLog('ОЧИСТКА ЦЕЛЕВОГО СЕРВЕРА...', 'warning');
+                addLog(currentLanguage === 'ru' ? 'ОЧИСТКА ЦЕЛЕВОГО СЕРВЕРА...' : 'CLEANING TARGET SERVER...', 'warning');
                 const delChannels = await deleteAllChannels(targetId);
                 if (cancelRequested) throw new Error('CLONING_CANCELLED');
                 const delRoles = await deleteAllRoles(targetId);
                 if (cancelRequested) throw new Error('CLONING_CANCELLED');
-                addLog(`УДАЛЕНО КАНАЛОВ: ${delChannels}`, 'success');
-                addLog(`УДАЛЕНО РОЛЕЙ: ${delRoles}`, 'success');
+                addLog((currentLanguage === 'ru' ? `УДАЛЕНО КАНАЛОВ: ${delChannels}` : `CHANNELS DELETED: ${delChannels}`), 'success');
+                addLog((currentLanguage === 'ru' ? `УДАЛЕНО РОЛЕЙ: ${delRoles}` : `ROLES DELETED: ${delRoles}`), 'success');
                 
-                progressFill.style.width = '40%';
+                updateStageProgress('cleaning', 100);
                 cloneState.stage = 'info';
-                cloneState.progress = 40;
+                cloneState.progress = 25;
                 localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
-                addLog('КОПИРОВАНИЕ ИНФОРМАЦИИ...', 'info');
+                addLog(currentLanguage === 'ru' ? 'КОПИРОВАНИЕ ИНФОРМАЦИИ...' : 'COPYING INFO...', 'info');
                 await updateGuildInfo(sourceId, targetId);
                 if (cancelRequested) throw new Error('CLONING_CANCELLED');
                 
-                progressFill.style.width = '50%';
+                updateStageProgress('info', 100);
                 cloneState.stage = 'roles';
-                cloneState.progress = 50;
+                cloneState.progress = 40;
                 localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
-                addLog('СОЗДАНИЕ РОЛЕЙ...', 'info');
+                addLog(currentLanguage === 'ru' ? 'СОЗДАНИЕ РОЛЕЙ...' : 'CREATING ROLES...', 'info');
                 const { count: rolesCount, roleMap } = await createRoles(sourceId, targetId);
                 if (cancelRequested) throw new Error('CLONING_CANCELLED');
                 cloneState.roleMap = roleMap;
                 
-                progressFill.style.width = '70%';
+                updateStageProgress('roles', 100);
                 cloneState.stage = 'channels';
-                cloneState.progress = 70;
+                cloneState.progress = 75;
                 localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
-                addLog('СОЗДАНИЕ КАНАЛОВ...', 'info');
+                addLog(currentLanguage === 'ru' ? 'СОЗДАНИЕ КАНАЛОВ...' : 'CREATING CHANNELS...', 'info');
                 const channelsCount = await createChannels(sourceId, targetId, roleMap);
                 if (cancelRequested) throw new Error('CLONING_CANCELLED');
                 
-                progressFill.style.width = '100%';
+                updateStageProgress('channels', 100);
                 cloneState.progress = 100;
                 localStorage.setItem('clone_state', JSON.stringify(cloneState));
                 
-                addLog('КЛОНИРОВАНИЕ ЗАВЕРШЕНО', 'success');
-                addLog(`СОЗДАНО КАНАЛОВ: ${channelsCount}`, 'success');
-                addLog(`СОЗДАНО РОЛЕЙ: ${rolesCount}`, 'success');
+                addLog(currentLanguage === 'ru' ? 'КЛОНИРОВАНИЕ ЗАВЕРШЕНО' : 'CLONING COMPLETED', 'success');
+                addLog((currentLanguage === 'ru' ? `СОЗДАНО КАНАЛОВ: ${channelsCount}` : `CHANNELS CREATED: ${channelsCount}`), 'success');
+                addLog((currentLanguage === 'ru' ? `СОЗДАНО РОЛЕЙ: ${rolesCount}` : `ROLES CREATED: ${rolesCount}`), 'success');
+                addLog((currentLanguage === 'ru' ? `ВРЕМЯ: ${getElapsedTime()}` : `TIME: ${getElapsedTime()}`), 'info');
                 
                 setTimeout(() => {
                     progressFill.style.width = '0%';
@@ -1987,19 +2633,22 @@
                 
                 localStorage.removeItem('clone_state');
                 document.getElementById('backgroundStatus').classList.remove('show');
+                playSound('success');
+                notifyComplete();
                 
             } catch (e) {
                 if (e.message === 'CLONING_CANCELLED') {
-                    addLog('⚠ КЛОНИРОВАНИЕ ОТМЕНЕНО ПОЛЬЗОВАТЕЛЕМ', 'warning');
+                    addLog(currentLanguage === 'ru' ? '⚠ КЛОНИРОВАНИЕ ОТМЕНЕНО ПОЛЬЗОВАТЕЛЕМ' : '⚠ CLONING CANCELLED BY USER', 'warning');
                     progressFill.style.width = '0%';
                     localStorage.removeItem('clone_state');
                     document.getElementById('backgroundStatus').classList.remove('show');
                 } else if (e.message !== 'NO_ADMIN_PERMISSIONS' && e.message !== 'SOURCE_NOT_FOUND' && e.message !== 'TARGET_NOT_FOUND') {
-                    showError('cloneError', `ОШИБКА: ${e.message}`);
-                    addLog(`ОШИБКА: ${e.message}`, 'error');
+                    showError('cloneError', `${currentLanguage === 'ru' ? 'ОШИБКА: ' : 'ERROR: '}${e.message}`);
+                    addLog(`${currentLanguage === 'ru' ? 'ОШИБКА: ' : 'ERROR: '}${e.message}`, 'error');
                     progressFill.style.width = '0%';
                     localStorage.removeItem('clone_state');
                     document.getElementById('backgroundStatus').classList.remove('show');
+                    playSound('error');
                 }
             } finally {
                 cloning = false;
@@ -2007,6 +2656,30 @@
                 document.getElementById('cloneBtn').disabled = false;
                 document.getElementById('cancelCloneBtn').disabled = true;
             }
+        }
+
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.classList.contains('log-msg')) {
+                e.preventDefault();
+                navigator.clipboard.writeText(e.target.textContent);
+                showToast(currentLanguage === 'ru' ? 'Скопировано!' : 'Copied!');
+            }
+        });
+
+        function exportLogs() {
+            const logs = Array.from(document.getElementById('log').children)
+                .map(entry => entry.textContent)
+                .join('\n');
+            
+            const blob = new Blob([logs], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `clone_logs_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast(currentLanguage === 'ru' ? 'Логи экспортированы' : 'Logs exported');
         }
 
         function addLog(msg, type = 'info') {
@@ -2029,11 +2702,10 @@
                 l.removeChild(l.children[0]);
             }
             
-            // Обновляем фоновый статус
             const bgProgress = document.getElementById('backgroundProgress');
             if (bgProgress && cloning) {
                 const progressFill = document.getElementById('progressFill');
-                bgProgress.textContent = `ПРОГРЕСС: ${progressFill.style.width}`;
+                bgProgress.textContent = (currentLanguage === 'ru' ? 'ПРОГРЕСС: ' : 'PROGRESS: ') + progressFill.style.width;
             }
         }
 
@@ -2066,6 +2738,8 @@
             const savedToken = localStorage.getItem('discord_token');
             const savedUser = localStorage.getItem('discord_user');
             
+            updateLanguage('ru');
+            
             if (savedToken && savedUser) {
                 token = savedToken;
                 user = JSON.parse(savedUser);
@@ -2091,10 +2765,8 @@
                 document.getElementById('authView').classList.add('hidden');
                 document.getElementById('mainView').classList.remove('hidden');
                 
-                addLog('СЕССИЯ ВОССТАНОВЛЕНА', 'success');
+                addLog(currentLanguage === 'ru' ? 'СЕССИЯ ВОССТАНОВЛЕНА' : 'SESSION RESTORED', 'success');
                 await loadServers();
-                
-                // Восстанавливаем состояние клонирования
                 restoreCloningState();
             }
             
