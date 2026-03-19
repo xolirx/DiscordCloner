@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Discord Server Cloner</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -34,25 +35,13 @@
             color: #1a1a1a;
         }
 
-        body.light-theme .glass-card {
+        body.light-theme .glass-card,
+        body.light-theme .clone-card,
+        body.light-theme .user-profile,
+        body.light-theme .info-card,
+        body.light-theme .log-container {
             background: rgba(255,255,255,0.8);
             border: 1px solid rgba(0,0,0,0.05);
-        }
-
-        body.light-theme .clone-card {
-            background: rgba(255,255,255,0.8);
-        }
-
-        body.light-theme .user-profile {
-            background: rgba(255,255,255,0.8);
-        }
-
-        body.light-theme .info-card {
-            background: rgba(255,255,255,0.6);
-        }
-
-        body.light-theme .log-container {
-            background: rgba(255,255,255,0.7);
         }
 
         body.light-theme .form-input,
@@ -68,30 +57,62 @@
         }
 
         body.light-theme .form-label,
-        body.light-theme .input-label {
+        body.light-theme .input-label,
+        body.light-theme .log-time,
+        body.light-theme .auth-subtitle span,
+        body.light-theme .clone-subtitle span,
+        body.light-theme .instruction-header span {
             color: #666;
-        }
-
-        body.light-theme .log-time {
-            color: #999;
         }
 
         body.light-theme .log-msg {
             color: #0066cc;
         }
 
-        body.light-theme .auth-subtitle span,
-        body.light-theme .clone-subtitle span {
+        body.light-theme .footer {
+            color: #0066cc;
+            border-top-color: rgba(0,0,0,0.05);
+        }
+
+        body.light-theme .instruction-box {
+            background: rgba(0,0,0,0.02);
+            border-color: rgba(0,0,0,0.05);
+        }
+
+        body.light-theme .instruction-content {
+            background: rgba(0,0,0,0.03);
+        }
+
+        body.light-theme .instruction-content li,
+        body.light-theme .instruction-content code {
+            color: #444;
+        }
+
+        body.light-theme .instruction-content code {
+            background: rgba(0,0,0,0.1);
+            color: #2a5;
+        }
+
+        body.light-theme .warning-message {
+            background: rgba(255,165,0,0.15);
+            border-color: rgba(255,165,0,0.4);
+            color: #b85;
+        }
+
+        body.light-theme .nav-link {
             color: #888;
         }
 
-        body.light-theme .instruction-header span {
+        body.light-theme .nav-link.active {
+            color: #1a1a1a;
+        }
+
+        body.light-theme .nav-link:hover {
             color: #666;
         }
 
         body.light-theme .footer {
             color: #0066cc;
-            border-top-color: rgba(0,0,0,0.05);
         }
 
         canvas {
@@ -138,6 +159,12 @@
             0% { box-shadow: 0 0 5px rgba(0,102,255,0.2); }
             50% { box-shadow: 0 0 20px rgba(0,102,255,0.4); }
             100% { box-shadow: 0 0 5px rgba(0,102,255,0.2); }
+        }
+
+        @keyframes loading {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
         }
 
         .fade-in {
@@ -243,16 +270,8 @@
             }
         }
 
-        body.light-theme .nav-link {
-            color: #888;
-        }
-
         .nav-link:hover {
             color: #aaa;
-        }
-
-        body.light-theme .nav-link:hover {
-            color: #666;
         }
 
         .nav-link.active {
@@ -273,15 +292,12 @@
             background: linear-gradient(90deg, transparent, #0066ff, transparent);
         }
 
-        body.light-theme .nav-link.active::after {
-            background: linear-gradient(90deg, transparent, #0066cc, transparent);
-        }
-
         .main-container {
             max-width: 1200px;
             margin: 80px auto 2rem;
             padding: 0 1rem;
             width: 100%;
+            flex: 1;
         }
 
         @media (min-width: 768px) {
@@ -323,10 +339,6 @@
 
         .glass-card:hover {
             border-color: rgba(255,255,255,0.05);
-        }
-
-        body.light-theme .glass-card:hover {
-            border-color: rgba(0,0,0,0.1);
         }
 
         .auth-title {
@@ -453,6 +465,10 @@
             width: 100%;
             text-align: center;
             -webkit-appearance: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
 
         @media (min-width: 768px) {
@@ -515,10 +531,6 @@
 
         .btn-primary:hover {
             background: rgba(0,102,255,0.1);
-        }
-
-        body.light-theme .btn-primary:hover {
-            background: rgba(0,102,204,0.1);
         }
 
         .btn-danger {
@@ -675,7 +687,6 @@
             border: 1px solid rgba(255,255,255,0.05);
             border-radius: 4px;
             padding: 0.2rem 0.5rem;
-            font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.2s;
             color: #888;
@@ -925,11 +936,6 @@
             border-color: rgba(0,102,255,0.2);
         }
 
-        body.light-theme .info-card {
-            background: rgba(255,255,255,0.6);
-            border-color: rgba(0,0,0,0.05);
-        }
-
         .info-card-title {
             color: #444;
             font-size: 0.65rem;
@@ -1042,6 +1048,9 @@
         .log-msg {
             color: #0066ff;
             word-break: break-word;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .log-success .log-msg { color: #6a6; }
@@ -1189,10 +1198,6 @@
             font-size: 0.8rem;
         }
 
-        body.light-theme .rules-list li::before {
-            color: #0066cc;
-        }
-
         .checkbox-group {
             margin: 1rem 0;
         }
@@ -1269,6 +1274,9 @@
             margin: 1rem 0;
             color: #d88;
             font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
         }
 
         @media (min-width: 768px) {
@@ -1278,10 +1286,6 @@
                 margin: 1.5rem 0;
                 font-size: 0.85rem;
             }
-        }
-
-        body.light-theme .warning-box {
-            color: #c66;
         }
 
         .modal-buttons {
@@ -1412,6 +1416,11 @@
             font-family: monospace;
         }
 
+        body.light-theme .instruction-content code {
+            background: rgba(0,0,0,0.1);
+            color: #2a5;
+        }
+
         .about-section {
             color: #666;
             line-height: 1.6;
@@ -1508,11 +1517,6 @@
             }
         }
 
-        body.light-theme .footer {
-            color: #0066cc;
-            border-top-color: rgba(0,102,204,0.2);
-        }
-
         .hidden {
             display: none !important;
         }
@@ -1525,6 +1529,8 @@
             background: rgba(255,80,80,0.03);
             border-radius: 8px;
             display: none;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         @media (min-width: 768px) {
@@ -1534,7 +1540,7 @@
         }
 
         .error-message.show {
-            display: block;
+            display: flex;
         }
 
         .server-list {
@@ -1594,17 +1600,6 @@
             .server-id {
                 font-size: 0.8rem;
             }
-        }
-
-        .eye-icon {
-            width: 16px;
-            height: 16px;
-            fill: #888;
-            transition: fill 0.2s;
-        }
-
-        .email-toggle:active .eye-icon {
-            fill: #0066ff;
         }
 
         .background-status {
@@ -1841,12 +1836,6 @@
             animation: loading 1.5s ease-in-out forwards;
         }
 
-        @keyframes loading {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
-        }
-
         .warning-message {
             background: rgba(255,165,0,0.1);
             border: 1px solid rgba(255,165,0,0.3);
@@ -1857,6 +1846,37 @@
             font-size: 0.85rem;
             text-align: center;
             animation: pulse 2s infinite;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        body.light-theme .warning-message {
+            color: #b85;
+            background: rgba(255,165,0,0.15);
+        }
+
+        .server-validation {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .initial-content {
+            display: block;
+        }
+
+        body.light-theme .initial-content .glass-card {
+            background: rgba(255,255,255,0.9);
+        }
+
+        .initial-content .glass-card .auth-title,
+        .initial-content .glass-card .auth-subtitle,
+        .initial-content .glass-card .form-label,
+        .initial-content .glass-card .btn {
+            opacity: 1;
         }
     </style>
 </head>
@@ -1890,21 +1910,24 @@
                         <div class="auth-subtitle"><span>by xolirx</span> • 2026</div>
                         
                         <div class="warning-box" id="tokenWarning" style="display: none; margin-bottom: 1rem;">
-                            ⚠ ТОКЕН - ЭТО ВАШ ПАРОЛЬ! НИКОГДА НИКОМУ ЕГО НЕ ПОКАЗЫВАЙТЕ
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>ТОКЕН - ЭТО ВАШ ПАРОЛЬ! НИКОГДА НИКОМУ ЕГО НЕ ПОКАЗЫВАЙТЕ</span>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">DISCORD TOKEN</label>
                             <div style="position: relative;">
                                 <input type="password" class="form-input" id="tokenInput" placeholder="••••••••••••••••••••••" autocomplete="off">
-                                <span style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #444; cursor: pointer; user-select: none; padding: 5px;" onclick="toggleTokenVisibility()" id="tokenToggle">👁️</span>
+                                <span style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #444; cursor: pointer; user-select: none; padding: 5px;" onclick="toggleTokenVisibility()" id="tokenToggle">
+                                    <i class="fas fa-eye"></i>
+                                </span>
                             </div>
                         </div>
 
                         <div class="instruction-box">
                             <div class="instruction-header" onclick="toggleInstructions()">
                                 <span>КАК ПОЛУЧИТЬ ТОКЕН?</span>
-                                <span class="arrow">▼</span>
+                                <span class="arrow"><i class="fas fa-chevron-down"></i></span>
                             </div>
                             <div class="instruction-content" id="instructionContent">
                                 <ol>
@@ -1919,12 +1942,12 @@
                         </div>
 
                         <div style="margin: 10px 0;">
-                            <button class="btn" onclick="testToken()" id="testTokenBtn">ПРОВЕРИТЬ ТОКЕН</button>
+                            <button class="btn" onclick="testToken()" id="testTokenBtn"><i class="fas fa-check-circle"></i> ПРОВЕРИТЬ ТОКЕН</button>
                         </div>
 
                         <div id="authError" class="error-message"></div>
 
-                        <button class="btn btn-primary" onclick="authorize()" id="loginBtn">ВОЙТИ</button>
+                        <button class="btn btn-primary" onclick="authorize()" id="loginBtn"><i class="fas fa-sign-in-alt"></i> ВОЙТИ</button>
                     </div>
                 </div>
             </div>
@@ -1938,13 +1961,11 @@
                         <div class="user-email">
                             <span class="email-blur" id="userEmail">••••••@•••••.com</span>
                             <span class="email-toggle" onclick="toggleEmail()">
-                                <svg class="eye-icon" viewBox="0 0 24 24">
-                                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                                </svg>
+                                <i class="fas fa-eye"></i>
                             </span>
                         </div>
                     </div>
-                    <button class="btn logout-btn" onclick="logout()">ВЫЙТИ</button>
+                    <button class="btn logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ВЫЙТИ</button>
                 </div>
 
                 <div id="backgroundStatus" class="background-status hidden">
@@ -1972,24 +1993,25 @@
                         </div>
 
                         <div style="display: flex; gap: 10px; max-width: 400px; margin: 10px auto;">
-                            <button class="btn" style="flex: 1;" onclick="showServerList()">МОИ СЕРВЕРА</button>
-                            <button class="btn" style="flex: 1;" onclick="validateServers()">ПРОВЕРИТЬ</button>
+                            <button class="btn" style="flex: 1;" onclick="showServerList()"><i class="fas fa-list"></i> МОИ СЕРВЕРА</button>
+                            <button class="btn" style="flex: 1;" onclick="validateServers()"><i class="fas fa-check"></i> ПРОВЕРИТЬ</button>
                         </div>
 
                         <div class="btn-group">
-                            <button class="btn btn-primary" id="cloneBtn" onclick="showAgreement()">НАЧАТЬ КЛОНИРОВАНИЕ</button>
+                            <button class="btn btn-primary" id="cloneBtn" onclick="showAgreement()"><i class="fas fa-copy"></i> НАЧАТЬ КЛОНИРОВАНИЕ</button>
                         </div>
 
                         <div class="cancel-btn-container">
-                            <button class="btn btn-danger" id="cancelCloneBtn" onclick="cancelCloning()" style="width: 100%;" disabled>ОТМЕНИТЬ КЛОНИРОВАНИЕ</button>
+                            <button class="btn btn-danger" id="cancelCloneBtn" onclick="cancelCloning()" style="width: 100%;" disabled><i class="fas fa-times-circle"></i> ОТМЕНИТЬ КЛОНИРОВАНИЕ</button>
                         </div>
 
                         <div id="serverListContainer" class="server-list hidden"></div>
 
-                        <div id="serverValidationResult" style="color: #6a6; font-size: 0.7rem; margin: 5px 0; display: none;"></div>
+                        <div id="serverValidationResult" class="server-validation" style="color: #6a6; font-size: 0.7rem; margin: 5px 0; display: none;"></div>
 
                         <div class="warning-message" id="closeWarning">
-                            ⚠ НЕ ЗАКРЫВАЙТЕ СТРАНИЦУ ВО ВРЕМЯ КЛОНИРОВАНИЯ
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>НЕ ЗАКРЫВАЙТЕ СТРАНИЦУ ВО ВРЕМЯ КЛОНИРОВАНИЯ</span>
                         </div>
 
                         <div class="progress-bar" id="progressBar">
@@ -2022,7 +2044,7 @@
                     </div>
 
                     <div style="margin: 10px 0; display: flex; gap: 10px; justify-content: flex-end;">
-                        <button class="btn" onclick="clearLogs()" style="padding: 0.5rem 1rem; font-size: 0.7rem;">ОЧИСТИТЬ ЛОГИ</button>
+                        <button class="btn" onclick="clearLogs()" style="padding: 0.5rem 1rem; font-size: 0.7rem;"><i class="fas fa-eraser"></i> ОЧИСТИТЬ ЛОГИ</button>
                     </div>
 
                     <div class="log-container" id="log"></div>
@@ -2034,7 +2056,7 @@
                         <div class="auth-subtitle"><span>by xolirx</span> • 2026</div>
                         
                         <div class="contact-single">
-                            <a href="https://t.me/xolirx" target="_blank" class="btn btn-primary">НАПИСАТЬ В TELEGRAM</a>
+                            <a href="https://t.me/xolirx" target="_blank" class="btn btn-primary"><i class="fab fa-telegram"></i> НАПИСАТЬ В TELEGRAM</a>
                         </div>
 
                         <div style="margin-top: 2rem; color: #333; font-size: 0.8rem; text-align: center;">
@@ -2087,10 +2109,10 @@
     </div>
 
     <div class="bottom-controls">
-        <button class="control-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+        <button class="control-btn" onclick="toggleTheme()" id="themeBtn"><i class="fas fa-moon"></i></button>
     </div>
 
-    <button class="export-btn" onclick="exportLogs()" title="Экспорт логов">📥</button>
+    <button class="export-btn" onclick="exportLogs()" title="Экспорт логов"><i class="fas fa-download"></i></button>
 
     <div id="agreementModal" class="modal">
         <div class="modal-content">
@@ -2129,17 +2151,80 @@
             </div>
 
             <div class="warning-box">
-                ⚠ НАРУШЕНИЕ ЛЮБОГО ПУНКТА ОСВОБОЖДАЕТ АВТОРА ОТ ОТВЕТСТВЕННОСТИ
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>НАРУШЕНИЕ ЛЮБОГО ПУНКТА ОСВОБОЖДАЕТ АВТОРА ОТ ОТВЕТСТВЕННОСТИ</span>
             </div>
 
             <div class="modal-buttons">
-                <button class="btn" onclick="closeModal()">ОТМЕНА</button>
-                <button class="btn btn-primary" onclick="confirmAllRules()" id="confirmBtn" disabled>ПРОДОЛЖИТЬ</button>
+                <button class="btn" onclick="closeModal()"><i class="fas fa-times"></i> ОТМЕНА</button>
+                <button class="btn btn-primary" onclick="confirmAllRules()" id="confirmBtn" disabled><i class="fas fa-check"></i> ПРОДОЛЖИТЬ</button>
             </div>
         </div>
     </div>
 
     <script>
+        const CONFIG = {
+            maxLogs: 200,
+            apiBase: 'https://discord.com/api/v10',
+            snowflakeCount: 15,
+            retryAttempts: 3,
+            rateLimitDelay: 1000
+        };
+
+        let state = {
+            token: null,
+            user: null,
+            cloning: false,
+            cancelRequested: false,
+            userGuilds: [],
+            emailVisible: false,
+            startTime: null,
+            cloneStats: { rolesCreated: 0, channelsCreated: 0, categoriesCreated: 0 },
+            animationFrame: null,
+            snowflakes: []
+        };
+
+        const elements = {
+            loadingOverlay: document.getElementById('loadingOverlay'),
+            snowCanvas: document.getElementById('snowCanvas'),
+            authView: document.getElementById('authView'),
+            mainView: document.getElementById('mainView'),
+            tokenInput: document.getElementById('tokenInput'),
+            tokenToggle: document.getElementById('tokenToggle'),
+            tokenWarning: document.getElementById('tokenWarning'),
+            authError: document.getElementById('authError'),
+            loginBtn: document.getElementById('loginBtn'),
+            testTokenBtn: document.getElementById('testTokenBtn'),
+            userAvatar: document.getElementById('userAvatar'),
+            userName: document.getElementById('userName'),
+            userId: document.getElementById('userId'),
+            userEmail: document.getElementById('userEmail'),
+            emailToggle: document.querySelector('.email-toggle i'),
+            sourceId: document.getElementById('sourceId'),
+            targetId: document.getElementById('targetId'),
+            cloneBtn: document.getElementById('cloneBtn'),
+            cancelCloneBtn: document.getElementById('cancelCloneBtn'),
+            closeWarning: document.getElementById('closeWarning'),
+            progressFill: document.getElementById('progressFill'),
+            backgroundStatus: document.getElementById('backgroundStatus'),
+            backgroundProgress: document.getElementById('backgroundProgress'),
+            backgroundStage: document.getElementById('backgroundStage'),
+            serverListContainer: document.getElementById('serverListContainer'),
+            serverValidationResult: document.getElementById('serverValidationResult'),
+            cloneError: document.getElementById('cloneError'),
+            log: document.getElementById('log'),
+            themeBtn: document.getElementById('themeBtn'),
+            agreementModal: document.getElementById('agreementModal'),
+            rule1: document.getElementById('rule1'),
+            rule2: document.getElementById('rule2'),
+            rule3: document.getElementById('rule3'),
+            confirmBtn: document.getElementById('confirmBtn'),
+            navLinks: document.querySelectorAll('.nav-link'),
+            mainContent: document.getElementById('mainContent'),
+            supportContent: document.getElementById('supportContent'),
+            aboutContent: document.getElementById('aboutContent')
+        };
+
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
@@ -2149,19 +2234,16 @@
         }
 
         setTimeout(() => {
-            document.getElementById('loadingOverlay').classList.add('fade-out');
+            elements.loadingOverlay.classList.add('fade-out');
         }, 1500);
 
-        const canvas = document.getElementById('snowCanvas');
-        const ctx = canvas.getContext('2d');
-        let animationFrame;
-        let snowflakes = [];
+        const ctx = elements.snowCanvas.getContext('2d');
         
         function initSnow() {
             resizeCanvas();
-            snowflakes = Array.from({ length: 15 }, () => ({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
+            state.snowflakes = Array.from({ length: CONFIG.snowflakeCount }, () => ({
+                x: Math.random() * elements.snowCanvas.width,
+                y: Math.random() * elements.snowCanvas.height,
                 radius: Math.random() * 2 + 0.5,
                 speed: Math.random() * 0.2 + 0.1,
                 opacity: Math.random() * 0.1
@@ -2169,35 +2251,35 @@
         }
         
         function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            elements.snowCanvas.width = window.innerWidth;
+            elements.snowCanvas.height = window.innerHeight;
         }
         
         initSnow();
 
         function drawSnow() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, elements.snowCanvas.width, elements.snowCanvas.height);
             ctx.fillStyle = '#fff';
-            snowflakes.forEach(f => {
+            state.snowflakes.forEach(f => {
                 ctx.beginPath();
                 ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
                 ctx.fillStyle = `rgba(255,255,255,${f.opacity})`;
                 ctx.fill();
                 f.y += f.speed;
-                if (f.y > canvas.height) {
+                if (f.y > elements.snowCanvas.height) {
                     f.y = 0;
-                    f.x = Math.random() * canvas.width;
+                    f.x = Math.random() * elements.snowCanvas.width;
                 }
             });
-            animationFrame = requestAnimationFrame(drawSnow);
+            state.animationFrame = requestAnimationFrame(drawSnow);
         }
         drawSnow();
 
         window.addEventListener('resize', () => {
             resizeCanvas();
-            snowflakes.forEach(f => {
-                if (f.x > canvas.width) f.x = Math.random() * canvas.width;
-                if (f.y > canvas.height) f.y = Math.random() * canvas.height;
+            state.snowflakes.forEach(f => {
+                if (f.x > elements.snowCanvas.width) f.x = Math.random() * elements.snowCanvas.width;
+                if (f.y > elements.snowCanvas.height) f.y = Math.random() * elements.snowCanvas.height;
             });
         });
 
@@ -2208,58 +2290,51 @@
             header.classList.toggle('active');
         }
 
-        let token = null;
-        let user = null;
-        let cloning = false;
-        let cancelRequested = false;
-        let userGuilds = [];
-        let emailVisible = false;
-        let startTime = null;
-        let cloneStats = {
-            rolesCreated: 0,
-            channelsCreated: 0,
-            categoriesCreated: 0
-        };
-
         function toggleTokenVisibility() {
-            const input = document.getElementById('tokenInput');
-            const toggle = document.getElementById('tokenToggle');
-            if (input.type === 'password') {
-                input.type = 'text';
-                toggle.textContent = '👁️‍🗨️';
+            const icon = elements.tokenToggle.querySelector('i');
+            if (elements.tokenInput.type === 'password') {
+                elements.tokenInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
             } else {
-                input.type = 'password';
-                toggle.textContent = '👁️';
+                elements.tokenInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
             }
         }
 
         function toggleTheme() {
-            const body = document.body;
-            const themeBtn = document.getElementById('themeBtn');
-            if (body.classList.contains('light-theme')) {
-                body.classList.remove('light-theme');
-                themeBtn.textContent = '🌙';
+            const icon = elements.themeBtn.querySelector('i');
+            if (document.body.classList.contains('light-theme')) {
+                document.body.classList.remove('light-theme');
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
             } else {
-                body.classList.add('light-theme');
-                themeBtn.textContent = '☀️';
+                document.body.classList.add('light-theme');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
             }
         }
 
         function toggleEmail() {
-            const emailEl = document.getElementById('userEmail');
-            emailVisible = !emailVisible;
-            if (emailVisible && user && user.email) {
-                emailEl.textContent = user.email;
-            } else if (user && user.email) {
-                emailEl.textContent = user.email.replace(/./g, '•');
+            const icon = document.querySelector('.email-toggle i');
+            state.emailVisible = !state.emailVisible;
+            if (state.emailVisible && state.user?.email) {
+                elements.userEmail.textContent = state.user.email;
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else if (state.user?.email) {
+                elements.userEmail.textContent = state.user.email.replace(/./g, '•');
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
             }
-            emailEl.classList.toggle('unblur');
+            elements.userEmail.classList.toggle('unblur');
         }
 
-        function showError(elementId, message) {
-            const errorEl = document.getElementById(elementId);
+        function showError(element, message) {
+            const errorEl = typeof element === 'string' ? document.getElementById(element) : element;
             if (errorEl) {
-                errorEl.textContent = message;
+                errorEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
                 errorEl.classList.add('show');
                 setTimeout(() => errorEl.classList.remove('show'), 3000);
             }
@@ -2312,17 +2387,17 @@
         }
 
         function cancelCloning() {
-            if (cloning) {
-                cancelRequested = true;
+            if (state.cloning) {
+                state.cancelRequested = true;
                 addLog('ОТМЕНА КЛОНИРОВАНИЯ...', 'warning');
-                document.getElementById('cancelCloneBtn').disabled = true;
-                document.getElementById('closeWarning').style.display = 'block';
+                elements.cancelCloneBtn.disabled = true;
+                elements.closeWarning.style.display = 'flex';
             }
         }
 
         function getElapsedTime() {
-            if (!startTime) return '';
-            const seconds = Math.floor((Date.now() - startTime) / 1000);
+            if (!state.startTime) return '';
+            const seconds = Math.floor((Date.now() - state.startTime) / 1000);
             const minutes = Math.floor(seconds / 60);
             const hours = Math.floor(minutes / 60);
             
@@ -2333,7 +2408,7 @@
 
         async function checkDiscordStatus() {
             try {
-                const response = await fetch('https://discord.com/api/v10/gateway');
+                const response = await fetch(`${CONFIG.apiBase}/gateway`);
                 if (response.ok) {
                     addLog('DISCORD API ДОСТУПЕН', 'success');
                     return true;
@@ -2344,9 +2419,9 @@
             }
         }
 
-        async function fetchWithRetry(url, options, maxRetries = 3) {
+        async function fetchWithRetry(url, options, maxRetries = CONFIG.retryAttempts) {
             for (let i = 0; i < maxRetries; i++) {
-                if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                if (state.cancelRequested) throw new Error('CLONING_CANCELLED');
                 try {
                     const response = await fetch(url, options);
                     if (response.status === 429) {
@@ -2359,155 +2434,178 @@
                         if (i === maxRetries - 1) {
                             throw new Error(`HTTP ${response.status}`);
                         }
-                        await sleep(1000 * (i + 1));
+                        await sleep(CONFIG.rateLimitDelay * (i + 1));
                         continue;
                     }
                     return response;
                 } catch (e) {
                     if (e.message === 'CLONING_CANCELLED') throw e;
                     if (i === maxRetries - 1) throw e;
-                    await sleep(1000 * (i + 1));
+                    await sleep(CONFIG.rateLimitDelay * (i + 1));
                 }
             }
             throw new Error('MAX_RETRIES_EXCEEDED');
         }
 
         async function testToken() {
-            const t = document.getElementById('tokenInput').value.trim();
+            const t = elements.tokenInput.value.trim();
             if (!t) {
-                showError('authError', 'ВВЕДИТЕ ТОКЕН');
+                showError(elements.authError, 'ВВЕДИТЕ ТОКЕН');
                 return;
             }
             
-            const testBtn = document.getElementById('testTokenBtn');
-            const originalText = testBtn.textContent;
-            testBtn.innerHTML = '<span class="loading-spinner"></span>';
-            testBtn.disabled = true;
+            const originalText = elements.testTokenBtn.innerHTML;
+            elements.testTokenBtn.innerHTML = '<span class="loading-spinner"></span>';
+            elements.testTokenBtn.disabled = true;
             
             try {
-                const response = await fetch('https://discord.com/api/v10/users/@me', {
+                const response = await fetch(`${CONFIG.apiBase}/users/@me`, {
                     headers: { 'Authorization': t }
                 });
                 
                 if (response.ok) {
                     const userData = await response.json();
                     showToast(`✓ ТОКЕН РАБОЧИЙ (${userData.username})`);
-                    document.getElementById('tokenWarning').style.display = 'block';
+                    elements.tokenWarning.style.display = 'flex';
                     setTimeout(() => {
-                        document.getElementById('tokenWarning').style.display = 'none';
+                        elements.tokenWarning.style.display = 'none';
                     }, 5000);
                 } else {
-                    showError('authError', 'НЕВЕРНЫЙ ТОКЕН');
+                    showError(elements.authError, 'НЕВЕРНЫЙ ТОКЕН');
                 }
             } catch {
-                showError('authError', 'ОШИБКА ПОДКЛЮЧЕНИЯ');
+                showError(elements.authError, 'ОШИБКА ПОДКЛЮЧЕНИЯ');
             } finally {
-                testBtn.textContent = originalText;
-                testBtn.disabled = false;
+                elements.testTokenBtn.innerHTML = originalText;
+                elements.testTokenBtn.disabled = false;
             }
         }
 
         async function authorize() {
-            const loginBtn = document.getElementById('loginBtn');
-            const originalText = loginBtn.textContent;
-            loginBtn.innerHTML = '<span class="loading-spinner"></span>';
-            loginBtn.disabled = true;
+            const originalText = elements.loginBtn.innerHTML;
+            elements.loginBtn.innerHTML = '<span class="loading-spinner"></span>';
+            elements.loginBtn.disabled = true;
             
-            const t = document.getElementById('tokenInput').value.trim();
+            const t = elements.tokenInput.value.trim();
             if (!t) {
-                showError('authError', 'ВВЕДИТЕ ТОКЕН');
-                loginBtn.textContent = originalText;
-                loginBtn.disabled = false;
+                showError(elements.authError, 'ВВЕДИТЕ ТОКЕН');
+                elements.loginBtn.innerHTML = originalText;
+                elements.loginBtn.disabled = false;
                 return;
             }
             
             addLog('ПРОВЕРКА ТОКЕНА... ' + maskToken(t), 'info');
             
             try {
-                const r = await fetch('https://discord.com/api/v10/users/@me', {
+                const r = await fetch(`${CONFIG.apiBase}/users/@me`, {
                     headers: { 'Authorization': t }
                 });
                 
                 if (r.ok) {
                     const u = await r.json();
-                    token = t;
-                    user = u;
+                    state.token = t;
+                    state.user = u;
                     
                     sessionStorage.setItem('discord_token', t);
                     sessionStorage.setItem('discord_user', JSON.stringify(u));
                     
-                    document.getElementById('userName').textContent = u.global_name || u.username;
-                    document.getElementById('userId').textContent = `ID: ${u.id}`;
+                    elements.userName.textContent = u.global_name || u.username;
+                    elements.userId.textContent = `ID: ${u.id}`;
                     
                     if (u.email) {
-                        const emailEl = document.getElementById('userEmail');
-                        emailEl.textContent = u.email.replace(/./g, '•');
-                        emailVisible = false;
+                        elements.userEmail.textContent = u.email.replace(/./g, '•');
+                        state.emailVisible = false;
                     }
                     
                     if (u.avatar) {
-                        const imgUrl = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=64`;
-                        document.getElementById('userAvatar').src = imgUrl;
+                        elements.userAvatar.src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=64`;
                     }
                     
-                    document.getElementById('authView').classList.add('hidden');
-                    document.getElementById('mainView').classList.remove('hidden');
+                    elements.authView.classList.add('hidden');
+                    elements.mainView.classList.remove('hidden');
                     
                     addLog('АВТОРИЗАЦИЯ УСПЕШНА', 'success');
                     
                     const savedSource = sessionStorage.getItem('last_source_id');
                     const savedTarget = sessionStorage.getItem('last_target_id');
-                    if (savedSource) document.getElementById('sourceId').value = savedSource;
-                    if (savedTarget) document.getElementById('targetId').value = savedTarget;
+                    if (savedSource) elements.sourceId.value = savedSource;
+                    if (savedTarget) elements.targetId.value = savedTarget;
                     
                     await loadServers();
                     await checkDiscordStatus();
                 } else {
-                    showError('authError', 'НЕВЕРНЫЙ ТОКЕН');
+                    showError(elements.authError, 'НЕВЕРНЫЙ ТОКЕН');
                     addLog('ОШИБКА: НЕВЕРНЫЙ ТОКЕН', 'error');
                     playSound('error');
                 }
             } catch (e) {
-                showError('authError', 'ОШИБКА ПОДКЛЮЧЕНИЯ');
+                showError(elements.authError, 'ОШИБКА ПОДКЛЮЧЕНИЯ');
                 addLog('ОШИБКА ПОДКЛЮЧЕНИЯ', 'error');
                 playSound('error');
             } finally {
-                loginBtn.textContent = originalText;
-                loginBtn.disabled = false;
+                elements.loginBtn.innerHTML = originalText;
+                elements.loginBtn.disabled = false;
+            }
+        }
+
+        function switchSection(sectionId, element) {
+            elements.navLinks.forEach(l => l.classList.remove('active'));
+            if (element) {
+                element.classList.add('active');
+                element.classList.add('slide-in');
+            }
+            
+            if (!state.user && sectionId !== 'main') {
+                showToast('СНАЧАЛА АВТОРИЗУЙТЕСЬ');
+                return;
+            }
+            
+            if (sectionId === 'main') {
+                elements.mainContent.classList.remove('hidden');
+                elements.supportContent.classList.add('hidden');
+                elements.aboutContent.classList.add('hidden');
+            } else if (sectionId === 'support') {
+                elements.mainContent.classList.add('hidden');
+                elements.supportContent.classList.remove('hidden');
+                elements.aboutContent.classList.add('hidden');
+            } else if (sectionId === 'about') {
+                elements.mainContent.classList.add('hidden');
+                elements.supportContent.classList.add('hidden');
+                elements.aboutContent.classList.remove('hidden');
             }
         }
 
         function logout() {
-            token = null;
-            user = null;
+            state.token = null;
+            state.user = null;
             sessionStorage.removeItem('discord_token');
             sessionStorage.removeItem('discord_user');
             sessionStorage.removeItem('last_source_id');
             sessionStorage.removeItem('last_target_id');
             
-            document.getElementById('authView').classList.remove('hidden');
-            document.getElementById('mainView').classList.add('hidden');
-            document.getElementById('tokenInput').value = '';
-            document.getElementById('sourceId').value = '';
-            document.getElementById('targetId').value = '';
+            elements.authView.classList.remove('hidden');
+            elements.mainView.classList.add('hidden');
+            elements.tokenInput.value = '';
+            elements.sourceId.value = '';
+            elements.targetId.value = '';
             addLog('ВЫХОД ИЗ СИСТЕМЫ', 'info');
             
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            document.querySelector('.nav-link').classList.add('active');
+            elements.navLinks.forEach(l => l.classList.remove('active'));
+            elements.navLinks[0].classList.add('active');
         }
 
         async function loadServers() {
-            if (!token) return;
+            if (!state.token) return;
             addLog('ЗАГРУЗКА СЕРВЕРОВ...', 'info');
             try {
-                const r = await fetch('https://discord.com/api/v10/users/@me/guilds', {
-                    headers: { 'Authorization': token }
+                const r = await fetch(`${CONFIG.apiBase}/users/@me/guilds`, {
+                    headers: { 'Authorization': state.token }
                 });
                 if (r.ok) {
-                    userGuilds = await r.json();
-                    userGuilds.sort((a, b) => a.name.localeCompare(b.name));
-                    addLog(`НАЙДЕНО СЕРВЕРОВ: ${userGuilds.length}`, 'success');
-                    return userGuilds;
+                    state.userGuilds = await r.json();
+                    state.userGuilds.sort((a, b) => a.name.localeCompare(b.name));
+                    addLog(`НАЙДЕНО СЕРВЕРОВ: ${state.userGuilds.length}`, 'success');
+                    return state.userGuilds;
                 }
             } catch (e) {
                 addLog('ОШИБКА ЗАГРУЗКИ СЕРВЕРОВ', 'error');
@@ -2516,16 +2614,14 @@
         }
 
         async function showServerList() {
-            const container = document.getElementById('serverListContainer');
-            
-            if (userGuilds.length === 0) {
+            if (state.userGuilds.length === 0) {
                 await loadServers();
             }
             
-            if (userGuilds.length > 0) {
+            if (state.userGuilds.length > 0) {
                 let html = '<div style="color: #444; margin-bottom: 0.5rem; font-size: 0.7rem;">НАЖМИТЕ ДЛЯ ВСТАВКИ ID:</div>';
                 
-                userGuilds.slice(0, 15).forEach(guild => {
+                state.userGuilds.slice(0, 15).forEach(guild => {
                     html += `
                         <div class="server-item" onclick="setSourceId('${guild.id}')">
                             <span>${guild.name}</span>
@@ -2534,112 +2630,106 @@
                     `;
                 });
                 
-                if (userGuilds.length > 15) {
-                    html += `<div style="color: #444; font-size: 0.7rem; padding: 5px; text-align: center;">... и еще ${userGuilds.length - 15}</div>`;
+                if (state.userGuilds.length > 15) {
+                    html += `<div style="color: #444; font-size: 0.7rem; padding: 5px; text-align: center;">... и еще ${state.userGuilds.length - 15}</div>`;
                 }
                 
-                container.innerHTML = html;
-                container.classList.remove('hidden');
+                elements.serverListContainer.innerHTML = html;
+                elements.serverListContainer.classList.remove('hidden');
             }
         }
 
         function setSourceId(id) {
-            document.getElementById('sourceId').value = id;
-            document.getElementById('serverListContainer').classList.add('hidden');
+            elements.sourceId.value = id;
+            elements.serverListContainer.classList.add('hidden');
             addLog(`ID ВСТАВЛЕН: ${id}`, 'info');
         }
 
         async function validateServers() {
-            if (!token) return;
+            if (!state.token) return;
             
-            const sourceId = document.getElementById('sourceId').value.trim();
-            const targetId = document.getElementById('targetId').value.trim();
-            const resultDiv = document.getElementById('serverValidationResult');
+            const sourceId = elements.sourceId.value.trim();
+            const targetId = elements.targetId.value.trim();
             
             if (!sourceId || !targetId) {
-                resultDiv.style.color = '#d88';
-                resultDiv.textContent = '⚠ ВВЕДИТЕ ID ОБОИХ СЕРВЕРОВ';
-                resultDiv.style.display = 'block';
-                setTimeout(() => resultDiv.style.display = 'none', 3000);
+                elements.serverValidationResult.style.color = '#d88';
+                elements.serverValidationResult.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ВВЕДИТЕ ID ОБОИХ СЕРВЕРОВ';
+                elements.serverValidationResult.style.display = 'flex';
+                setTimeout(() => elements.serverValidationResult.style.display = 'none', 3000);
                 return;
             }
             
-            resultDiv.style.display = 'block';
-            resultDiv.textContent = 'ПРОВЕРКА...';
+            elements.serverValidationResult.style.display = 'flex';
+            elements.serverValidationResult.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> ПРОВЕРКА...';
             
             try {
-                const sourceCheck = await fetch(`https://discord.com/api/v10/guilds/${sourceId}`, {
-                    headers: { 'Authorization': token }
-                });
-                
-                const targetCheck = await fetch(`https://discord.com/api/v10/guilds/${targetId}`, {
-                    headers: { 'Authorization': token }
-                });
+                const [sourceCheck, targetCheck] = await Promise.all([
+                    fetch(`${CONFIG.apiBase}/guilds/${sourceId}`, { headers: { 'Authorization': state.token } }),
+                    fetch(`${CONFIG.apiBase}/guilds/${targetId}`, { headers: { 'Authorization': state.token } })
+                ]);
                 
                 if (!sourceCheck.ok && !targetCheck.ok) {
-                    resultDiv.style.color = '#d88';
-                    resultDiv.textContent = '⚠ ОБА СЕРВЕРА НЕ НАЙДЕНЫ';
+                    elements.serverValidationResult.style.color = '#d88';
+                    elements.serverValidationResult.innerHTML = '<i class="fas fa-exclamation-circle"></i> ОБА СЕРВЕРА НЕ НАЙДЕНЫ';
                 } else if (!sourceCheck.ok) {
-                    resultDiv.style.color = '#d88';
-                    resultDiv.textContent = '⚠ ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН';
+                    elements.serverValidationResult.style.color = '#d88';
+                    elements.serverValidationResult.innerHTML = '<i class="fas fa-exclamation-circle"></i> ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН';
                 } else if (!targetCheck.ok) {
-                    resultDiv.style.color = '#d88';
-                    resultDiv.textContent = '⚠ ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН';
+                    elements.serverValidationResult.style.color = '#d88';
+                    elements.serverValidationResult.innerHTML = '<i class="fas fa-exclamation-circle"></i> ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН';
                 } else {
-                    const sourceGuild = await sourceCheck.json();
-                    const targetGuild = await targetCheck.json();
-                    resultDiv.style.color = '#6a6';
-                    resultDiv.textContent = `✓ ${sourceGuild.name} → ${targetGuild.name}`;
+                    const [sourceGuild, targetGuild] = await Promise.all([
+                        sourceCheck.json(),
+                        targetCheck.json()
+                    ]);
+                    elements.serverValidationResult.style.color = '#6a6';
+                    elements.serverValidationResult.innerHTML = `<i class="fas fa-check-circle"></i> ${sourceGuild.name} → ${targetGuild.name}`;
                     
                     if (sourceId === targetId) {
-                        resultDiv.style.color = '#fa0';
-                        resultDiv.textContent += ' ⚠ СЕРВЕРЫ ОДИНАКОВЫЕ';
+                        elements.serverValidationResult.style.color = '#fa0';
+                        elements.serverValidationResult.innerHTML += ' <i class="fas fa-exclamation-triangle"></i> СЕРВЕРЫ ОДИНАКОВЫЕ';
                     }
                 }
                 
-                setTimeout(() => resultDiv.style.display = 'none', 5000);
+                setTimeout(() => elements.serverValidationResult.style.display = 'none', 5000);
             } catch {
-                resultDiv.style.color = '#d88';
-                resultDiv.textContent = '⚠ ОШИБКА ПРОВЕРКИ';
-                setTimeout(() => resultDiv.style.display = 'none', 3000);
+                elements.serverValidationResult.style.color = '#d88';
+                elements.serverValidationResult.innerHTML = '<i class="fas fa-exclamation-circle"></i> ОШИБКА ПРОВЕРКИ';
+                setTimeout(() => elements.serverValidationResult.style.display = 'none', 3000);
             }
         }
 
         function checkAllRules() {
-            const rule1 = document.getElementById('rule1').checked;
-            const rule2 = document.getElementById('rule2').checked;
-            const rule3 = document.getElementById('rule3').checked;
-            
-            document.getElementById('confirmBtn').disabled = !(rule1 && rule2 && rule3);
+            elements.confirmBtn.disabled = !(elements.rule1.checked && elements.rule2.checked && elements.rule3.checked);
         }
 
         function showAgreement() {
-            const s = document.getElementById('sourceId').value.trim();
-            const t = document.getElementById('targetId').value.trim();
+            const s = elements.sourceId.value.trim();
+            const t = elements.targetId.value.trim();
             
             if (!s || !t) {
-                showError('cloneError', 'ВВЕДИТЕ ID СЕРВЕРОВ');
+                showError(elements.cloneError, 'ВВЕДИТЕ ID СЕРВЕРОВ');
                 return;
             }
             
             if (s === t) {
-                showError('cloneError', 'СЕРВЕРЫ НЕ МОГУТ БЫТЬ ОДИНАКОВЫМИ');
+                showError(elements.cloneError, 'СЕРВЕРЫ НЕ МОГУТ БЫТЬ ОДИНАКОВЫМИ');
                 return;
             }
             
-            document.getElementById('rule1').checked = false;
-            document.getElementById('rule2').checked = false;
-            document.getElementById('rule3').checked = false;
-            document.getElementById('confirmBtn').disabled = true;
-            document.getElementById('agreementModal').classList.add('active');
+            elements.rule1.checked = false;
+            elements.rule2.checked = false;
+            elements.rule3.checked = false;
+            elements.confirmBtn.disabled = true;
+            elements.agreementModal.classList.add('active');
         }
 
         function closeModal() {
-            document.getElementById('agreementModal').classList.remove('active');
+            elements.agreementModal.classList.remove('active');
         }
 
         function confirmAllRules() {
-            if (!document.getElementById('rule1').checked || !document.getElementById('rule2').checked || !document.getElementById('rule3').checked) {
+            if (!elements.rule1.checked || !elements.rule2.checked || !elements.rule3.checked) {
                 return;
             }
             closeModal();
@@ -2648,8 +2738,8 @@
 
         async function checkPermissions(guildId) {
             try {
-                const r = await fetch(`https://discord.com/api/v10/users/@me/guilds`, {
-                    headers: { 'Authorization': token }
+                const r = await fetch(`${CONFIG.apiBase}/users/@me/guilds`, {
+                    headers: { 'Authorization': state.token }
                 });
                 const guilds = await r.json();
                 const targetGuild = guilds.find(g => g.id === guildId);
@@ -2665,8 +2755,8 @@
 
         async function deleteAllChannels(guildId) {
             try {
-                const r = await fetchWithRetry(`https://discord.com/api/v10/guilds/${guildId}/channels`, {
-                    headers: { 'Authorization': token }
+                const r = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${guildId}/channels`, {
+                    headers: { 'Authorization': state.token }
                 });
                 if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ КАНАЛЫ');
                 
@@ -2674,11 +2764,11 @@
                 let count = 0;
                 
                 for (const channel of channels) {
-                    if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                    if (state.cancelRequested) throw new Error('CLONING_CANCELLED');
                     try {
-                        const del = await fetchWithRetry(`https://discord.com/api/v10/channels/${channel.id}`, {
+                        const del = await fetchWithRetry(`${CONFIG.apiBase}/channels/${channel.id}`, {
                             method: 'DELETE',
-                            headers: { 'Authorization': token }
+                            headers: { 'Authorization': state.token }
                         });
                         if (del.ok) {
                             count++;
@@ -2698,8 +2788,8 @@
 
         async function deleteAllRoles(guildId) {
             try {
-                const r = await fetchWithRetry(`https://discord.com/api/v10/guilds/${guildId}/roles`, {
-                    headers: { 'Authorization': token }
+                const r = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${guildId}/roles`, {
+                    headers: { 'Authorization': state.token }
                 });
                 if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ РОЛИ');
                 
@@ -2711,11 +2801,11 @@
                     .sort((a, b) => b.position - a.position);
                 
                 for (const role of sortedRoles) {
-                    if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                    if (state.cancelRequested) throw new Error('CLONING_CANCELLED');
                     try {
-                        const del = await fetchWithRetry(`https://discord.com/api/v10/guilds/${guildId}/roles/${role.id}`, {
+                        const del = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${guildId}/roles/${role.id}`, {
                             method: 'DELETE',
-                            headers: { 'Authorization': token }
+                            headers: { 'Authorization': state.token }
                         });
                         if (del.ok) {
                             count++;
@@ -2735,8 +2825,8 @@
 
         async function createRoles(sourceId, targetId) {
             try {
-                const r = await fetchWithRetry(`https://discord.com/api/v10/guilds/${sourceId}/roles`, {
-                    headers: { 'Authorization': token }
+                const r = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${sourceId}/roles`, {
+                    headers: { 'Authorization': state.token }
                 });
                 if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ РОЛИ');
                 
@@ -2749,7 +2839,7 @@
                     .sort((a, b) => b.position - a.position);
                 
                 for (const role of sortedRoles) {
-                    if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                    if (state.cancelRequested) throw new Error('CLONING_CANCELLED');
                     
                     const roleData = {
                         name: role.name,
@@ -2760,10 +2850,10 @@
                     };
                     
                     try {
-                        const create = await fetchWithRetry(`https://discord.com/api/v10/guilds/${targetId}/roles`, {
+                        const create = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/roles`, {
                             method: 'POST',
                             headers: { 
-                                'Authorization': token,
+                                'Authorization': state.token,
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify(roleData)
@@ -2816,8 +2906,8 @@
 
         async function createChannels(sourceId, targetId, roleMap) {
             try {
-                const r = await fetchWithRetry(`https://discord.com/api/v10/guilds/${sourceId}/channels`, {
-                    headers: { 'Authorization': token }
+                const r = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${sourceId}/channels`, {
+                    headers: { 'Authorization': state.token }
                 });
                 if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ КАНАЛЫ');
                 
@@ -2829,7 +2919,7 @@
                 let catCount = 0;
                 
                 for (const cat of categories) {
-                    if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                    if (state.cancelRequested) throw new Error('CLONING_CANCELLED');
                     
                     const catData = {
                         name: cat.name,
@@ -2839,10 +2929,10 @@
                     };
                     
                     try {
-                        const create = await fetchWithRetry(`https://discord.com/api/v10/guilds/${targetId}/channels`, {
+                        const create = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/channels`, {
                             method: 'POST',
                             headers: { 
-                                'Authorization': token,
+                                'Authorization': state.token,
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify(catData)
@@ -2862,7 +2952,7 @@
                 }
                 
                 for (const ch of others) {
-                    if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                    if (state.cancelRequested) throw new Error('CLONING_CANCELLED');
                     
                     const chData = {
                         name: ch.name,
@@ -2884,10 +2974,10 @@
                     if (!allowedTypes.includes(ch.type)) continue;
                     
                     try {
-                        const create = await fetchWithRetry(`https://discord.com/api/v10/guilds/${targetId}/channels`, {
+                        const create = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/channels`, {
                             method: 'POST',
                             headers: { 
-                                'Authorization': token,
+                                'Authorization': state.token,
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify(chData)
@@ -2903,8 +2993,8 @@
                     }
                 }
                 
-                cloneStats.categoriesCreated = catCount;
-                cloneStats.channelsCreated = count - catCount;
+                state.cloneStats.categoriesCreated = catCount;
+                state.cloneStats.channelsCreated = count - catCount;
                 
                 return count;
             } catch (e) {
@@ -2915,8 +3005,8 @@
 
         async function updateGuildInfo(sourceId, targetId) {
             try {
-                const r = await fetchWithRetry(`https://discord.com/api/v10/guilds/${sourceId}`, {
-                    headers: { 'Authorization': token }
+                const r = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${sourceId}`, {
+                    headers: { 'Authorization': state.token }
                 });
                 if (!r.ok) throw new Error('НЕ УДАЛОСЬ ПОЛУЧИТЬ ИНФОРМАЦИЮ');
                 
@@ -2948,10 +3038,10 @@
                     }
                 }
                 
-                const update = await fetchWithRetry(`https://discord.com/api/v10/guilds/${targetId}`, {
+                const update = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}`, {
                     method: 'PATCH',
                     headers: { 
-                        'Authorization': token,
+                        'Authorization': state.token,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(updateData)
@@ -2979,7 +3069,7 @@
             if (!stageRange) return;
             
             const totalProgress = stageRange.start + (percent / 100) * (stageRange.end - stageRange.start);
-            document.getElementById('progressFill').style.width = totalProgress + '%';
+            elements.progressFill.style.width = totalProgress + '%';
             
             const stageNames = {
                 cleaning: 'ОЧИСТКА',
@@ -2989,28 +3079,27 @@
                 final: 'ЗАВЕРШЕНИЕ'
             };
             
-            document.getElementById('backgroundStage').textContent = `ЭТАП: ${stageNames[stage] || ''} ${percent}%`;
+            elements.backgroundStage.textContent = `ЭТАП: ${stageNames[stage] || ''} ${percent}%`;
         }
 
         async function startRealCloning() {
-            if (cloning) {
-                showError('cloneError', 'КЛОНИРОВАНИЕ УЖЕ ВЫПОЛНЯЕТСЯ');
+            if (state.cloning) {
+                showError(elements.cloneError, 'КЛОНИРОВАНИЕ УЖЕ ВЫПОЛНЯЕТСЯ');
                 return;
             }
             
-            cloneStats = { rolesCreated: 0, channelsCreated: 0, categoriesCreated: 0 };
-            cloning = true;
-            cancelRequested = false;
-            startTime = Date.now();
-            document.getElementById('cloneBtn').disabled = true;
-            document.getElementById('cancelCloneBtn').disabled = false;
-            document.getElementById('closeWarning').style.display = 'block';
-            document.getElementById('backgroundStatus').classList.remove('hidden');
-            document.getElementById('backgroundStage').textContent = 'ЭТАП: ПОДГОТОВКА';
+            state.cloneStats = { rolesCreated: 0, channelsCreated: 0, categoriesCreated: 0 };
+            state.cloning = true;
+            state.cancelRequested = false;
+            state.startTime = Date.now();
+            elements.cloneBtn.disabled = true;
+            elements.cancelCloneBtn.disabled = false;
+            elements.closeWarning.style.display = 'flex';
+            elements.backgroundStatus.classList.remove('hidden');
+            elements.backgroundStage.textContent = 'ЭТАП: ПОДГОТОВКА';
             
-            const sourceId = document.getElementById('sourceId').value.trim();
-            const targetId = document.getElementById('targetId').value.trim();
-            const progressFill = document.getElementById('progressFill');
+            const sourceId = elements.sourceId.value.trim();
+            const targetId = elements.targetId.value.trim();
             
             sessionStorage.setItem('last_source_id', sourceId);
             sessionStorage.setItem('last_target_id', targetId);
@@ -3021,36 +3110,32 @@
                 addLog('ЦЕЛЕВОЙ: ' + targetId, 'info');
                 addLog('⚠ НЕ ЗАКРЫВАЙТЕ СТРАНИЦУ', 'warning');
                 
-                document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: 0%';
-                
+                elements.backgroundProgress.textContent = 'ПРОГРЕСС: 0%';
                 updateStageProgress('cleaning', 0);
                 
                 const hasAdmin = await checkPermissions(targetId);
                 if (!hasAdmin) {
-                    showError('cloneError', 'НЕТ ПРАВ АДМИНИСТРАТОРА НА ЦЕЛЕВОМ СЕРВЕРЕ');
+                    showError(elements.cloneError, 'НЕТ ПРАВ АДМИНИСТРАТОРА НА ЦЕЛЕВОМ СЕРВЕРЕ');
                     addLog('ОШИБКА: НЕТ ПРАВ АДМИНИСТРАТОРА', 'error');
                     throw new Error('NO_ADMIN_PERMISSIONS');
                 }
                 
                 updateStageProgress('cleaning', 10);
-                document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: 10%';
+                elements.backgroundProgress.textContent = 'ПРОГРЕСС: 10%';
                 
-                const sourceCheck = await fetchWithRetry(`https://discord.com/api/v10/guilds/${sourceId}`, {
-                    headers: { 'Authorization': token }
-                });
+                const [sourceCheck, targetCheck] = await Promise.all([
+                    fetchWithRetry(`${CONFIG.apiBase}/guilds/${sourceId}`, { headers: { 'Authorization': state.token } }),
+                    fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}`, { headers: { 'Authorization': state.token } })
+                ]);
                 
                 if (!sourceCheck.ok) {
-                    showError('cloneError', 'ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН');
+                    showError(elements.cloneError, 'ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН');
                     addLog('ОШИБКА: ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН', 'error');
                     throw new Error('SOURCE_NOT_FOUND');
                 }
                 
-                const targetCheck = await fetchWithRetry(`https://discord.com/api/v10/guilds/${targetId}`, {
-                    headers: { 'Authorization': token }
-                });
-                
                 if (!targetCheck.ok) {
-                    showError('cloneError', 'ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН');
+                    showError(elements.cloneError, 'ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН');
                     addLog('ОШИБКА: ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН', 'error');
                     throw new Error('TARGET_NOT_FOUND');
                 }
@@ -3059,53 +3144,54 @@
                 addLog('ИСХОДНЫЙ СЕРВЕР: ' + sourceGuild.name, 'success');
                 
                 updateStageProgress('cleaning', 30);
-                document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: 15%';
+                elements.backgroundProgress.textContent = 'ПРОГРЕСС: 15%';
                 
                 addLog('ОЧИСТКА ЦЕЛЕВОГО СЕРВЕРА...', 'warning');
-                const delChannels = await deleteAllChannels(targetId);
-                if (cancelRequested) throw new Error('CLONING_CANCELLED');
-                const delRoles = await deleteAllRoles(targetId);
-                if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                const [delChannels, delRoles] = await Promise.all([
+                    deleteAllChannels(targetId),
+                    deleteAllRoles(targetId)
+                ]);
+                if (state.cancelRequested) throw new Error('CLONING_CANCELLED');
                 addLog(`УДАЛЕНО КАНАЛОВ: ${delChannels}`, 'success');
                 addLog(`УДАЛЕНО РОЛЕЙ: ${delRoles}`, 'success');
                 
                 updateStageProgress('cleaning', 100);
-                document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: 25%';
+                elements.backgroundProgress.textContent = 'ПРОГРЕСС: 25%';
                 
                 addLog('КОПИРОВАНИЕ ИНФОРМАЦИИ...', 'info');
                 await updateGuildInfo(sourceId, targetId);
-                if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                if (state.cancelRequested) throw new Error('CLONING_CANCELLED');
                 
                 updateStageProgress('info', 100);
-                document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: 40%';
+                elements.backgroundProgress.textContent = 'ПРОГРЕСС: 40%';
                 
                 addLog('СОЗДАНИЕ РОЛЕЙ...', 'info');
                 const { count: rolesCount, roleMap } = await createRoles(sourceId, targetId);
-                if (cancelRequested) throw new Error('CLONING_CANCELLED');
-                cloneStats.rolesCreated = rolesCount;
+                if (state.cancelRequested) throw new Error('CLONING_CANCELLED');
+                state.cloneStats.rolesCreated = rolesCount;
                 
                 updateStageProgress('roles', 100);
-                document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: 75%';
+                elements.backgroundProgress.textContent = 'ПРОГРЕСС: 75%';
                 
                 addLog('СОЗДАНИЕ КАНАЛОВ...', 'info');
                 const channelsCount = await createChannels(sourceId, targetId, roleMap);
-                if (cancelRequested) throw new Error('CLONING_CANCELLED');
+                if (state.cancelRequested) throw new Error('CLONING_CANCELLED');
                 
                 updateStageProgress('channels', 100);
-                document.getElementById('backgroundProgress').textContent = 'ПРОГРЕСС: 100%';
-                progressFill.style.width = '100%';
+                elements.backgroundProgress.textContent = 'ПРОГРЕСС: 100%';
+                elements.progressFill.style.width = '100%';
                 
                 addLog('КЛОНИРОВАНИЕ ЗАВЕРШЕНО', 'success');
-                addLog(`СОЗДАНО КАТЕГОРИЙ: ${cloneStats.categoriesCreated}`, 'success');
-                addLog(`СОЗДАНО КАНАЛОВ: ${cloneStats.channelsCreated}`, 'success');
-                addLog(`СОЗДАНО РОЛЕЙ: ${cloneStats.rolesCreated}`, 'success');
+                addLog(`СОЗДАНО КАТЕГОРИЙ: ${state.cloneStats.categoriesCreated}`, 'success');
+                addLog(`СОЗДАНО КАНАЛОВ: ${state.cloneStats.channelsCreated}`, 'success');
+                addLog(`СОЗДАНО РОЛЕЙ: ${state.cloneStats.rolesCreated}`, 'success');
                 addLog(`ВРЕМЯ: ${getElapsedTime()}`, 'info');
                 
                 setTimeout(() => {
-                    progressFill.style.width = '0%';
+                    elements.progressFill.style.width = '0%';
                 }, 2000);
                 
-                document.getElementById('backgroundStatus').classList.add('hidden');
+                elements.backgroundStatus.classList.add('hidden');
                 
                 playSound('success');
                 notifyComplete();
@@ -3114,24 +3200,24 @@
             } catch (e) {
                 if (e.message === 'CLONING_CANCELLED') {
                     addLog('КЛОНИРОВАНИЕ ОТМЕНЕНО', 'warning');
-                    progressFill.style.width = '0%';
-                    document.getElementById('backgroundStatus').classList.add('hidden');
+                    elements.progressFill.style.width = '0%';
+                    elements.backgroundStatus.classList.add('hidden');
                     showToast('ОТМЕНЕНО');
                 } else if (e.message !== 'NO_ADMIN_PERMISSIONS' && e.message !== 'SOURCE_NOT_FOUND' && e.message !== 'TARGET_NOT_FOUND') {
-                    showError('cloneError', 'ОШИБКА: ' + e.message);
+                    showError(elements.cloneError, 'ОШИБКА: ' + e.message);
                     addLog('ОШИБКА: ' + e.message, 'error');
-                    progressFill.style.width = '0%';
-                    document.getElementById('backgroundStatus').classList.add('hidden');
+                    elements.progressFill.style.width = '0%';
+                    elements.backgroundStatus.classList.add('hidden');
                     playSound('error');
                     showToast('ОШИБКА');
                 }
             } finally {
-                cloning = false;
-                cancelRequested = false;
-                document.getElementById('cloneBtn').disabled = false;
-                document.getElementById('cancelCloneBtn').disabled = true;
-                document.getElementById('closeWarning').style.display = 'none';
-                document.getElementById('backgroundStage').textContent = 'ЭТАП: ПОДГОТОВКА';
+                state.cloning = false;
+                state.cancelRequested = false;
+                elements.cloneBtn.disabled = false;
+                elements.cancelCloneBtn.disabled = true;
+                elements.closeWarning.style.display = 'none';
+                elements.backgroundStage.textContent = 'ЭТАП: ПОДГОТОВКА';
             }
         }
 
@@ -3144,12 +3230,12 @@
         });
 
         function clearLogs() {
-            document.getElementById('log').innerHTML = '';
+            elements.log.innerHTML = '';
             addLog('ЛОГИ ОЧИЩЕНЫ', 'info');
         }
 
         function exportLogs() {
-            const logs = Array.from(document.getElementById('log').children)
+            const logs = Array.from(elements.log.children)
                 .map(entry => {
                     const time = entry.querySelector('.log-time')?.textContent || '--:--:--';
                     const msg = entry.querySelector('.log-msg')?.textContent || '';
@@ -3178,8 +3264,7 @@
         }
 
         function addLog(msg, type = 'info') {
-            const l = document.getElementById('log');
-            if (!l) return;
+            if (!elements.log) return;
             
             const t = new Date().toLocaleTimeString('ru-RU', { 
                 hour: '2-digit', 
@@ -3187,20 +3272,24 @@
                 second: '2-digit' 
             });
             
+            let icon = '';
+            if (type === 'success') icon = '<i class="fas fa-check-circle" style="color:#6a6;"></i>';
+            else if (type === 'error') icon = '<i class="fas fa-exclamation-circle" style="color:#a55;"></i>';
+            else if (type === 'warning') icon = '<i class="fas fa-exclamation-triangle" style="color:#ca8;"></i>';
+            else icon = '<i class="fas fa-info-circle" style="color:#0066ff;"></i>';
+            
             const e = document.createElement('div');
             e.className = `log-entry log-${type}`;
-            e.innerHTML = `<span class="log-time">${t}</span><span class="log-msg">${msg}</span>`;
-            l.appendChild(e);
-            l.scrollTop = l.scrollHeight;
+            e.innerHTML = `<span class="log-time">${t}</span><span class="log-msg">${icon} ${msg}</span>`;
+            elements.log.appendChild(e);
+            elements.log.scrollTop = elements.log.scrollHeight;
             
-            if (l.children.length > 200) {
-                l.removeChild(l.children[0]);
+            if (elements.log.children.length > CONFIG.maxLogs) {
+                elements.log.removeChild(elements.log.children[0]);
             }
             
-            const bgProgress = document.getElementById('backgroundProgress');
-            if (bgProgress && cloning) {
-                const progressFill = document.getElementById('progressFill');
-                bgProgress.textContent = 'ПРОГРЕСС: ' + (progressFill.style.width || '0%');
+            if (elements.backgroundProgress && state.cloning) {
+                elements.backgroundProgress.textContent = 'ПРОГРЕСС: ' + (elements.progressFill.style.width || '0%');
             }
         }
 
@@ -3208,62 +3297,36 @@
             return new Promise(r => setTimeout(r, ms));
         }
 
-        function switchSection(sectionId, element) {
-            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            if (element) {
-                element.classList.add('active');
-                element.classList.add('slide-in');
-            }
-            
-            if (!user) return;
-            
-            const contents = ['mainContent', 'supportContent', 'aboutContent'];
-            contents.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    if (id === sectionId + 'Content') {
-                        el.classList.remove('hidden');
-                        el.classList.add('fade-in');
-                    } else {
-                        el.classList.add('hidden');
-                        el.classList.remove('fade-in');
-                    }
-                }
-            });
-        }
-
         window.onload = async () => {
             const savedToken = sessionStorage.getItem('discord_token');
             const savedUser = sessionStorage.getItem('discord_user');
             
-            document.getElementById('log').innerHTML = '';
+            elements.log.innerHTML = '';
             addLog('DISCORD SERVER CLONER by xolirx', 'info');
             addLog('2026', 'info');
             
             if (savedToken && savedUser) {
-                token = savedToken;
-                user = JSON.parse(savedUser);
+                state.token = savedToken;
+                state.user = JSON.parse(savedUser);
                 
-                document.getElementById('userName').textContent = user.global_name || user.username;
-                document.getElementById('userId').textContent = `ID: ${user.id}`;
+                elements.userName.textContent = state.user.global_name || state.user.username;
+                elements.userId.textContent = `ID: ${state.user.id}`;
                 
-                if (user.email) {
-                    const emailEl = document.getElementById('userEmail');
-                    emailEl.textContent = user.email.replace(/./g, '•');
+                if (state.user.email) {
+                    elements.userEmail.textContent = state.user.email.replace(/./g, '•');
                 }
                 
-                if (user.avatar) {
-                    document.getElementById('userAvatar').src = 
-                        `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`;
+                if (state.user.avatar) {
+                    elements.userAvatar.src = `https://cdn.discordapp.com/avatars/${state.user.id}/${state.user.avatar}.png?size=64`;
                 }
                 
                 const savedSource = sessionStorage.getItem('last_source_id');
                 const savedTarget = sessionStorage.getItem('last_target_id');
-                if (savedSource) document.getElementById('sourceId').value = savedSource;
-                if (savedTarget) document.getElementById('targetId').value = savedTarget;
+                if (savedSource) elements.sourceId.value = savedSource;
+                if (savedTarget) elements.targetId.value = savedTarget;
                 
-                document.getElementById('authView').classList.add('hidden');
-                document.getElementById('mainView').classList.remove('hidden');
+                elements.authView.classList.add('hidden');
+                elements.mainView.classList.remove('hidden');
                 
                 addLog('СЕССИЯ ВОССТАНОВЛЕНА', 'success');
                 await loadServers();
@@ -3271,7 +3334,7 @@
         };
 
         window.addEventListener('beforeunload', (e) => {
-            if (cloning && !cancelRequested) {
+            if (state.cloning && !state.cancelRequested) {
                 e.preventDefault();
                 e.returnValue = 'Клонирование выполняется! Если закроете страницу - процесс прервется.';
                 return e.returnValue;
