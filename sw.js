@@ -1,120 +1,255 @@
+const CACHE_VERSION = 'v2';
+const CACHE_NAME = `discord-cloner-${CACHE_VERSION}`;
+const STATIC_CACHE_NAME = `discord-cloner-static-${CACHE_VERSION}`;
+const API_CACHE_NAME = `discord-cloner-api-${CACHE_VERSION}`;
+
+const STATIC_ASSETS = [
+    '/',
+    '/index.html',
+    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css',
+    'https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap'
+];
+
 self.addEventListener('install', event => {
-    self.skipWaiting();
+    event.waitUntil(
+        Promise.all([
+            caches.open(STATIC_CACHE_NAME).then(cache => cache.addAll(STATIC_ASSETS)),
+            self.skipWaiting()
+        ])
+    );
 });
 
 self.addEventListener('activate', event => {
-    event.waitUntil(clients.claim());
+    event.waitUntil(
+        Promise.all([
+            caches.keys().then(keys => {
+                return Promise.all(
+                    keys.filter(key => key !== STATIC_CACHE_NAME && key !== API_CACHE_NAME)
+                        .map(key => caches.delete(key))
+                );
+            }),
+            clients.claim()
+        ])
+    );
 });
 
-let cloneInterval = null;
-
-self.addEventListener('message', event => {
-    if (event.data.type === 'START_CLONE') {
-        startBackgroundClone(event.data.state);
-    } else if (event.data.type === 'STOP_CLONE') {
-        stopBackgroundClone();
-    } else if (event.data.type === 'GET_STATUS') {
-        sendStatus();
+self.addEventListener('fetch', event => {
+    const url = new URL(event.request.url);
+    
+    if (url.pathname === '/sw.js') {
+        event.respondWith(fetch(event.request));
+        return;
+    }
+    
+    if (url.hostname === 'cdn.discordapp.com' || url.hostname === 'discord.com') {
+        event.respondWith(networkFirst(event.request));
+    } else {
+        event.respondWith(cacheFirst(event.request));
     }
 });
 
-function startBackgroundClone(state) {
-    stopBackgroundClone();
+async function cacheFirst(request) {
+    const cache = await caches.open(STATIC_CACHE_NAME);
+    const cached = await cache.match(request);
+    if (cached) return cached;
+    
+    try {
+        const response = await fetch(request);
+        if (response.ok) cache.put(request, response.clone());
+        return response;
+    } catch (error) {
+        return new Response('Офлайн режим', { status: 503, statusText: 'Offline' });
+    }
+}
+
+async function networkFirst(request) {
+    try {
+        const response = await fetch(request);
+        if (response.ok) {
+            const cache = await caches.open(API_CACHE_NAME);
+            cache.put(request, response.clone());
+        }
+        return response;
+    } catch (error) {
+        const cache = await caches.open(API_CACHE_NAME);
+        const cached = await cache.match(request);
+        return cached || new Response('Нет подключения к интернету', { status: 503 });
+    }
+}
+
+let cloneInterval = null;
+let activeCloneState = null;
+let notificationPermissionGranted = false;
+
+self.addEventListener('message', async event => {
+    const { type, data } = event.data;
+    
+    switch (type) {
+        case 'START_CLONE':
+            await startBackgroundClone(data);
+            break;
+        case 'STOP_CLONE':
+            await stopBackgroundClone();
+            break;
+        case 'GET_STATUS':
+            sendStatus();
+            break;
+        case 'CHECK_NOTIFICATIONS':
+            checkNotificationPermission();
+            break;
+    }
+});
+
+async function checkNotificationPermission() {
+    if (Notification.permission === 'granted') {
+        notificationPermissionGranted = true;
+    } else if (Notification.permission !== 'denied') {
+        const permission = await Notification.requestPermission();
+        notificationPermissionGranted = permission === 'granted';
+    }
+}
+
+async function startBackgroundClone(state) {
+    await stopBackgroundClone();
+    
+    activeCloneState = {
+        ...state,
+        active: true,
+        startTime: Date.now(),
+        progress: 0,
+        stage: 'cleaning',
+        channelsDeleted: false,
+        rolesDeleted: false,
+        roleMap: null,
+        channelsCreated: false,
+        rolesCount: 0,
+        channelsCount: 0,
+        errors: []
+    };
+    
+    await saveCloneState(activeCloneState);
+    await saveToken(state.token);
     
     cloneInterval = setInterval(async () => {
+        if (!activeCloneState || !activeCloneState.active) {
+            await stopBackgroundClone();
+            return;
+        }
+        
         try {
-            const savedState = await getCloneState();
-            if (!savedState || !savedState.active) {
-                stopBackgroundClone();
-                return;
-            }
+            const result = await processCloneStep(activeCloneState);
+            activeCloneState = { ...activeCloneState, ...result };
+            await saveCloneState(activeCloneState);
             
-            const result = await processCloneStep(savedState);
-            await saveCloneState(result);
+            await sendProgressUpdate();
             
-            const clients = await self.clients.matchAll();
-            if (clients.length > 0) {
-                clients.forEach(client => {
-                    client.postMessage({
-                        type: 'CLONE_PROGRESS',
-                        progress: result.progress,
-                        stage: result.stage
-                    });
-                });
-            }
-            
-            if (result.progress >= 100) {
-                stopBackgroundClone();
-                const clients = await self.clients.matchAll();
-                if (clients.length > 0) {
-                    clients.forEach(client => {
-                        client.postMessage({ type: 'CLONE_COMPLETE' });
-                    });
-                }
+            if (result.progress >= 100 || result.completed) {
+                await completeClone();
             }
         } catch (error) {
             console.error('Background clone error:', error);
+            activeCloneState.errors.push({ time: Date.now(), error: error.message });
+            await saveCloneState(activeCloneState);
+            
+            if (activeCloneState.errors.length > 5) {
+                await stopBackgroundClone();
+                await sendErrorNotification(error.message);
+            }
         }
-    }, 5000);
+    }, 3000);
 }
 
-function stopBackgroundClone() {
+async function stopBackgroundClone() {
     if (cloneInterval) {
         clearInterval(cloneInterval);
         cloneInterval = null;
+    }
+    
+    if (activeCloneState) {
+        activeCloneState.active = false;
+        await saveCloneState(activeCloneState);
+        activeCloneState = null;
     }
 }
 
 async function processCloneStep(state) {
     const token = await getToken();
-    if (!token) return state;
+    if (!token) throw new Error('Токен не найден');
+    
+    const result = { ...state };
     
     try {
         switch (state.stage) {
             case 'cleaning':
                 if (!state.channelsDeleted) {
-                    await deleteAllChannels(state.targetId, token);
-                    state.channelsDeleted = true;
-                    state.progress = 20;
+                    const deletedCount = await deleteAllChannels(state.targetId, token);
+                    result.channelsDeleted = true;
+                    result.progress = 20;
+                    result.stage = 'cleaning_roles';
+                    await sendNotification(`Удалено каналов: ${deletedCount}`);
                 } else if (!state.rolesDeleted) {
-                    await deleteAllRoles(state.targetId, token);
-                    state.rolesDeleted = true;
-                    state.stage = 'info';
-                    state.progress = 30;
+                    const deletedCount = await deleteAllRoles(state.targetId, token);
+                    result.rolesDeleted = true;
+                    result.progress = 30;
+                    result.stage = 'info';
+                    await sendNotification(`Удалено ролей: ${deletedCount}`);
+                }
+                break;
+                
+            case 'cleaning_roles':
+                if (!state.rolesDeleted) {
+                    const deletedCount = await deleteAllRoles(state.targetId, token);
+                    result.rolesDeleted = true;
+                    result.progress = 30;
+                    result.stage = 'info';
+                    await sendNotification(`Удалено ролей: ${deletedCount}`);
                 }
                 break;
                 
             case 'info':
                 await updateGuildInfo(state.sourceId, state.targetId, token);
-                state.stage = 'roles';
-                state.progress = 40;
+                const iconCopied = await copyGuildIcon(state.sourceId, state.targetId, token);
+                result.stage = 'roles';
+                result.progress = 40;
+                if (iconCopied) await sendNotification('Иконка сервера скопирована');
                 break;
                 
             case 'roles':
                 if (!state.roleMap) {
-                    const result = await createRoles(state.sourceId, state.targetId, token);
-                    state.roleMap = result.roleMap;
-                    state.rolesCount = result.count;
-                    state.stage = 'channels';
-                    state.progress = 60;
+                    const { roleMap, count } = await createRoles(state.sourceId, state.targetId, token);
+                    result.roleMap = roleMap;
+                    result.rolesCount = count;
+                    result.stage = 'channels';
+                    result.progress = 60;
+                    await sendNotification(`Создано ролей: ${count}`);
                 }
                 break;
                 
             case 'channels':
                 if (!state.channelsCreated) {
                     const count = await createChannels(state.sourceId, state.targetId, token, state.roleMap || {});
-                    state.channelsCreated = true;
-                    state.channelsCount = count;
-                    state.progress = 100;
+                    result.channelsCreated = true;
+                    result.channelsCount = count;
+                    result.progress = 100;
+                    result.stage = 'complete';
+                    result.completed = true;
+                    await sendNotification(`Создано каналов: ${count}`);
                 }
+                break;
+                
+            case 'complete':
+                result.completed = true;
+                result.progress = 100;
                 break;
         }
     } catch (error) {
         console.error('Step error:', error);
-        state.error = error.message;
+        result.errors = result.errors || [];
+        result.errors.push({ time: Date.now(), error: error.message });
+        throw error;
     }
     
-    return state;
+    return result;
 }
 
 async function deleteAllChannels(guildId, token) {
@@ -122,9 +257,10 @@ async function deleteAllChannels(guildId, token) {
         const response = await fetch(`https://discord.com/api/v10/guilds/${guildId}/channels`, {
             headers: { 'Authorization': token }
         });
-        if (!response.ok) return;
+        if (!response.ok) return 0;
         
         const channels = await response.json();
+        let deleted = 0;
         
         for (const channel of channels) {
             try {
@@ -132,13 +268,16 @@ async function deleteAllChannels(guildId, token) {
                     method: 'DELETE',
                     headers: { 'Authorization': token }
                 });
-                await sleep(300);
+                deleted++;
+                await sleep(400);
             } catch (e) {
                 console.error('Error deleting channel:', e);
             }
         }
+        return deleted;
     } catch (e) {
         console.error('Error fetching channels:', e);
+        return 0;
     }
 }
 
@@ -147,24 +286,70 @@ async function deleteAllRoles(guildId, token) {
         const response = await fetch(`https://discord.com/api/v10/guilds/${guildId}/roles`, {
             headers: { 'Authorization': token }
         });
-        if (!response.ok) return;
+        if (!response.ok) return 0;
         
         const roles = await response.json();
+        let deleted = 0;
         
-        for (const role of roles) {
-            if (role.name === '@everyone' || role.managed) continue;
+        const deletable = roles.filter(r => r.name !== '@everyone' && !r.managed)
+            .sort((a, b) => b.position - a.position);
+        
+        for (const role of deletable) {
             try {
                 await fetch(`https://discord.com/api/v10/guilds/${guildId}/roles/${role.id}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': token }
                 });
-                await sleep(300);
+                deleted++;
+                await sleep(400);
             } catch (e) {
                 console.error('Error deleting role:', e);
             }
         }
+        return deleted;
     } catch (e) {
         console.error('Error fetching roles:', e);
+        return 0;
+    }
+}
+
+async function copyGuildIcon(sourceId, targetId, token) {
+    try {
+        const response = await fetch(`https://discord.com/api/v10/guilds/${sourceId}`, {
+            headers: { 'Authorization': token }
+        });
+        if (!response.ok) return false;
+        
+        const guild = await response.json();
+        
+        if (!guild.icon) return false;
+        
+        const iconUrl = `https://cdn.discordapp.com/icons/${sourceId}/${guild.icon}.png?size=256`;
+        const iconResponse = await fetch(iconUrl);
+        
+        if (!iconResponse.ok) return false;
+        
+        const iconBlob = await iconResponse.blob();
+        const reader = new FileReader();
+        
+        const iconData = await new Promise((resolve) => {
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(iconBlob);
+        });
+        
+        await fetch(`https://discord.com/api/v10/guilds/${targetId}`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ icon: iconData.split(',')[1] })
+        });
+        
+        return true;
+    } catch (e) {
+        console.error('Error copying guild icon:', e);
+        return false;
     }
 }
 
@@ -206,7 +391,7 @@ async function createRoles(sourceId, targetId, token) {
                     roleMap[role.id] = newRole.id;
                     count++;
                 }
-                await sleep(500);
+                await sleep(600);
             } catch (e) {
                 console.error('Error creating role:', e);
             }
@@ -288,7 +473,7 @@ async function createChannels(sourceId, targetId, token, roleMap) {
                     categoryMap[cat.id] = newCat.id;
                     count++;
                 }
-                await sleep(500);
+                await sleep(600);
             } catch (e) {
                 console.error('Error creating category:', e);
             }
@@ -382,6 +567,17 @@ async function getCloneState() {
     return null;
 }
 
+async function saveToken(token) {
+    try {
+        const cache = await caches.open('clone-data');
+        await cache.put('/token', new Response(token, {
+            headers: { 'Content-Type': 'text/plain' }
+        }));
+    } catch (e) {
+        console.error('Error saving token:', e);
+    }
+}
+
 async function getToken() {
     try {
         const cache = await caches.open('clone-data');
@@ -395,16 +591,92 @@ async function getToken() {
     return null;
 }
 
-function sendStatus() {
-    self.clients.matchAll().then(clients => {
-        if (clients.length > 0) {
-            clients.forEach(client => {
-                client.postMessage({ type: 'CLONE_ACTIVE' });
+async function sendProgressUpdate() {
+    const clients = await self.clients.matchAll();
+    if (clients.length === 0) return;
+    
+    clients.forEach(client => {
+        client.postMessage({
+            type: 'CLONE_PROGRESS',
+            progress: activeCloneState?.progress || 0,
+            stage: activeCloneState?.stage || 'unknown',
+            rolesCreated: activeCloneState?.rolesCount || 0,
+            channelsCreated: activeCloneState?.channelsCount || 0,
+            errors: activeCloneState?.errors || []
+        });
+    });
+}
+
+async function completeClone() {
+    await stopBackgroundClone();
+    
+    const clients = await self.clients.matchAll();
+    if (clients.length > 0) {
+        clients.forEach(client => {
+            client.postMessage({
+                type: 'CLONE_COMPLETE',
+                success: true,
+                stats: {
+                    roles: activeCloneState?.rolesCount || 0,
+                    channels: activeCloneState?.channelsCount || 0,
+                    duration: Date.now() - (activeCloneState?.startTime || Date.now())
+                }
             });
-        }
-    }).catch(e => console.error('Error sending status:', e));
+        });
+    }
+    
+    await sendNotification('✅ Клонирование завершено!', {
+        body: `Создано ${activeCloneState?.rolesCount || 0} ролей и ${activeCloneState?.channelsCount || 0} каналов`,
+        icon: '/icon-192.png'
+    });
+}
+
+async function sendErrorNotification(errorMessage) {
+    const clients = await self.clients.matchAll();
+    if (clients.length > 0) {
+        clients.forEach(client => {
+            client.postMessage({
+                type: 'CLONE_ERROR',
+                error: errorMessage
+            });
+        });
+    }
+    
+    await sendNotification('❌ Ошибка клонирования', {
+        body: errorMessage,
+        icon: '/icon-192.png'
+    });
+}
+
+async function sendNotification(title, options = {}) {
+    if (notificationPermissionGranted) {
+        await self.registration.showNotification(title, {
+            ...options,
+            badge: '/icon-192.png',
+            timestamp: Date.now()
+        });
+    }
+}
+
+async function sendStatus() {
+    const clients = await self.clients.matchAll();
+    if (clients.length === 0) return;
+    
+    clients.forEach(client => {
+        client.postMessage({
+            type: 'CLONE_STATUS',
+            active: !!activeCloneState?.active,
+            progress: activeCloneState?.progress || 0,
+            stage: activeCloneState?.stage || 'idle'
+        });
+    });
 }
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+self.addEventListener('notificationclick', event => {
+    event.notification.close();
+    event.waitUntil(clients.openWindow('/'));
+});
