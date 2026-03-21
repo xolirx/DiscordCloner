@@ -1230,6 +1230,10 @@
                 try {
                     const res = await fetch(url, options);
                     if (res.status === 429) { const wait = parseInt(res.headers.get('Retry-After')) || 2; await sleep(wait * 1000); continue; }
+                    if (res.status === 400) {
+                        const errorData = await res.text();
+                        throw new Error(`HTTP 400: ${errorData.substring(0, 200)}`);
+                    }
                     if (!res.ok && i === maxRetries - 1) throw new Error(`HTTP ${res.status}`);
                     if (!res.ok) { await sleep(CONFIG.rateLimitDelay * (i + 1)); continue; }
                     return res;
@@ -1309,6 +1313,59 @@
         function confirmAllRules() { if (elements.rule1.checked && elements.rule2.checked && elements.rule3.checked) { closeModal(); startCloning(); } }
         function cancelCloning() { if (state.cloning) { state.cancelRequested = true; addLog('ОТМЕНА КЛОНИРОВАНИЯ...', 'warning'); elements.cancelCloneBtn.disabled = true; } }
 
+        function convertOverwrites(overwrites, targetGuildId, roleMap) {
+            if (!overwrites || !Array.isArray(overwrites)) return [];
+            return overwrites.map(ow => {
+                if (!ow || !ow.id) return null;
+                let id = ow.id;
+                if (ow.type === 0) {
+                    if (roleMap && roleMap[ow.id]) id = roleMap[ow.id];
+                    else return null;
+                } else if (ow.type === 1) {
+                    id = targetGuildId;
+                }
+                return {
+                    id: id,
+                    type: ow.type,
+                    allow: ow.allow?.toString() || '0',
+                    deny: ow.deny?.toString() || '0'
+                };
+            }).filter(ow => ow !== null);
+        }
+
+        async function copyGuildIcon(sourceId, targetId, token) {
+            try {
+                const response = await fetch(`${CONFIG.apiBase}/guilds/${sourceId}`, { headers: { 'Authorization': token } });
+                if (!response.ok) return false;
+                const guild = await response.json();
+                if (!guild.icon) return false;
+                const iconUrl = `https://cdn.discordapp.com/icons/${sourceId}/${guild.icon}.png?size=256`;
+                const iconResponse = await fetch(iconUrl);
+                if (!iconResponse.ok) return false;
+                const iconBlob = await iconResponse.blob();
+                if (iconBlob.size > 256 * 1024) {
+                    addLog('ИКОНКА СЛИШКОМ БОЛЬШАЯ, ПРОПУСК', 'warning');
+                    return false;
+                }
+                const reader = new FileReader();
+                const iconData = await new Promise((resolve, reject) => {
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(iconBlob);
+                });
+                const base64Data = iconData.split(',')[1];
+                const updateResponse = await fetch(`${CONFIG.apiBase}/guilds/${targetId}`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ icon: base64Data })
+                });
+                return updateResponse.ok;
+            } catch(e) {
+                addLog(`ОШИБКА КОПИРОВАНИЯ ИКОНКИ: ${e.message}`, 'warning');
+                return false;
+            }
+        }
+
         async function startCloning() {
             if (state.cloning) return;
             state.cloning = true; state.cancelRequested = false; state.startTime = Date.now();
@@ -1330,10 +1387,12 @@
                 const channels = await channelsRes.json();
                 for (let i = 0; i < channels.length; i++) {
                     if (state.cancelRequested) throw new Error('CANCELLED');
-                    await fetchWithRetry(`${CONFIG.apiBase}/channels/${channels[i].id}`, { method: 'DELETE', headers: { 'Authorization': state.token } });
-                    addLog(`УДАЛЕН КАНАЛ: ${channels[i].name}`, 'warning');
-                    await sleep(250);
-                    elements.progressFill.style.width = `${Math.min(20, (i / channels.length) * 20)}%`;
+                    try {
+                        await fetchWithRetry(`${CONFIG.apiBase}/channels/${channels[i].id}`, { method: 'DELETE', headers: { 'Authorization': state.token } });
+                        addLog(`УДАЛЕН КАНАЛ: ${channels[i].name}`, 'warning');
+                    } catch(e) { addLog(`НЕ УДАЛОСЬ УДАЛИТЬ КАНАЛ: ${channels[i].name}`, 'error'); }
+                    await sleep(300);
+                    elements.progressFill.style.width = `${Math.min(20, (i / Math.max(channels.length, 1)) * 20)}%`;
                 }
                 
                 const rolesRes = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/roles`, { headers: { 'Authorization': state.token } });
@@ -1341,35 +1400,25 @@
                 const deletable = roles.filter(r => r.name !== '@everyone' && !r.managed).sort((a,b) => b.position - a.position);
                 for (let i = 0; i < deletable.length; i++) {
                     if (state.cancelRequested) throw new Error('CANCELLED');
-                    await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/roles/${deletable[i].id}`, { method: 'DELETE', headers: { 'Authorization': state.token } });
-                    addLog(`УДАЛЕНА РОЛЬ: ${deletable[i].name}`, 'warning');
-                    await sleep(250);
+                    try {
+                        await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/roles/${deletable[i].id}`, { method: 'DELETE', headers: { 'Authorization': state.token } });
+                        addLog(`УДАЛЕНА РОЛЬ: ${deletable[i].name}`, 'warning');
+                    } catch(e) { addLog(`НЕ УДАЛОСЬ УДАЛИТЬ РОЛЬ: ${deletable[i].name}`, 'error'); }
+                    await sleep(300);
                 }
                 elements.progressFill.style.width = '20%'; elements.backgroundStage.textContent = 'ЭТАП: КОПИРОВАНИЕ ИНФОРМАЦИИ';
                 
                 const srcGuild = await (await fetchWithRetry(`${CONFIG.apiBase}/guilds/${sourceId}`, { headers: { 'Authorization': state.token } })).json();
                 
-                let iconData = null;
-                if (srcGuild.icon) {
-                    const iconUrl = `https://cdn.discordapp.com/icons/${sourceId}/${srcGuild.icon}.png?size=256`;
-                    const iconResponse = await fetch(iconUrl);
-                    if (iconResponse.ok) {
-                        const iconBlob = await iconResponse.blob();
-                        const reader = new FileReader();
-                        iconData = await new Promise((resolve) => {
-                            reader.onloadend = () => resolve(reader.result);
-                            reader.readAsDataURL(iconBlob);
-                        });
-                    }
-                }
-                
                 await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}`, { 
                     method: 'PATCH', 
                     headers: { 'Authorization': state.token, 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ name: srcGuild.name, icon: iconData ? iconData.split(',')[1] : null })
+                    body: JSON.stringify({ name: srcGuild.name })
                 });
                 addLog(`НАЗВАНИЕ: ${srcGuild.name}`, 'success');
-                if (iconData) addLog(`ИКОНКА СКОПИРОВАНА`, 'success');
+                
+                await copyGuildIcon(sourceId, targetId, state.token);
+                
                 elements.progressFill.style.width = '30%';
                 
                 elements.backgroundStage.textContent = 'ЭТАП: СОЗДАНИЕ РОЛЕЙ 0%';
@@ -1378,42 +1427,113 @@
                 const roleMap = {};
                 for (let i = 0; i < rolesToCreate.length; i++) {
                     if (state.cancelRequested) throw new Error('CANCELLED');
-                    const create = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/roles`, { method: 'POST', headers: { 'Authorization': state.token, 'Content-Type': 'application/json' }, body: JSON.stringify({ name: rolesToCreate[i].name, color: rolesToCreate[i].color, hoist: rolesToCreate[i].hoist || false, mentionable: rolesToCreate[i].mentionable || false, permissions: rolesToCreate[i].permissions?.toString() || '0' }) });
-                    const newRole = await create.json(); roleMap[rolesToCreate[i].id] = newRole.id;
-                    addLog(`СОЗДАНА РОЛЬ: ${rolesToCreate[i].name}`, 'success');
-                    await sleep(300);
-                    elements.progressFill.style.width = `${30 + (i / rolesToCreate.length) * 30}%`;
-                    elements.backgroundStage.textContent = `ЭТАП: СОЗДАНИЕ РОЛЕЙ ${Math.floor((i+1)/rolesToCreate.length*100)}%`;
+                    try {
+                        const create = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/roles`, { 
+                            method: 'POST', 
+                            headers: { 'Authorization': state.token, 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify({ 
+                                name: rolesToCreate[i].name.substring(0, 100),
+                                color: rolesToCreate[i].color || 0, 
+                                hoist: rolesToCreate[i].hoist || false, 
+                                mentionable: rolesToCreate[i].mentionable || false, 
+                                permissions: rolesToCreate[i].permissions?.toString() || '0'
+                            }) 
+                        });
+                        if (create.ok) {
+                            const newRole = await create.json();
+                            roleMap[rolesToCreate[i].id] = newRole.id;
+                            addLog(`СОЗДАНА РОЛЬ: ${rolesToCreate[i].name}`, 'success');
+                        } else {
+                            addLog(`ОШИБКА СОЗДАНИЯ РОЛИ ${rolesToCreate[i].name}: ${create.status}`, 'error');
+                        }
+                    } catch(e) {
+                        addLog(`ОШИБКА: ${e.message}`, 'error');
+                    }
+                    await sleep(400);
+                    elements.progressFill.style.width = `${30 + (i / Math.max(rolesToCreate.length, 1)) * 30}%`;
+                    elements.backgroundStage.textContent = `ЭТАП: СОЗДАНИЕ РОЛЕЙ ${Math.floor((i+1)/Math.max(rolesToCreate.length, 1)*100)}%`;
                 }
                 
                 elements.backgroundStage.textContent = 'ЭТАП: СОЗДАНИЕ КАНАЛОВ 0%';
                 const srcChannels = await (await fetchWithRetry(`${CONFIG.apiBase}/guilds/${sourceId}/channels`, { headers: { 'Authorization': state.token } })).json();
                 const categories = srcChannels.filter(c => c.type === 4).sort((a,b) => a.position - b.position);
                 const others = srcChannels.filter(c => c.type !== 4).sort((a,b) => a.position - b.position);
-                const catMap = {};
+                const categoryMap = {};
                 let channelCount = 0;
-                
-                const convertOW = (ows, roleMap) => { if (!ows) return []; return ows.map(ow => { let id = ow.id; if (ow.type === 0 && roleMap[ow.id]) id = roleMap[ow.id]; else if (ow.type === 1) id = targetId; else if (ow.type === 0 && !roleMap[ow.id]) return null; return { id, type: ow.type, allow: ow.allow?.toString() || '0', deny: ow.deny?.toString() || '0' }; }).filter(ow => ow); };
                 
                 for (let i = 0; i < categories.length; i++) {
                     if (state.cancelRequested) throw new Error('CANCELLED');
-                    const create = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/channels`, { method: 'POST', headers: { 'Authorization': state.token, 'Content-Type': 'application/json' }, body: JSON.stringify({ name: categories[i].name, type: 4, position: categories[i].position, permission_overwrites: convertOW(categories[i].permission_overwrites, roleMap) }) });
-                    const newCat = await create.json(); catMap[categories[i].id] = newCat.id;
-                    addLog(`СОЗДАНА КАТЕГОРИЯ: ${categories[i].name}`, 'success');
-                    channelCount++; await sleep(300);
-                    elements.progressFill.style.width = `${60 + (i / categories.length) * 20}%`;
+                    try {
+                        const catData = {
+                            name: categories[i].name.substring(0, 100),
+                            type: 4,
+                            position: categories[i].position,
+                            permission_overwrites: convertOverwrites(categories[i].permission_overwrites, targetId, roleMap)
+                        };
+                        const create = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/channels`, { 
+                            method: 'POST', 
+                            headers: { 'Authorization': state.token, 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify(catData) 
+                        });
+                        if (create.ok) {
+                            const newCat = await create.json();
+                            categoryMap[categories[i].id] = newCat.id;
+                            addLog(`СОЗДАНА КАТЕГОРИЯ: ${categories[i].name}`, 'success');
+                            channelCount++;
+                        } else {
+                            addLog(`ОШИБКА СОЗДАНИЯ КАТЕГОРИИ ${categories[i].name}: ${create.status}`, 'error');
+                        }
+                    } catch(e) {
+                        addLog(`ОШИБКА: ${e.message}`, 'error');
+                    }
+                    await sleep(400);
+                    elements.progressFill.style.width = `${60 + (i / Math.max(categories.length, 1)) * 20}%`;
                 }
                 
                 for (let i = 0; i < others.length; i++) {
                     if (state.cancelRequested) throw new Error('CANCELLED');
                     const ch = others[i];
-                    const chData = { name: ch.name, type: ch.type, position: ch.position, topic: ch.topic || '', bitrate: ch.bitrate, user_limit: ch.user_limit, rate_limit_per_user: ch.rate_limit_per_user, nsfw: ch.nsfw || false, permission_overwrites: convertOW(ch.permission_overwrites, roleMap) };
-                    if (ch.parent_id && catMap[ch.parent_id]) chData.parent_id = catMap[ch.parent_id];
-                    await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/channels`, { method: 'POST', headers: { 'Authorization': state.token, 'Content-Type': 'application/json' }, body: JSON.stringify(chData) });
-                    addLog(`СОЗДАН КАНАЛ: ${ch.name}`, 'success');
-                    channelCount++; await sleep(300);
-                    elements.progressFill.style.width = `${60 + ((i+1) / others.length) * 20}%`;
-                    elements.backgroundStage.textContent = `ЭТАП: СОЗДАНИЕ КАНАЛОВ ${Math.floor((i+1)/others.length*100)}%`;
+                    try {
+                        const chData = {
+                            name: ch.name.substring(0, 100),
+                            type: ch.type,
+                            position: ch.position,
+                            permission_overwrites: convertOverwrites(ch.permission_overwrites, targetId, roleMap)
+                        };
+                        
+                        if (ch.type === 0 || ch.type === 5) {
+                            if (ch.topic) chData.topic = ch.topic.substring(0, 1024);
+                            if (ch.rate_limit_per_user) chData.rate_limit_per_user = Math.min(ch.rate_limit_per_user, 21600);
+                            if (ch.nsfw) chData.nsfw = ch.nsfw;
+                        }
+                        
+                        if (ch.type === 2) {
+                            if (ch.bitrate) chData.bitrate = Math.min(ch.bitrate, 384000);
+                            if (ch.user_limit) chData.user_limit = Math.min(ch.user_limit, 99);
+                        }
+                        
+                        if (ch.parent_id && categoryMap[ch.parent_id]) {
+                            chData.parent_id = categoryMap[ch.parent_id];
+                        }
+                        
+                        const create = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/channels`, { 
+                            method: 'POST', 
+                            headers: { 'Authorization': state.token, 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify(chData) 
+                        });
+                        if (create.ok) {
+                            addLog(`СОЗДАН КАНАЛ: ${ch.name}`, 'success');
+                            channelCount++;
+                        } else {
+                            const errorText = await create.text();
+                            addLog(`ОШИБКА СОЗДАНИЯ КАНАЛА ${ch.name}: ${create.status}`, 'error');
+                        }
+                    } catch(e) {
+                        addLog(`ОШИБКА: ${e.message}`, 'error');
+                    }
+                    await sleep(400);
+                    elements.progressFill.style.width = `${60 + ((i+1) / Math.max(others.length, 1)) * 20}%`;
+                    elements.backgroundStage.textContent = `ЭТАП: СОЗДАНИЕ КАНАЛОВ ${Math.floor((i+1)/Math.max(others.length, 1)*100)}%`;
                 }
                 
                 elements.progressFill.style.width = '100%';
