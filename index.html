@@ -20,8 +20,8 @@
             --bg-secondary: rgba(15,15,15,0.7);
             --text-primary: #ffffff;
             --text-secondary: #888;
-            --accent: #0066ff;
-            --accent-glow: rgba(0,102,255,0.3);
+            --accent: #5865F2;
+            --accent-glow: rgba(88,101,242,0.3);
             --border: rgba(255,255,255,0.02);
             --error: #ff5555;
             --warning: #ffaa44;
@@ -34,7 +34,7 @@
             --text-primary: #1a1a1a;
             --text-secondary: #666;
             --border: rgba(0,0,0,0.05);
-            --accent: #0066cc;
+            --accent: #5865F2;
         }
 
         body {
@@ -66,12 +66,12 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(20px); filter: blur(10px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
         }
 
         @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-10px); }
+            from { opacity: 0; transform: translateX(-20px); }
             to { opacity: 1; transform: translateX(0); }
         }
 
@@ -81,18 +81,28 @@
         }
 
         @keyframes loading {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
+            0% { width: 0%; opacity: 0.5; }
+            50% { width: 70%; opacity: 1; }
+            100% { width: 100%; opacity: 0.5; }
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
         }
 
-        .fade-in { animation: fadeIn 0.3s ease forwards; }
-        .slide-in { animation: slideIn 0.3s ease forwards; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        .fade-in { animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .slide-in { animation: slideIn 0.4s ease forwards; }
 
         .navbar {
             position: fixed;
@@ -106,6 +116,7 @@
             background: rgba(0,0,0,0.8);
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
+            animation: slideIn 0.5s ease;
         }
 
         body.light-theme .navbar {
@@ -118,6 +129,12 @@
             letter-spacing: 2px;
             color: var(--text-primary);
             opacity: 0.9;
+            transition: all 0.3s;
+        }
+
+        .logo:hover {
+            letter-spacing: 4px;
+            color: var(--accent);
         }
 
         @media (min-width: 768px) {
@@ -155,7 +172,7 @@
             .nav-link { font-size: 0.85rem; }
         }
 
-        .nav-link:hover { color: var(--accent); }
+        .nav-link:hover { color: var(--accent); transform: translateY(-2px); }
         .nav-link.active { color: var(--text-primary); }
 
         .nav-link.active::after {
@@ -166,6 +183,7 @@
             width: 100%;
             height: 2px;
             background: var(--accent);
+            animation: slideIn 0.3s ease;
         }
 
         .main-container {
@@ -187,6 +205,13 @@
             border-radius: 24px;
             padding: 1.5rem;
             transition: all 0.3s;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-glow);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         }
 
         @media (min-width: 768px) {
@@ -199,6 +224,7 @@
             text-align: center;
             letter-spacing: 2px;
             color: var(--text-primary);
+            animation: pulse 2s infinite;
         }
 
         @media (min-width: 768px) {
@@ -249,6 +275,7 @@
             border-color: var(--accent);
             background: rgba(20,20,20,0.8);
             transform: scale(1.01);
+            box-shadow: 0 0 20px var(--accent-glow);
         }
 
         .btn {
@@ -291,16 +318,17 @@
 
         .btn:hover {
             border-color: var(--accent);
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
 
         .btn-primary {
-            background: rgba(0,102,255,0.05);
+            background: rgba(88,101,242,0.05);
             border-color: var(--accent-glow);
         }
 
         .btn-primary:hover {
-            background: rgba(0,102,255,0.1);
+            background: rgba(88,101,242,0.1);
         }
 
         .btn-danger {
@@ -329,6 +357,13 @@
             display: flex;
             align-items: center;
             gap: 1rem;
+            transition: all 0.3s;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .user-profile:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-glow);
         }
 
         @media (min-width: 768px) {
@@ -339,9 +374,11 @@
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            background: #111;
+            background: linear-gradient(135deg, var(--accent), #00aaff);
             border: 2px solid var(--accent-glow);
             object-fit: cover;
+            transition: all 0.3s;
+            animation: float 3s ease-in-out infinite;
         }
 
         @media (min-width: 768px) {
@@ -382,6 +419,11 @@
             justify-content: center;
         }
 
+        .email-toggle:hover {
+            background: var(--accent-glow);
+            transform: scale(1.05);
+        }
+
         .logout-btn {
             padding: 0.5rem 1rem;
             font-size: 0.7rem;
@@ -397,6 +439,12 @@
             padding: 1.5rem;
             text-align: center;
             margin-bottom: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .clone-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-glow);
         }
 
         @media (min-width: 768px) {
@@ -421,18 +469,20 @@
 
         .progress-bar {
             width: 100%;
-            height: 2px;
+            height: 3px;
             background: var(--border);
             margin: 1.5rem 0;
-            border-radius: 2px;
+            border-radius: 3px;
             overflow: hidden;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--accent), #00aaff);
+            background: linear-gradient(90deg, var(--accent), #00aaff, var(--accent));
+            background-size: 200% 100%;
             width: 0%;
             transition: width 0.3s ease;
+            animation: shimmer 2s infinite;
         }
 
         .info-grid {
@@ -452,6 +502,12 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 1rem;
+            transition: all 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-glow);
         }
 
         .info-card-title {
@@ -498,10 +554,14 @@
             align-items: flex-start;
             gap: 0.8rem;
             cursor: pointer;
-            transition: background 0.15s;
+            transition: all 0.15s;
+            animation: slideIn 0.3s ease;
         }
 
-        .log-entry:active { background: var(--accent-glow); }
+        .log-entry:hover {
+            background: var(--accent-glow);
+            transform: translateX(5px);
+        }
 
         .log-time {
             color: var(--text-secondary);
@@ -597,6 +657,12 @@
             background: rgba(255,255,255,0.01);
             border-radius: 10px;
             margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .checkbox-item:hover {
+            background: var(--accent-glow);
+            transform: translateX(5px);
         }
 
         .checkbox-item input[type="checkbox"] {
@@ -641,6 +707,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.3s;
+        }
+
+        .instruction-header:hover {
+            background: var(--accent-glow);
         }
 
         .instruction-header span { color: var(--text-secondary); font-size: 0.75rem; }
@@ -691,7 +762,10 @@
             transition: all 0.2s;
         }
 
-        .server-item:active { background: var(--accent-glow); }
+        .server-item:hover {
+            background: var(--accent-glow);
+            transform: translateX(5px);
+        }
 
         .server-id {
             color: var(--text-secondary);
@@ -704,8 +778,9 @@
             border-radius: 10px;
             padding: 0.8rem;
             margin-bottom: 1rem;
-            border-left: 2px solid var(--accent);
+            border-left: 3px solid var(--accent);
             display: none;
+            animation: pulse 2s infinite;
         }
 
         .background-status.show { display: block; }
@@ -751,6 +826,11 @@
             justify-content: center;
             font-size: 1.2rem;
             transition: all 0.2s;
+        }
+
+        .control-btn:hover, .export-btn:hover {
+            transform: scale(1.1) rotate(5deg);
+            border-color: var(--accent);
         }
 
         .control-btn:active, .export-btn:active { transform: scale(0.95); }
@@ -810,13 +890,15 @@
             transform: translateX(-50%);
             background: rgba(0,0,0,0.9);
             color: #fff;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 30px;
             z-index: 10000;
             animation: fadeIn 0.2s;
             font-size: 0.8rem;
             white-space: nowrap;
             pointer-events: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--accent-glow);
         }
 
         .hidden { display: none !important; }
@@ -847,6 +929,25 @@
 
         @media (min-width: 768px) {
             .footer { margin-top: 4rem; padding: 2rem; font-size: 0.7rem; }
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-glow);
         }
     </style>
 </head>
@@ -1095,7 +1196,7 @@
         function initSnow() {
             const resize = () => { elements.snowCanvas.width = window.innerWidth; elements.snowCanvas.height = window.innerHeight; };
             resize(); window.addEventListener('resize', resize);
-            state.snowflakes = Array.from({ length: 20 }, () => ({ x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, radius: Math.random() * 2 + 0.5, speed: Math.random() * 0.3 + 0.1, opacity: Math.random() * 0.15 }));
+            state.snowflakes = Array.from({ length: 80 }, () => ({ x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight, radius: Math.random() * 2 + 0.3, speed: Math.random() * 0.5 + 0.2, opacity: Math.random() * 0.3 + 0.1 }));
             function draw() {
                 const ctx = elements.snowCanvas.getContext('2d'); ctx.clearRect(0, 0, elements.snowCanvas.width, elements.snowCanvas.height);
                 state.snowflakes.forEach(f => { ctx.beginPath(); ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(255,255,255,${f.opacity})`; ctx.fill(); f.y += f.speed; if (f.y > elements.snowCanvas.height) { f.y = 0; f.x = Math.random() * elements.snowCanvas.width; } });
@@ -1111,7 +1212,6 @@
         function toggleEmail() { state.emailVisible = !state.emailVisible; const emailSpan = elements.userEmail, icon = document.querySelector('.email-toggle i'); if (state.emailVisible && state.user?.email) { emailSpan.textContent = state.user.email; emailSpan.classList.add('unblur'); icon.classList.replace('fa-eye', 'fa-eye-slash'); } else if (state.user?.email) { emailSpan.textContent = state.user.email.replace(/./g, '•'); emailSpan.classList.remove('unblur'); icon.classList.replace('fa-eye-slash', 'fa-eye'); } }
         function showError(element, message) { const el = typeof element === 'string' ? document.getElementById(element) : element; if (el) { el.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 3000); } }
         function showToast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2000); }
-        function playSound(type) { try { const ctx = new (window.AudioContext || window.webkitAudioContext)(); const osc = ctx.createOscillator(), gain = ctx.createGain(); osc.connect(gain); gain.connect(ctx.destination); gain.gain.value = 0.1; osc.frequency.value = type === 'success' ? 800 : 200; osc.start(); osc.stop(ctx.currentTime + (type === 'success' ? 0.1 : 0.3)); } catch(e) {} }
         function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
         
         function addLog(msg, type = 'info') {
@@ -1161,11 +1261,11 @@
                     sessionStorage.setItem('discord_token', t); sessionStorage.setItem('discord_user', JSON.stringify(u));
                     elements.userName.textContent = u.global_name || u.username; elements.userId.textContent = `ID: ${u.id}`;
                     if (u.email) elements.userEmail.textContent = u.email.replace(/./g, '•');
-                    if (u.avatar) elements.userAvatar.src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=64`;
+                    if (u.avatar) elements.userAvatar.src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=128`;
                     elements.authView.classList.add('hidden'); elements.mainView.classList.remove('hidden');
                     addLog(`АВТОРИЗАЦИЯ: ${u.username}`, 'success');
                     await loadServers();
-                } else { showError(elements.authError, 'НЕВЕРНЫЙ ТОКЕН'); playSound('error'); }
+                } else { showError(elements.authError, 'НЕВЕРНЫЙ ТОКЕН'); }
             } catch { showError(elements.authError, 'ОШИБКА ПОДКЛЮЧЕНИЯ'); }
             finally { elements.loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> ВОЙТИ'; elements.loginBtn.disabled = false; }
         }
@@ -1248,8 +1348,28 @@
                 elements.progressFill.style.width = '20%'; elements.backgroundStage.textContent = 'ЭТАП: КОПИРОВАНИЕ ИНФОРМАЦИИ';
                 
                 const srcGuild = await (await fetchWithRetry(`${CONFIG.apiBase}/guilds/${sourceId}`, { headers: { 'Authorization': state.token } })).json();
-                await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}`, { method: 'PATCH', headers: { 'Authorization': state.token, 'Content-Type': 'application/json' }, body: JSON.stringify({ name: srcGuild.name }) });
+                
+                let iconData = null;
+                if (srcGuild.icon) {
+                    const iconUrl = `https://cdn.discordapp.com/icons/${sourceId}/${srcGuild.icon}.png?size=256`;
+                    const iconResponse = await fetch(iconUrl);
+                    if (iconResponse.ok) {
+                        const iconBlob = await iconResponse.blob();
+                        const reader = new FileReader();
+                        iconData = await new Promise((resolve) => {
+                            reader.onloadend = () => resolve(reader.result);
+                            reader.readAsDataURL(iconBlob);
+                        });
+                    }
+                }
+                
+                await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}`, { 
+                    method: 'PATCH', 
+                    headers: { 'Authorization': state.token, 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify({ name: srcGuild.name, icon: iconData ? iconData.split(',')[1] : null })
+                });
                 addLog(`НАЗВАНИЕ: ${srcGuild.name}`, 'success');
+                if (iconData) addLog(`ИКОНКА СКОПИРОВАНА`, 'success');
                 elements.progressFill.style.width = '30%';
                 
                 elements.backgroundStage.textContent = 'ЭТАП: СОЗДАНИЕ РОЛЕЙ 0%';
@@ -1284,7 +1404,6 @@
                     elements.progressFill.style.width = `${60 + (i / categories.length) * 20}%`;
                 }
                 
-                const allChannels = [...categories, ...others];
                 for (let i = 0; i < others.length; i++) {
                     if (state.cancelRequested) throw new Error('CANCELLED');
                     const ch = others[i];
@@ -1300,10 +1419,10 @@
                 elements.progressFill.style.width = '100%';
                 addLog(`КЛОНИРОВАНИЕ ЗАВЕРШЕНО!`, 'success');
                 addLog(`СОЗДАНО: ${rolesToCreate.length} РОЛЕЙ, ${channelCount} КАНАЛОВ`, 'success');
-                playSound('success'); showToast('КЛОНИРОВАНИЕ ЗАВЕРШЕНО');
+                showToast('КЛОНИРОВАНИЕ ЗАВЕРШЕНО');
             } catch(e) {
                 if (e.message === 'CANCELLED') addLog('КЛОНИРОВАНИЕ ОТМЕНЕНО', 'warning');
-                else { addLog(`ОШИБКА: ${e.message}`, 'error'); showError(elements.cloneError, e.message); playSound('error'); }
+                else { addLog(`ОШИБКА: ${e.message}`, 'error'); showError(elements.cloneError, e.message); }
                 elements.progressFill.style.width = '0%';
             } finally {
                 state.cloning = false; elements.cloneBtn.disabled = false; elements.cancelCloneBtn.disabled = true; elements.backgroundStatus.classList.remove('show');
@@ -1323,7 +1442,7 @@
         
         window.onload = async () => {
             const savedToken = sessionStorage.getItem('discord_token'), savedUser = sessionStorage.getItem('discord_user');
-            if (savedToken && savedUser) { state.token = savedToken; state.user = JSON.parse(savedUser); elements.userName.textContent = state.user.global_name || state.user.username; elements.userId.textContent = `ID: ${state.user.id}`; if (state.user.email) elements.userEmail.textContent = state.user.email.replace(/./g, '•'); if (state.user.avatar) elements.userAvatar.src = `https://cdn.discordapp.com/avatars/${state.user.id}/${state.user.avatar}.png?size=64`; elements.authView.classList.add('hidden'); elements.mainView.classList.remove('hidden'); addLog('СЕССИЯ ВОССТАНОВЛЕНА', 'success'); await loadServers(); }
+            if (savedToken && savedUser) { state.token = savedToken; state.user = JSON.parse(savedUser); elements.userName.textContent = state.user.global_name || state.user.username; elements.userId.textContent = `ID: ${state.user.id}`; if (state.user.email) elements.userEmail.textContent = state.user.email.replace(/./g, '•'); if (state.user.avatar) elements.userAvatar.src = `https://cdn.discordapp.com/avatars/${state.user.id}/${state.user.avatar}.png?size=128`; elements.authView.classList.add('hidden'); elements.mainView.classList.remove('hidden'); addLog('СЕССИЯ ВОССТАНОВЛЕНА', 'success'); await loadServers(); }
             addLog('DISCORD SERVER CLONER PRO by xolirx', 'info');
         };
         window.addEventListener('beforeunload', (e) => { if (state.cloning && !state.cancelRequested) { e.preventDefault(); e.returnValue = 'Клонирование выполняется!'; return e.returnValue; } });
