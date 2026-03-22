@@ -82,15 +82,16 @@ window.API = {
                 }
                 
                 if (res.status === 401) {
-                    throw new Error('UNAUTHORIZED: Invalid token or token expired');
+                    const errorText = await res.text();
+                    throw new Error(`UNAUTHORIZED: Invalid token - ${errorText.substring(0, 100)}`);
                 }
                 
                 if (res.status === 403) {
-                    throw new Error('FORBIDDEN: Insufficient permissions');
+                    throw new Error('FORBIDDEN: Token is valid but missing permissions');
                 }
                 
                 if (res.status === 404) {
-                    throw new Error('NOT_FOUND: Resource not found');
+                    throw new Error('NOT_FOUND: API endpoint not found');
                 }
                 
                 if (res.status === 400) {
@@ -110,14 +111,14 @@ window.API = {
                 return res;
             } catch (error) {
                 lastError = error;
+                if (error.message.includes('UNAUTHORIZED')) {
+                    throw error;
+                }
+                if (error.message.includes('FORBIDDEN')) {
+                    throw error;
+                }
                 if (error.name === 'AbortError') {
                     throw new Error('Request timeout - check your internet connection');
-                }
-                if (error.message === 'UNAUTHORIZED: Invalid token or token expired') {
-                    throw error;
-                }
-                if (error.message === 'FORBIDDEN: Insufficient permissions') {
-                    throw error;
                 }
                 if (i < maxRetries - 1) {
                     await window.Utils.sleep(window.CONFIG.rateLimitDelay * (i + 1));
@@ -253,28 +254,54 @@ window.API = {
     },
 
     async validateToken(token) {
+        if (!token || typeof token !== 'string') {
+            return { valid: false, error: 'Token is empty or invalid format' };
+        }
+        
+        const trimmedToken = token.trim();
+        
+        if (trimmedToken.length < 50) {
+            return { valid: false, error: 'Token is too short. Discord tokens are usually 50+ characters' };
+        }
+        
         try {
             const res = await this.fetchWithRetry(
                 this.getFullUrl('/users/@me'),
                 { 
-                    headers: { 'Authorization': token },
+                    headers: { 
+                        'Authorization': trimmedToken,
+                        'Content-Type': 'application/json'
+                    },
                     method: 'GET'
                 },
                 1
             );
+            
             if (res.ok) {
                 const user = await res.json();
                 return { valid: true, user };
             }
-            return { valid: false, error: `HTTP ${res.status}` };
+            
+            if (res.status === 401) {
+                let errorDetail = 'Invalid token';
+                try {
+                    const errorData = await res.json();
+                    if (errorData.message) errorDetail = errorData.message;
+                } catch (e) {}
+                return { valid: false, error: `Invalid token: ${errorDetail}` };
+            }
+            
+            return { valid: false, error: `HTTP ${res.status}: ${res.statusText}` };
         } catch (error) {
-            let errorMessage = 'Invalid token';
+            let errorMessage = 'Network error';
             if (error.message.includes('UNAUTHORIZED')) {
                 errorMessage = 'Invalid token - please check your Discord token';
             } else if (error.message.includes('timeout')) {
                 errorMessage = 'Connection timeout - check your internet';
             } else if (error.message.includes('Failed to fetch')) {
-                errorMessage = 'Network error - check your connection';
+                errorMessage = 'Network error - check your connection and disable any VPN/Proxy';
+            } else {
+                errorMessage = error.message;
             }
             return { valid: false, error: errorMessage };
         }
