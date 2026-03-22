@@ -1,5 +1,5 @@
 class APIPool {
-    constructor(max = 10) {
+    constructor(max = 5) {
         this.max = max;
         this.queue = [];
         this.active = 0;
@@ -44,7 +44,7 @@ class APIPool {
             const response = await fetch(url, { ...options, signal: controller.signal });
             clearTimeout(timeout);
             
-            if (options.method !== 'POST' && options.method !== 'PATCH' && options.method !== 'DELETE') {
+            if (options.method !== 'POST' && options.method !== 'PATCH' && options.method !== 'DELETE' && response.ok) {
                 const cloned = response.clone();
                 cloned.json().then(data => {
                     this.setToCache(cacheKey, data);
@@ -65,7 +65,7 @@ window.API = {
     pool: new APIPool(window.CONFIG.maxConcurrent),
 
     getFullUrl(endpoint) {
-        return `${window.CONFIG.corsProxy}${window.CONFIG.apiBase}${endpoint}`;
+        return `${window.CONFIG.apiBase}${endpoint}`;
     },
 
     async fetchWithRetry(url, options, maxRetries = window.CONFIG.retryAttempts) {
@@ -79,6 +79,18 @@ window.API = {
                     const wait = parseInt(res.headers.get('Retry-After')) || 2;
                     await window.Utils.sleep(wait * 1000);
                     continue;
+                }
+                
+                if (res.status === 401) {
+                    throw new Error('UNAUTHORIZED: Invalid token or token expired');
+                }
+                
+                if (res.status === 403) {
+                    throw new Error('FORBIDDEN: Insufficient permissions');
+                }
+                
+                if (res.status === 404) {
+                    throw new Error('NOT_FOUND: Resource not found');
                 }
                 
                 if (res.status === 400) {
@@ -99,7 +111,13 @@ window.API = {
             } catch (error) {
                 lastError = error;
                 if (error.name === 'AbortError') {
-                    throw new Error('Request timeout');
+                    throw new Error('Request timeout - check your internet connection');
+                }
+                if (error.message === 'UNAUTHORIZED: Invalid token or token expired') {
+                    throw error;
+                }
+                if (error.message === 'FORBIDDEN: Insufficient permissions') {
+                    throw error;
                 }
                 if (i < maxRetries - 1) {
                     await window.Utils.sleep(window.CONFIG.rateLimitDelay * (i + 1));
@@ -113,7 +131,12 @@ window.API = {
     async getUser(token) {
         const res = await this.fetchWithRetry(
             this.getFullUrl('/users/@me'),
-            { headers: { 'Authorization': token } }
+            { 
+                headers: { 
+                    'Authorization': token,
+                    'Content-Type': 'application/json'
+                } 
+            }
         );
         return res.json();
     },
@@ -201,21 +224,59 @@ window.API = {
     },
 
     async checkPermissions(token, guildId) {
-        const guilds = await this.getUserGuilds(token);
-        const guild = guilds.find(g => g.id === guildId);
-        return guild && (BigInt(guild.permissions) & 0x8n) !== 0n;
+        try {
+            const guilds = await this.getUserGuilds(token);
+            const guild = guilds.find(g => g.id === guildId);
+            if (!guild) return false;
+            return (BigInt(guild.permissions) & 0x8n) !== 0n;
+        } catch (error) {
+            return false;
+        }
     },
 
     async fetchIcon(token, guildId, iconHash) {
-        const url = `https://cdn.discordapp.com/icons/${guildId}/${iconHash}.png?size=256`;
-        const res = await fetch(url);
-        if (!res.ok) return null;
-        const blob = await res.blob();
-        if (blob.size > 256 * 1024) return null;
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.readAsDataURL(blob);
-        });
+        try {
+            const url = `https://cdn.discordapp.com/icons/${guildId}/${iconHash}.png?size=256`;
+            const res = await fetch(url);
+            if (!res.ok) return null;
+            const blob = await res.blob();
+            if (blob.size > 256 * 1024) return null;
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = () => resolve(null);
+                reader.readAsDataURL(blob);
+            });
+        } catch (error) {
+            return null;
+        }
+    },
+
+    async validateToken(token) {
+        try {
+            const res = await this.fetchWithRetry(
+                this.getFullUrl('/users/@me'),
+                { 
+                    headers: { 'Authorization': token },
+                    method: 'GET'
+                },
+                1
+            );
+            if (res.ok) {
+                const user = await res.json();
+                return { valid: true, user };
+            }
+            return { valid: false, error: `HTTP ${res.status}` };
+        } catch (error) {
+            let errorMessage = 'Invalid token';
+            if (error.message.includes('UNAUTHORIZED')) {
+                errorMessage = 'Invalid token - please check your Discord token';
+            } else if (error.message.includes('timeout')) {
+                errorMessage = 'Connection timeout - check your internet';
+            } else if (error.message.includes('Failed to fetch')) {
+                errorMessage = 'Network error - check your connection';
+            }
+            return { valid: false, error: errorMessage };
+        }
     }
 };
