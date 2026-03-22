@@ -21,7 +21,7 @@
             window.UI.addLog(`Загружено серверов: ${userGuilds.length}`, 'success');
             return userGuilds;
         } catch (e) {
-            window.UI.addLog('Ошибка загрузки серверов', 'error');
+            window.UI.addLog(`Ошибка загрузки серверов: ${e.message}`, 'error');
             return [];
         }
     }
@@ -47,6 +47,20 @@
         
         try {
             window.UI.updateProgress(0, 'ПОЛУЧЕНИЕ ДАННЫХ...', 0, 0, 0, 0);
+            
+            const hasSourcePerms = await window.API.checkPermissions(window.state.token, sourceId);
+            const hasTargetPerms = await window.API.checkPermissions(window.state.token, targetId);
+            
+            if (!hasSourcePerms) {
+                window.UI.showError(window.UI.elements.cloneError, 'Нет прав администратора на исходном сервере');
+                return false;
+            }
+            
+            if (!hasTargetPerms) {
+                window.UI.showError(window.UI.elements.cloneError, 'Нет прав администратора на целевом сервере');
+                return false;
+            }
+            
             const [sourceGuild, targetGuild, sourceRoles, sourceChannels] = await Promise.all([
                 window.API.getGuild(window.state.token, sourceId),
                 window.API.getGuild(window.state.token, targetId),
@@ -61,7 +75,7 @@
             return true;
         } catch (error) {
             window.UI.addLog(`Ошибка загрузки данных: ${error.message}`, 'error');
-            window.UI.showError(window.UI.elements.cloneError, 'Не удалось загрузить данные серверов');
+            window.UI.showError(window.UI.elements.cloneError, `Не удалось загрузить данные: ${error.message}`);
             return false;
         }
     }
@@ -118,7 +132,7 @@
             setTimeout(() => window.UI.elements.serverValidationResult.style.display = 'none', 5000);
         } catch (error) {
             window.UI.elements.serverValidationResult.style.color = '#ff5555';
-            window.UI.elements.serverValidationResult.innerHTML = '<i class="fas fa-exclamation-circle"></i> СЕРВЕР НЕ НАЙДЕН';
+            window.UI.elements.serverValidationResult.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${error.message.includes('404') ? 'СЕРВЕР НЕ НАЙДЕН' : 'ОШИБКА ПРОВЕРКИ'}`;
             setTimeout(() => window.UI.elements.serverValidationResult.style.display = 'none', 5000);
         }
     }
@@ -127,6 +141,8 @@
         if (userGuilds.length === 0) {
             loadServers().then(() => {
                 window.UI.showServerList(userGuilds, targetField);
+            }).catch(() => {
+                window.UI.showToast('Не удалось загрузить список серверов');
             });
         } else {
             window.UI.showServerList(userGuilds, targetField);
@@ -144,15 +160,21 @@
         window.UI.elements.testTokenBtn.disabled = true;
         
         try {
-            const user = await window.API.getUser(token);
-            window.UI.showToast(`✓ ТОКЕН РАБОЧИЙ (${user.username})`);
-            const warn = document.getElementById('tokenWarning');
-            if (warn) {
-                warn.style.display = 'flex';
-                setTimeout(() => warn.style.display = 'none', 3000);
+            const result = await window.API.validateToken(token);
+            
+            if (result.valid) {
+                window.UI.showToast(`✓ ТОКЕН РАБОЧИЙ (${result.user.username})`);
+                const warn = document.getElementById('tokenWarning');
+                if (warn) {
+                    warn.style.display = 'flex';
+                    setTimeout(() => warn.style.display = 'none', 3000);
+                }
+                window.UI.elements.authError.classList.remove('show');
+            } else {
+                window.UI.showError(window.UI.elements.authError, result.error);
             }
         } catch (error) {
-            window.UI.showError(window.UI.elements.authError, 'НЕВЕРНЫЙ ТОКЕН');
+            window.UI.showError(window.UI.elements.authError, 'ОШИБКА ПОДКЛЮЧЕНИЯ: ' + error.message);
         } finally {
             window.UI.elements.testTokenBtn.innerHTML = '<i class="fas fa-check-circle"></i> ПРОВЕРИТЬ ТОКЕН';
             window.UI.elements.testTokenBtn.disabled = false;
@@ -170,7 +192,14 @@
         window.UI.elements.loginBtn.disabled = true;
         
         try {
-            const user = await window.API.getUser(token);
+            const result = await window.API.validateToken(token);
+            
+            if (!result.valid) {
+                window.UI.showError(window.UI.elements.authError, result.error);
+                return;
+            }
+            
+            const user = result.user;
             
             window.state = { token, user };
             currentUser = user;
@@ -181,7 +210,7 @@
             window.UI.updateUserProfile(user);
             window.UI.elements.authView.classList.add('hidden');
             window.UI.elements.mainView.classList.remove('hidden');
-            window.UI.addLog(`Авторизация: ${user.username}`, 'success');
+            window.UI.addLog(`Авторизация: ${user.username}#${user.discriminator || '0'}`, 'success');
             
             await loadServers();
             
@@ -192,7 +221,7 @@
             
             resetInactivityTimer();
         } catch (error) {
-            window.UI.showError(window.UI.elements.authError, 'НЕВЕРНЫЙ ТОКЕН');
+            window.UI.showError(window.UI.elements.authError, `Ошибка авторизации: ${error.message}`);
         } finally {
             window.UI.elements.loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> ВОЙТИ';
             window.UI.elements.loginBtn.disabled = false;
@@ -209,10 +238,10 @@
         window.UI.addLog('Выход', 'info');
     }
 
+    let emailVisible = false;
     function toggleEmail() {
         if (!window.state?.user) return;
-        const emailVisible = !window._emailVisible;
-        window._emailVisible = emailVisible;
+        emailVisible = !emailVisible;
         window.UI.toggleEmail(window.state.user, emailVisible);
     }
 
@@ -223,19 +252,19 @@
                 link.classList.add('active');
                 const section = link.dataset.section;
                 
-                window.UI.elements.mainContent.classList.add('hidden');
-                window.UI.elements.updatesContent.classList.add('hidden');
-                window.UI.elements.supportContent.classList.add('hidden');
-                window.UI.elements.aboutContent.classList.add('hidden');
+                if (window.UI.elements.mainContent) window.UI.elements.mainContent.classList.add('hidden');
+                if (window.UI.elements.updatesContent) window.UI.elements.updatesContent.classList.add('hidden');
+                if (window.UI.elements.supportContent) window.UI.elements.supportContent.classList.add('hidden');
+                if (window.UI.elements.aboutContent) window.UI.elements.aboutContent.classList.add('hidden');
                 
                 if (section === 'main') {
-                    window.UI.elements.mainContent.classList.remove('hidden');
+                    if (window.UI.elements.mainContent) window.UI.elements.mainContent.classList.remove('hidden');
                 } else if (section === 'updates') {
-                    window.UI.elements.updatesContent.classList.remove('hidden');
+                    if (window.UI.elements.updatesContent) window.UI.elements.updatesContent.classList.remove('hidden');
                 } else if (section === 'support') {
-                    window.UI.elements.supportContent.classList.remove('hidden');
+                    if (window.UI.elements.supportContent) window.UI.elements.supportContent.classList.remove('hidden');
                 } else if (section === 'about') {
-                    window.UI.elements.aboutContent.classList.remove('hidden');
+                    if (window.UI.elements.aboutContent) window.UI.elements.aboutContent.classList.remove('hidden');
                 }
             });
         });
@@ -246,21 +275,30 @@
         document.addEventListener('keypress', resetInactivityTimer);
         
         document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'Enter' && window.state?.token && !window.Cloner.state.active) {
+            if (e.ctrlKey && e.key === 'Enter' && window.state?.token && !window.Cloner?.state?.active) {
+                e.preventDefault();
                 showPreview();
             }
             if (e.key === 'Escape') {
-                window.UI.closeModal();
-                window.UI.closePreviewModal();
+                if (window.UI) {
+                    window.UI.closeModal();
+                    window.UI.closePreviewModal();
+                }
             }
         });
         
-        window.UI.elements.rule1?.addEventListener('change', () => window.UI.checkAllRules());
-        window.UI.elements.rule2?.addEventListener('change', () => window.UI.checkAllRules());
-        window.UI.elements.rule3?.addEventListener('change', () => window.UI.checkAllRules());
+        if (window.UI.elements.rule1) {
+            window.UI.elements.rule1.addEventListener('change', () => window.UI.checkAllRules());
+        }
+        if (window.UI.elements.rule2) {
+            window.UI.elements.rule2.addEventListener('change', () => window.UI.checkAllRules());
+        }
+        if (window.UI.elements.rule3) {
+            window.UI.elements.rule3.addEventListener('change', () => window.UI.checkAllRules());
+        }
         
         window.addEventListener('beforeunload', (e) => {
-            if (window.Cloner.state.active && !window.Cloner.state.cancelled) {
+            if (window.Cloner?.state?.active && !window.Cloner?.state?.cancelled) {
                 e.preventDefault();
                 e.returnValue = 'Клонирование выполняется!';
                 return e.returnValue;
@@ -269,6 +307,11 @@
     }
 
     function init() {
+        if (!window.UI || !window.UI.init) {
+            setTimeout(init, 100);
+            return;
+        }
+        
         window.UI.init();
         
         window.toggleTokenVisibility = () => window.UI.toggleTokenVisibility();
@@ -283,12 +326,14 @@
         window.showAgreement = () => window.UI.showAgreement();
         window.closeModal = () => window.UI.closeModal();
         window.confirmAllRules = () => {
-            if (window.UI.elements.rule1.checked && window.UI.elements.rule2.checked && window.UI.elements.rule3.checked) {
+            if (window.UI.elements.rule1?.checked && window.UI.elements.rule2?.checked && window.UI.elements.rule3?.checked) {
                 window.UI.closeModal();
                 showPreview();
             }
         };
-        window.cancelCloning = () => window.Cloner.cancel();
+        window.cancelCloning = () => {
+            if (window.Cloner) window.Cloner.cancel();
+        };
         window.clearLogs = () => window.UI.clearLogs();
         window.exportLogs = () => window.UI.exportLogs();
         window.closePreviewModal = () => window.UI.closePreviewModal();
@@ -304,10 +349,12 @@
             }
         }, 1200);
         
-        window.UI.initSnow();
-        window.UI.initDynamicBackground();
+        if (window.UI.initSnow) window.UI.initSnow();
+        if (window.UI.initDynamicBackground) window.UI.initDynamicBackground();
         
-        document.querySelectorAll('.btn').forEach(btn => window.UI.addRippleEffect(btn));
+        document.querySelectorAll('.btn').forEach(btn => {
+            if (window.UI.addRippleEffect) window.UI.addRippleEffect(btn);
+        });
         
         const savedToken = sessionStorage.getItem('discord_token');
         const savedUser = sessionStorage.getItem('discord_user');
@@ -325,11 +372,13 @@
                 resetInactivityTimer();
             } catch (e) {
                 console.error('Session restore error:', e);
+                sessionStorage.clear();
             }
         }
         
         window.UI.addLog('DISCORD SERVER CLONER PRO by xolirx', 'info');
-        window.UI.addLog('Версия 3.0 - Модульная архитектура с CORS прокси', 'success');
+        window.UI.addLog('Версия 3.0 - Стабильная версия с исправленным API', 'success');
+        window.UI.addLog('Для работы требуется токен аккаунта с правами администратора', 'info');
     }
 
     if (document.readyState === 'loading') {
