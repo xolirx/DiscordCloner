@@ -5,7 +5,1081 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Discord Server Cloner Pro</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+            --bg-primary: #000000;
+            --bg-secondary: rgba(15,15,15,0.7);
+            --text-primary: #ffffff;
+            --text-secondary: #9ca3af;
+            --accent: #9ca3af;
+            --accent-glow: rgba(128,128,128,0.2);
+            --border: rgba(255,255,255,0.05);
+            --error: #ff5555;
+            --warning: #ffaa44;
+            --success: #88ff88;
+            --fix-bg: rgba(128,128,128,0.05);
+            --card-hover: rgba(128,128,128,0.1);
+        }
+
+        body.light-theme {
+            --bg-primary: #f5f7fa;
+            --bg-secondary: rgba(255,255,255,0.8);
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --border: rgba(0,0,0,0.05);
+            --accent: #6b7280;
+            --fix-bg: rgba(107,114,128,0.1);
+            --card-hover: rgba(0,0,0,0.02);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); filter: blur(10px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes loading {
+            0% { width: 0%; opacity: 0.5; }
+            50% { width: 70%; opacity: 1; }
+            100% { width: 100%; opacity: 0.5; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        @keyframes ripple {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .fade-in { animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .slide-in { animation: slideIn 0.4s ease forwards; }
+        .slide-up { animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            animation: slideIn 0.5s ease;
+        }
+
+        body.light-theme .navbar {
+            background: rgba(255,255,255,0.8);
+        }
+
+        .logo {
+            font-size: 0.85rem;
+            font-weight: 400;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+            opacity: 0.9;
+            transition: all 0.3s;
+        }
+
+        .logo:hover {
+            letter-spacing: 4px;
+            color: var(--accent);
+        }
+
+        @media (min-width: 768px) {
+            .navbar { padding: 1.25rem 3rem; }
+            .logo { font-size: 1rem; letter-spacing: 4px; }
+        }
+
+        .logo span {
+            color: var(--text-secondary);
+            font-size: 0.6rem;
+            margin-left: 0.3rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .nav-links { gap: 2.5rem; }
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.7rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 0.5rem 0;
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .nav-link { font-size: 0.85rem; }
+        }
+
+        .nav-link:hover { color: var(--text-primary); transform: translateY(-1px); }
+        .nav-link.active { color: var(--text-primary); }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+            animation: slideIn 0.3s ease;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 80px auto 2rem;
+            padding: 0 1rem;
+            width: 100%;
+            flex: 1;
+        }
+
+        @media (min-width: 768px) {
+            .main-container { margin: 100px auto 2rem; padding: 0 2rem; }
+        }
+
+        .glass-card {
+            background: var(--bg-secondary);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-3px);
+            backdrop-filter: blur(16px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (min-width: 768px) {
+            .glass-card { border-radius: 28px; padding: 2.5rem; }
+        }
+
+        .auth-title, .clone-title, .fix-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        @media (min-width: 768px) {
+            .auth-title, .clone-title, .fix-title { font-size: 1.4rem; letter-spacing: 3px; }
+        }
+
+        .auth-subtitle, .clone-subtitle, .fix-subtitle {
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.65rem;
+            letter-spacing: 0.5px;
+        }
+
+        @media (min-width: 768px) {
+            .auth-subtitle, .clone-subtitle, .fix-subtitle { font-size: 0.7rem; letter-spacing: 1px; margin-bottom: 2rem; }
+        }
+
+        .form-group { margin-bottom: 1.5rem; }
+
+        .form-label, .input-label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.65rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .form-input, .clone-input {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.9rem 1.2rem;
+            color: var(--text-primary);
+            font-size: 0.85rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        body.light-theme .form-input, body.light-theme .clone-input {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .form-input:focus, .clone-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(20,20,20,0.8);
+            transform: scale(1.01);
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.9rem 1.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 400;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+
+        .btn:active::before {
+            width: 280px;
+            height: 280px;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background: rgba(128,128,128,0.08);
+            border-color: var(--accent-glow);
+        }
+
+        .btn-primary:hover {
+            background: rgba(128,128,128,0.12);
+            box-shadow: 0 0 16px var(--accent-glow);
+        }
+
+        .btn-danger {
+            background: rgba(255,80,80,0.05);
+            border-color: rgba(255,80,80,0.2);
+            color: #ff8888;
+        }
+
+        .btn-danger:hover {
+            background: rgba(255,80,80,0.1);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .user-profile {
+            background: var(--bg-secondary);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.2s;
+        }
+
+        .user-profile:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-glow);
+        }
+
+        @media (min-width: 768px) {
+            .user-profile { padding: 1.5rem; gap: 1.5rem; }
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6b7280, #374151);
+            border: 2px solid var(--accent-glow);
+            object-fit: cover;
+            transition: all 0.2s;
+        }
+
+        @media (min-width: 768px) {
+            .avatar { width: 64px; height: 64px; }
+        }
+
+        .user-details { flex: 1; min-width: 0; }
+        .user-name { font-size: 1rem; font-weight: 500; margin-bottom: 0.2rem; }
+        .user-id { color: var(--text-secondary); font-size: 0.7rem; font-family: monospace; }
+
+        .user-email {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.3rem;
+        }
+
+        .email-blur {
+            filter: blur(3px);
+            background: rgba(255,255,255,0.02);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            transition: filter 0.2s;
+        }
+
+        .email-blur.unblur { filter: blur(0); }
+
+        .email-toggle {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.2rem 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .email-toggle:hover {
+            background: var(--accent-glow);
+            transform: scale(1.02);
+        }
+
+        .logout-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.7rem;
+            border-radius: 30px;
+            width: auto;
+        }
+
+        .clone-card {
+            background: var(--bg-secondary);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 1.5rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            transition: all 0.2s ease;
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation-delay: 0.2s;
+        }
+
+        .clone-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (min-width: 768px) {
+            .clone-card { border-radius: 28px; padding: 2rem; margin-bottom: 2rem; }
+        }
+
+        .input-group { max-width: 400px; margin: 0 auto 1rem; text-align: left; }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            max-width: 400px;
+            margin: 1.5rem auto 0.5rem;
+        }
+
+        @media (min-width: 480px) {
+            .btn-group { flex-direction: row; gap: 1rem; }
+        }
+
+        .btn-group .btn { flex: 1; }
+
+        .progress-bar {
+            width: 100%;
+            height: 3px;
+            background: var(--border);
+            margin: 1.5rem 0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #aaa, var(--accent));
+            background-size: 200% 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            animation: shimmer 2s infinite;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .info-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        }
+
+        .info-card {
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1rem;
+            transition: all 0.2s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-glow);
+        }
+
+        .info-card-title {
+            color: var(--accent);
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.8rem;
+        }
+
+        .info-list {
+            list-style: none;
+        }
+
+        .info-list li {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            padding: 0.3rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-list li:last-child { border-bottom: none; }
+
+        .log-container {
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 1rem;
+            height: 280px;
+            overflow-y: auto;
+            font-size: 0.7rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        @media (min-width: 768px) {
+            .log-container { padding: 1.5rem; height: 300px; font-size: 0.8rem; }
+        }
+
+        .log-entry {
+            padding: 0.3rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .log-entry:hover {
+            background: var(--accent-glow);
+            transform: translateX(3px);
+        }
+
+        .log-time {
+            color: var(--text-secondary);
+            min-width: 70px;
+            font-size: 0.65rem;
+            font-family: monospace;
+        }
+
+        .log-msg {
+            color: var(--accent);
+            word-break: break-word;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+        }
+
+        .log-success .log-msg { color: var(--success); }
+        .log-error .log-msg { color: var(--error); }
+        .log-warning .log-msg { color: var(--warning); }
+
+        .fixes-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .fix-group {
+            background: var(--fix-bg);
+            border-left: 3px solid var(--accent);
+            border-radius: 16px;
+            padding: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .fix-group:hover {
+            transform: translateX(4px);
+            background: rgba(128,128,128,0.08);
+        }
+
+        .fix-date {
+            display: inline-block;
+            background: var(--accent);
+            color: #000;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .fix-title-main {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .fix-title-main i {
+            color: var(--accent);
+            font-size: 1rem;
+        }
+
+        .fix-list {
+            list-style: none;
+            padding-left: 1.5rem;
+        }
+
+        .fix-list li {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            padding: 0.4rem 0;
+            position: relative;
+            line-height: 1.4;
+        }
+
+        .fix-list li::before {
+            content: "✓";
+            color: var(--success);
+            position: absolute;
+            left: -1.2rem;
+            font-weight: bold;
+        }
+
+        .fix-note {
+            margin-top: 0.8rem;
+            padding: 0.6rem;
+            background: rgba(128,128,128,0.1);
+            border-radius: 10px;
+            color: var(--accent);
+            font-size: 0.75rem;
+            font-style: italic;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(15px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--accent-glow);
+            border-radius: 24px;
+            padding: 1.5rem;
+            max-width: 600px;
+            width: 90%;
+            transform: scale(0.95);
+            transition: all 0.2s;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal.active .modal-content { transform: scale(1); }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .rules-list {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .rules-list li {
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rules-list li::before {
+            content: "●";
+            color: var(--accent);
+        }
+
+        .checkbox-group { margin: 1rem 0; }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.6rem;
+            background: rgba(255,255,255,0.01);
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .checkbox-item label {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .warning-box {
+            background: rgba(255,80,80,0.03);
+            border: 1px solid rgba(255,80,80,0.1);
+            border-radius: 14px;
+            padding: 1rem;
+            margin: 1rem 0;
+            color: #ff8888;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .instruction-box {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+
+        .instruction-header {
+            padding: 0.8rem 1.2rem;
+            background: rgba(255,255,255,0.01);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .instruction-header:hover {
+            background: var(--accent-glow);
+        }
+
+        .instruction-header span { color: var(--text-secondary); font-size: 0.75rem; }
+        .instruction-header .arrow { transition: transform 0.2s; }
+        .instruction-header.active .arrow { transform: rotate(180deg); }
+
+        .instruction-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: rgba(0,0,0,0.4);
+        }
+
+        .instruction-content.show { max-height: 350px; }
+
+        .instruction-content ol {
+            padding: 1rem 1rem 1rem 2rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 0.8rem;
+        }
+
+        .instruction-content code {
+            background: rgba(0,0,0,0.5);
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            color: var(--success);
+            font-family: monospace;
+        }
+
+        .server-list {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 0.8rem;
+            margin-top: 1rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .server-item {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .server-item:hover {
+            background: var(--accent-glow);
+            transform: translateX(3px);
+        }
+
+        .server-id {
+            color: var(--text-secondary);
+            font-family: monospace;
+            font-size: 0.7rem;
+        }
+
+        .background-status {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--accent);
+            display: none;
+        }
+
+        .background-status.show { display: block; }
+
+        .background-status-title {
+            color: var(--accent);
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--accent);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .bottom-controls {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            display: flex;
+            gap: 8px;
+            z-index: 1000;
+        }
+
+        .control-btn, .export-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+
+        .control-btn:hover, .export-btn:hover {
+            transform: scale(1.05);
+            border-color: var(--accent);
+        }
+
+        .control-btn:active, .export-btn:active { transform: scale(0.96); }
+
+        .export-btn {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            transition: opacity 0.5s;
+        }
+
+        .loading-overlay.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-logo {
+            font-size: 2rem;
+            letter-spacing: 5px;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 2px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-bar-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), #aaa);
+            animation: loading 1.5s ease-in-out forwards;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            z-index: 10000;
+            animation: fadeIn 0.2s;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            pointer-events: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--accent-glow);
+        }
+
+        .hidden { display: none !important; }
+
+        .error-message {
+            color: #ff5555;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(255,80,80,0.03);
+            border-radius: 8px;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .error-message.show { display: flex; }
+
+        .footer {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            text-align: center;
+            color: var(--accent);
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            border-top: 1px solid var(--accent-glow);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 4px;
+        }
+
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(128, 128, 128, 0.2);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+        }
+
+        .confetti {
+            position: fixed;
+            top: -10px;
+            pointer-events: none;
+            animation: confettiFall 2s ease-out forwards;
+            z-index: 10000;
+            border-radius: 2px;
+        }
+
+        .progress-details {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            display: none;
+        }
+
+        .detail-item {
+            margin-bottom: 0.8rem;
+        }
+
+        .detail-item span {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .detail-bar {
+            height: 2px;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .glass-card:hover, .clone-card:hover {
+                transform: translateY(-2px);
+            }
+            .btn {
+                min-height: 44px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="loading-overlay" id="loadingOverlay">
@@ -14,353 +1088,672 @@
             <div class="loading-bar"><div class="loading-bar-fill"></div></div>
         </div>
     </div>
-
     <canvas id="snowCanvas"></canvas>
-
     <div class="content">
         <nav class="navbar">
             <div class="logo">DISCORD SERVER CLONER <span>by xolirx</span></div>
             <div class="nav-links">
                 <span class="nav-link active" data-section="main">ГЛАВНАЯ</span>
-                <span class="nav-link" data-section="updates">ОБНОВЛЕНИЯ</span>
+                <span class="nav-link" data-section="fixes">ВСЕ ИСПРАВЛЕНИЯ</span>
                 <span class="nav-link" data-section="support">ПОДДЕРЖКА</span>
                 <span class="nav-link" data-section="about">О САЙТЕ</span>
             </div>
         </nav>
-
         <div class="main-container">
-            <div id="authView">
-                <div class="auth-container">
-                    <div class="glass-card">
-                        <div class="auth-title">DISCORD CLONER PRO</div>
-                        <div class="auth-subtitle"><span>by xolirx</span> • 2026</div>
-                        
-                        <div class="warning-box" id="tokenWarning" style="display: none;">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <span>ТОКЕН - ЭТО ВАШ ПАРОЛЬ! НИКОМУ НЕ ПОКАЗЫВАЙТЕ</span>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">DISCORD TOKEN</label>
-                            <div style="position: relative;">
-                                <input type="password" class="form-input" id="tokenInput" placeholder="••••••••••••••••••••••">
-                                <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); cursor: pointer;" onclick="window.toggleTokenVisibility()">
-                                    <i class="fas fa-eye"></i>
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="instruction-box">
-                            <div class="instruction-header" onclick="window.toggleInstructions()">
-                                <span>КАК ПОЛУЧИТЬ ТОКЕН?</span>
-                                <span class="arrow"><i class="fas fa-chevron-down"></i></span>
-                            </div>
-                            <div class="instruction-content" id="instructionContent">
-                                <ol>
-                                    <li>Откройте Discord в браузере</li>
-                                    <li>Нажмите <code>F12</code> → Network</li>
-                                    <li>Введите в поиске: <code>/api</code></li>
-                                    <li>Найдите пункт <code>science</code></li>
-                                    <li>Скопируйте <code>authorization</code></li>
-                                </ol>
-                            </div>
-                        </div>
-
-                        <div style="margin: 10px 0;">
-                            <button class="btn" onclick="window.testToken()" id="testTokenBtn"><i class="fas fa-check-circle"></i> ПРОВЕРИТЬ ТОКЕН</button>
-                        </div>
-
-                        <div id="authError" class="error-message"></div>
-
-                        <button class="btn btn-primary" onclick="window.authorize()" id="loginBtn"><i class="fas fa-sign-in-alt"></i> ВОЙТИ</button>
-                    </div>
-                </div>
-            </div>
-
+            <div id="authView"><div class="auth-container"><div class="glass-card"><div class="auth-title">DISCORD CLONER PRO</div><div class="auth-subtitle"><span>by xolirx</span> • 2026</div><div class="warning-box" id="tokenWarning" style="display: none;"><i class="fas fa-exclamation-triangle"></i><span>ТОКЕН - ЭТО ВАШ ПАРОЛЬ! НИКОМУ НЕ ПОКАЗЫВАЙТЕ</span></div><div class="form-group"><label class="form-label">DISCORD TOKEN</label><div style="position: relative;"><input type="password" class="form-input" id="tokenInput" placeholder="••••••••••••••••••••••"><span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); cursor: pointer;" onclick="window.toggleTokenVisibility()"><i class="fas fa-eye"></i></span></div></div><div class="instruction-box"><div class="instruction-header" onclick="window.toggleInstructions()"><span>КАК ПОЛУЧИТЬ ТОКЕН?</span><span class="arrow"><i class="fas fa-chevron-down"></i></span></div><div class="instruction-content" id="instructionContent"><ol><li>Откройте Discord в браузере</li><li>Нажмите <code>F12</code> → Network</li><li>Введите в поиске: <code>/api</code></li><li>Найдите пункт <code>science</code></li><li>Скопируйте <code>authorization</code></li></ol></div></div><div style="margin: 10px 0;"><button class="btn" onclick="window.testToken()" id="testTokenBtn"><i class="fas fa-check-circle"></i> ПРОВЕРИТЬ ТОКЕН</button></div><div id="authError" class="error-message"></div><button class="btn btn-primary" onclick="window.authorize()" id="loginBtn"><i class="fas fa-sign-in-alt"></i> ВОЙТИ</button></div></div></div>
             <div id="mainView" class="hidden">
-                <div class="user-profile">
-                    <img id="userAvatar" class="avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23111'/%3E%3Ctext x='32' y='40' text-anchor='middle' fill='%23333' font-size='24'%3E●%3C/text%3E%3C/svg%3E">
-                    <div class="user-details">
-                        <div class="user-name" id="userName">ЗАГРУЗКА...</div>
-                        <div class="user-id" id="userId">ID: ...</div>
-                        <div class="user-email">
-                            <span class="email-blur" id="userEmail">••••••@•••••.com</span>
-                            <span class="email-toggle" onclick="window.toggleEmail()"><i class="fas fa-eye"></i></span>
-                        </div>
-                    </div>
-                    <button class="btn logout-btn" onclick="window.logout()"><i class="fas fa-sign-out-alt"></i> ВЫЙТИ</button>
-                </div>
-
-                <div id="backgroundStatus" class="background-status">
-                    <div class="background-status-title">
-                        <div class="spinner"></div>
-                        <span>КЛОНИРОВАНИЕ ВЫПОЛНЯЕТСЯ</span>
-                    </div>
-                    <div id="backgroundProgress">ПРОГРЕСС: 0%</div>
-                    <div id="backgroundStage" style="color: var(--text-secondary); font-size: 0.7rem; margin-top: 5px;">ЭТАП: ПОДГОТОВКА</div>
-                </div>
-
-                <div id="mainContent">
-                    <div class="clone-card">
-                        <div class="clone-title">КЛОНИРОВАНИЕ</div>
-                        <div class="clone-subtitle"><span>by xolirx</span> • 2026</div>
-                        
-                        <div class="input-group">
-                            <label class="input-label">ИСХОДНЫЙ СЕРВЕР</label>
-                            <div class="search-wrapper">
-                                <input type="text" class="clone-input" id="sourceId" placeholder="000000000000000000">
-                                <i class="fas fa-search search-icon" onclick="window.showServerList('source')"></i>
-                            </div>
-                        </div>
-
-                        <div class="input-group">
-                            <label class="input-label">ЦЕЛЕВОЙ СЕРВЕР</label>
-                            <div class="search-wrapper">
-                                <input type="text" class="clone-input" id="targetId" placeholder="000000000000000000">
-                                <i class="fas fa-search search-icon" onclick="window.showServerList('target')"></i>
-                            </div>
-                        </div>
-
-                        <div class="selection-options">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="cloneRoles" checked>
-                                <span>Клонировать роли</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="cloneChannels" checked>
-                                <span>Клонировать каналы</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="cloneIcon" checked>
-                                <span>Клонировать иконку</span>
-                            </label>
-                        </div>
-
-                        <div style="display: flex; gap: 10px; max-width: 400px; margin: 10px auto;">
-                            <button class="btn" style="flex: 1;" onclick="window.validateServers()"><i class="fas fa-check"></i> ПРОВЕРИТЬ</button>
-                        </div>
-
-                        <div class="btn-group">
-                            <button class="btn btn-primary" id="cloneBtn" onclick="window.showAgreement()"><i class="fas fa-copy"></i> НАЧАТЬ КЛОНИРОВАНИЕ</button>
-                            <button class="btn btn-danger" id="cancelCloneBtn" onclick="window.cancelCloning()" disabled><i class="fas fa-times-circle"></i> ОТМЕНИТЬ</button>
-                        </div>
-
-                        <div id="serverListContainer" class="server-list hidden"></div>
-                        <div id="serverValidationResult" style="color: #88ff88; font-size: 0.7rem; margin: 5px 0; display: none;"></div>
-
-                        <div class="progress-bar" id="progressBar">
-                            <div class="progress-fill" id="progressFill"></div>
-                        </div>
-
-                        <div class="progress-details" id="progressDetails">
-                            <div class="detail-item">
-                                <span>РОЛИ</span>
-                                <div class="detail-bar" id="rolesProgressBar" style="width: 0%"></div>
-                                <span class="detail-count" id="rolesCount">0/0</span>
-                            </div>
-                            <div class="detail-item">
-                                <span>КАНАЛЫ</span>
-                                <div class="detail-bar" id="channelsProgressBar" style="width: 0%"></div>
-                                <span class="detail-count" id="channelsCount">0/0</span>
-                            </div>
-                        </div>
-
-                        <div id="cloneError" class="error-message"></div>
-                    </div>
-
-                    <div class="info-grid">
-                        <div class="info-card">
-                            <div class="info-card-title">БУДЕТ СКОПИРОВАНО</div>
-                            <ul class="info-list">
-                                <li>НАЗВАНИЕ СЕРВЕРА</li>
-                                <li>ИКОНКА СЕРВЕРА</li>
-                                <li>ВСЕ РОЛИ (С ПРАВАМИ)</li>
-                                <li>КАТЕГОРИИ И КАНАЛЫ</li>
-                                <li>ПРАВА ДОСТУПА</li>
-                            </ul>
-                        </div>
-                        <div class="info-card">
-                            <div class="info-card-title">НЕ БУДЕТ СКОПИРОВАНО</div>
-                            <ul class="info-list">
-                                <li>СООБЩЕНИЯ</li>
-                                <li>УЧАСТНИКИ</li>
-                                <li>ВЕБХУКИ</li>
-                                <li>ИНТЕГРАЦИИ</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div style="margin: 10px 0; display: flex; gap: 10px; justify-content: flex-end;">
-                        <button class="btn" onclick="window.clearLogs()" style="padding: 0.5rem 1rem; font-size: 0.7rem;"><i class="fas fa-eraser"></i> ОЧИСТИТЬ ЛОГИ</button>
-                    </div>
-
-                    <div class="log-container" id="log"></div>
-                </div>
-
-                <div id="updatesContent" class="hidden">
-                    <div class="glass-card">
-                        <div class="fix-title">ИСТОРИЯ ОБНОВЛЕНИЙ</div>
-                        <div class="fix-subtitle"><span>by xolirx</span> • все изменения по датам</div>
-                        
-                        <div class="fixes-container">
-                            <div class="fix-group">
-                                <div class="fix-date">22 МАРТА 2026</div>
-                                <div class="fix-title-main">
-                                    <i class="fas fa-rocket"></i>
-                                    <span>МАЖОРНОЕ ОБНОВЛЕНИЕ V3.0</span>
-                                </div>
-                                <ul class="fix-list">
-                                    <li>Добавлен CORS-прокси для корректной работы с Discord API</li>
-                                    <li>Реализована полная модульная архитектура с разделением на файлы</li>
-                                    <li>Добавлена возможность выбора элементов для клонирования (роли/каналы/иконка)</li>
-                                    <li>Реализован поиск по серверам с фильтрацией в реальном времени</li>
-                                    <li>Добавлены таймауты для всех запросов (30 секунд)</li>
-                                    <li>Улучшена обработка rate limit с автоматическими повторными попытками</li>
-                                    <li>Добавлено кэширование данных серверов (5 минут)</li>
-                                    <li>Реализована виртуализация списка серверов для производительности</li>
-                                    <li>Добавлен предпросмотр структуры перед клонированием</li>
-                                    <li>Исправлены все проблемы с CORS и правами доступа</li>
-                                    <li>Добавлена валидация прав администратора на каждом этапе</li>
-                                    <li>Реализовано сохранение темы в localStorage</li>
-                                </ul>
-                                <div class="fix-note">
-                                    <i class="fas fa-check-circle"></i> Полная переработка архитектуры, исправлены все критические ошибки
-                                </div>
-                            </div>
-
-                            <div class="fix-group">
-                                <div class="fix-date">21 МАРТА 2026</div>
-                                <div class="fix-title-main">
-                                    <i class="fas fa-palette"></i>
-                                    <span>ВИЗУАЛЬНОЕ ОБНОВЛЕНИЕ V2.0</span>
-                                </div>
-                                <ul class="fix-list">
-                                    <li>Переход на монохромную цветовую схему (черный/белый/серый)</li>
-                                    <li>Удалены эффекты пыли за курсором и 3D-наклона карточек</li>
-                                    <li>Оптимизированы все анимации для снижения нагрузки на GPU</li>
-                                    <li>Добавлена адаптация под мобильные устройства</li>
-                                    <li>Реализованы кастомные тултипы для всех полей ввода</li>
-                                    <li>Добавлены конфетти при успешном завершении клонирования</li>
-                                </ul>
-                                <div class="fix-note">
-                                    <i class="fas fa-star"></i> Лаконичный и производительный интерфейс
-                                </div>
-                            </div>
-
-                            <div class="fix-group">
-                                <div class="fix-date">20 МАРТА 2026</div>
-                                <div class="fix-title-main">
-                                    <i class="fas fa-bug"></i>
-                                    <span>КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: HTTP 400 ОШИБКИ</span>
-                                </div>
-                                <ul class="fix-list">
-                                    <li>Исправлена проблема с правами доступа (permission_overwrites)</li>
-                                    <li>Исправлено копирование голосовых каналов</li>
-                                    <li>Добавлена обрезка длинных названий ролей и каналов</li>
-                                    <li>Исправлено копирование иконки сервера</li>
-                                    <li>Улучшена обработка ошибок 400 с детальными сообщениями</li>
-                                </ul>
-                            </div>
-
-                            <div class="fix-group">
-                                <div class="fix-date">15 МАРТА 2026</div>
-                                <div class="fix-title-main">
-                                    <i class="fas fa-shield-alt"></i>
-                                    <span>УЛУЧШЕНИЯ БЕЗОПАСНОСТИ</span>
-                                </div>
-                                <ul class="fix-list">
-                                    <li>Добавлено шифрование токена при сохранении</li>
-                                    <li>Реализован автоматический выход после 30 минут бездействия</li>
-                                    <li>Добавлена валидация ID серверов</li>
-                                    <li>Улучшена защита от XSS атак</li>
-                                    <li>Добавлено экранирование всех пользовательских данных</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="supportContent" class="hidden">
-                    <div class="glass-card">
-                        <div class="auth-title">ПОДДЕРЖКА РАЗРАБОТЧИКА</div>
-                        <div class="auth-subtitle"><span>by xolirx</span> • 2026</div>
-                        <div class="contact-single" style="text-align: center;">
-                            <a href="https://t.me/xolirx" target="_blank" class="btn btn-primary" style="display: inline-flex;"><i class="fab fa-telegram"></i> НАПИСАТЬ В TELEGRAM</a>
-                        </div>
-                        <div style="margin-top: 2rem; color: var(--text-secondary); font-size: 0.8rem; text-align: center;">ОТВЕЧАЮ В ТЕЧЕНИЕ ЧАСА</div>
-                    </div>
-                </div>
-
-                <div id="aboutContent" class="hidden">
-                    <div class="glass-card">
-                        <div class="auth-title">О ПРОЕКТЕ</div>
-                        <div class="auth-subtitle"><span>by xolirx</span> • 2026</div>
-                        <div class="about-section">
-                            <p>Профессиональный инструмент для полного клонирования структуры Discord серверов.</p>
-                            <h3 style="margin: 1rem 0 0.5rem; color: var(--accent);">ОСНОВНЫЕ ВОЗМОЖНОСТИ</h3>
-                            <ul class="info-list">
-                                <li>Полное клонирование структуры сервера</li>
-                                <li>Сохранение всех ролей с правами</li>
-                                <li>Воссоздание категорий и каналов</li>
-                                <li>Копирование иконки и названия</li>
-                                <li>Выборочное клонирование элементов</li>
-                                <li>Предпросмотр перед клонированием</li>
-                            </ul>
-                            <h3 style="margin: 1rem 0 0.5rem; color: var(--accent);">АВТОР</h3>
-                            <ul class="info-list"><li>XOLIRX • 2026</li></ul>
-                        </div>
-                    </div>
-                </div>
+                <div class="user-profile"><img id="userAvatar" class="avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23111'/%3E%3Ctext x='32' y='40' text-anchor='middle' fill='%23333' font-size='24'%3E●%3C/text%3E%3C/svg%3E"><div class="user-details"><div class="user-name" id="userName">ЗАГРУЗКА...</div><div class="user-id" id="userId">ID: ...</div><div class="user-email"><span class="email-blur" id="userEmail">••••••@•••••.com</span><span class="email-toggle" onclick="window.toggleEmail()"><i class="fas fa-eye"></i></span></div></div><button class="btn logout-btn" onclick="window.logout()"><i class="fas fa-sign-out-alt"></i> ВЫЙТИ</button></div>
+                <div id="backgroundStatus" class="background-status"><div class="background-status-title"><div class="spinner"></div><span>КЛОНИРОВАНИЕ ВЫПОЛНЯЕТСЯ</span></div><div id="backgroundProgress">ПРОГРЕСС: 0%</div><div id="backgroundStage" style="color: var(--text-secondary); font-size: 0.7rem; margin-top: 5px;">ЭТАП: ПОДГОТОВКА</div></div>
+                <div id="mainContent"><div class="clone-card"><div class="clone-title">КЛОНИРОВАНИЕ</div><div class="clone-subtitle"><span>by xolirx</span> • 2026</div><div class="input-group"><label class="input-label">ИСХОДНЫЙ СЕРВЕР</label><input type="text" class="clone-input" id="sourceId" placeholder="000000000000000000"></div><div class="input-group"><label class="input-label">ЦЕЛЕВОЙ СЕРВЕР</label><input type="text" class="clone-input" id="targetId" placeholder="000000000000000000"></div><div style="display: flex; gap: 10px; max-width: 400px; margin: 10px auto;"><button class="btn" style="flex: 1;" onclick="window.showServerList()"><i class="fas fa-list"></i> МОИ СЕРВЕРА</button><button class="btn" style="flex: 1;" onclick="window.validateServers()"><i class="fas fa-check"></i> ПРОВЕРИТЬ</button></div><div class="btn-group"><button class="btn btn-primary" id="cloneBtn" onclick="window.showAgreement()"><i class="fas fa-copy"></i> НАЧАТЬ КЛОНИРОВАНИЕ</button><button class="btn btn-danger" id="cancelCloneBtn" onclick="window.cancelCloning()" disabled><i class="fas fa-times-circle"></i> ОТМЕНИТЬ</button></div><div id="serverListContainer" class="server-list hidden"></div><div id="serverValidationResult" style="color: #88ff88; font-size: 0.7rem; margin: 5px 0; display: none;"></div><div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div><div class="progress-details" id="progressDetails"><div class="detail-item"><span>РОЛИ</span><div class="detail-bar" id="rolesProgressBar" style="width: 0%"></div><span class="detail-count" id="rolesCount">0/0</span></div><div class="detail-item"><span>КАНАЛЫ</span><div class="detail-bar" id="channelsProgressBar" style="width: 0%"></div><span class="detail-count" id="channelsCount">0/0</span></div></div><div id="cloneError" class="error-message"></div></div><div class="info-grid"><div class="info-card"><div class="info-card-title">БУДЕТ СКОПИРОВАНО</div><ul class="info-list"><li>НАЗВАНИЕ СЕРВЕРА</li><li>ИКОНКА СЕРВЕРА</li><li>ВСЕ РОЛИ (С ПРАВАМИ)</li><li>КАТЕГОРИИ И КАНАЛЫ</li><li>ПРАВА ДОСТУПА</li></ul></div><div class="info-card"><div class="info-card-title">НЕ БУДЕТ СКОПИРОВАНО</div><ul class="info-list"><li>СООБЩЕНИЯ</li><li>УЧАСТНИКИ</li><li>ВЕБХУКИ</li><li>ИНТЕГРАЦИИ</li></ul></div></div><div style="margin: 10px 0; display: flex; gap: 10px; justify-content: flex-end;"><button class="btn" onclick="window.clearLogs()" style="padding: 0.5rem 1rem; font-size: 0.7rem;"><i class="fas fa-eraser"></i> ОЧИСТИТЬ ЛОГИ</button></div><div class="log-container" id="log"></div></div>
+                <div id="fixesContent" class="hidden"><div class="glass-card"><div class="fix-title">ИСТОРИЯ ИСПРАВЛЕНИЙ</div><div class="fix-subtitle"><span>by xolirx</span> • все изменения по датам</div><div class="fixes-container"><div class="fix-group"><div class="fix-date">22 МАРТА 2026</div><div class="fix-title-main"><i class="fas fa-palette"></i><span>РЕФАКТОРИНГ И ОПТИМИЗАЦИЯ: МОНОХРОМНАЯ ТЕМА</span></div><ul class="fix-list"><li>Полное удаление эффекта пыли за курсором и зеркального 3D-наклона карточек</li><li>Переход на строгую черно-бело-серую цветовую схему (акцент заменён на оттенки серого)</li><li>Оптимизация анимаций и снижение нагрузки на GPU при прокрутке</li><li>Улучшена обработка ошибок сети и повторные попытки при 429</li><li>Ускорен рендеринг логов и исправлены редкие базы с обновлением прогресса</li><li>Повышена стабильность при отмене клонирования и очистке ресурсов</li></ul><div class="fix-note"><i class="fas fa-check-circle"></i> Интерфейс стал лаконичнее, работа инструмента — быстрее и надёжнее</div></div><div class="fix-group"><div class="fix-date">21 МАРТА 2026</div><div class="fix-title-main"><i class="fas fa-bug"></i><span>КРИТИЧЕСКОЕ ОБНОВЛЕНИЕ: ИСПРАВЛЕНИЕ ОШИБКИ HTTP 400</span></div><ul class="fix-list"><li>Исправлена проблема с правами доступа (permission_overwrites)</li><li>Исправлено копирование голосовых каналов</li><li>Добавлена обрезка длинных названий ролей/каналов</li><li>Исправлено копирование иконки сервера</li></ul></div><div class="fix-group"><div class="fix-date">20 МАРТА 2026</div><div class="fix-title-main"><i class="fas fa-sync-alt"></i><span>ОПТИМИЗАЦИЯ И УЛУЧШЕНИЯ ПРОИЗВОДИТЕЛЬНОСТИ</span></div><ul class="fix-list"><li>Функция повторных попыток при ошибках 429</li><li>Улучшена анимация прогресса</li><li>Возможность отмены клонирования</li><li>Пул соединений для API запросов</li></ul></div></div></div></div>
+                <div id="supportContent" class="hidden"><div class="glass-card"><div class="auth-title">ПОДДЕРЖКА РАЗРАБОТЧИКА</div><div class="auth-subtitle"><span>by xolirx</span> • 2026</div><div class="contact-single" style="text-align: center;"><a href="https://t.me/xolirx" target="_blank" class="btn btn-primary" style="display: inline-flex;"><i class="fab fa-telegram"></i> НАПИСАТЬ В TELEGRAM</a></div><div style="margin-top: 2rem; color: var(--text-secondary); font-size: 0.8rem; text-align: center;">ОТВЕЧАЮ В ТЕЧЕНИЕ ЧАСА</div></div></div>
+                <div id="aboutContent" class="hidden"><div class="glass-card"><div class="auth-title">О ПРОЕКТЕ</div><div class="auth-subtitle"><span>by xolirx</span> • 2026</div><div class="about-section"><p>Профессиональный инструмент для полного клонирования структуры Discord серверов.</p><h3 style="margin: 1rem 0 0.5rem; color: var(--accent);">ОСНОВНЫЕ ВОЗМОЖНОСТИ</h3><ul class="info-list"><li>Полное клонирование структуры сервера</li><li>Сохранение всех ролей с правами</li><li>Воссоздание категорий и каналов</li><li>Копирование иконки и названия</li></ul><h3 style="margin: 1rem 0 0.5rem; color: var(--accent);">АВТОР</h3><ul class="info-list"><li>XOLIRX • 2026</li></ul></div></div></div>
             </div>
         </div>
-
         <div class="footer">DISCORD SERVER CLONER PRO • 2026 • by xolirx</div>
     </div>
-
-    <div class="bottom-controls">
-        <button class="control-btn" onclick="window.toggleTheme()"><i class="fas fa-moon"></i></button>
-    </div>
+    <div class="bottom-controls"><button class="control-btn" onclick="window.toggleTheme()"><i class="fas fa-moon"></i></button></div>
     <button class="export-btn" onclick="window.exportLogs()"><i class="fas fa-download"></i></button>
+    <div id="agreementModal" class="modal"><div class="modal-content"><div class="modal-title">ПРАВИЛА И ОТВЕТСТВЕННОСТЬ</div><ul class="rules-list"><li>Я использую программу НА СВОЙ РИСК</li><li>Автор НЕ НЕСЕТ ответственности за последствия</li><li>Я принимаю ответственность за блокировку аккаунта</li><li>Я использую программу ТОЛЬКО на своих серверах</li><li>Я имею права администратора на обоих серверах</li><li>Все каналы и роли на целевом сервере будут УДАЛЕНЫ</li></ul><div class="checkbox-group"><div class="checkbox-item"><input type="checkbox" id="rule1"><label>Я ПРОЧИТАЛ И ПОНЯЛ ПРАВИЛА</label></div><div class="checkbox-item"><input type="checkbox" id="rule2"><label>Я ОСОЗНАЮ ВСЕ РИСКИ</label></div><div class="checkbox-item"><input type="checkbox" id="rule3"><label>Я ПРИНИМАЮ ПОЛНУЮ ОТВЕТСТВЕННОСТЬ</label></div></div><div class="modal-buttons" style="display: flex; gap: 1rem; justify-content: flex-end;"><button class="btn" onclick="window.closeModal()">ОТМЕНА</button><button class="btn btn-primary" onclick="window.confirmAllRules()" id="confirmBtn" disabled>ПРОДОЛЖИТЬ</button></div></div></div>
 
-    <div id="agreementModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-title">ПРАВИЛА И ОТВЕТСТВЕННОСТЬ</div>
-            <ul class="rules-list">
-                <li>Я использую программу НА СВОЙ РИСК</li>
-                <li>Автор НЕ НЕСЕТ ответственности за последствия</li>
-                <li>Я принимаю ответственность за блокировку аккаунта</li>
-                <li>Я использую программу ТОЛЬКО на своих серверах</li>
-                <li>Я имею права администратора на обоих серверах</li>
-                <li>Все каналы и роли на целевом сервере будут УДАЛЕНЫ</li>
-            </ul>
-            <div class="checkbox-group">
-                <div class="checkbox-item"><input type="checkbox" id="rule1"><label>Я ПРОЧИТАЛ И ПОНЯЛ ПРАВИЛА</label></div>
-                <div class="checkbox-item"><input type="checkbox" id="rule2"><label>Я ОСОЗНАЮ ВСЕ РИСКИ</label></div>
-                <div class="checkbox-item"><input type="checkbox" id="rule3"><label>Я ПРИНИМАЮ ПОЛНУЮ ОТВЕТСТВЕННОСТЬ</label></div>
-            </div>
-            <div class="modal-buttons" style="display: flex; gap: 1rem; justify-content: flex-end;">
-                <button class="btn" onclick="window.closeModal()">ОТМЕНА</button>
-                <button class="btn btn-primary" onclick="window.confirmAllRules()" id="confirmBtn" disabled>ПРОДОЛЖИТЬ</button>
-            </div>
-        </div>
-    </div>
+    <script>
+        // Глобальные переменные и функции
+        window.CONFIG = { maxLogs: 200, apiBase: 'https://discord.com/api/v10', retryAttempts: 3, rateLimitDelay: 1000, maxConcurrent: 5 };
+        window.state = { token: null, user: null, cloning: false, cancelRequested: false, userGuilds: [], emailVisible: false, snowflakes: [], animationFrame: null, inactivityTimer: null };
+        
+        // DOM элементы
+        const els = {
+            loadingOverlay: document.getElementById('loadingOverlay'),
+            snowCanvas: document.getElementById('snowCanvas'),
+            authView: document.getElementById('authView'),
+            mainView: document.getElementById('mainView'),
+            tokenInput: document.getElementById('tokenInput'),
+            authError: document.getElementById('authError'),
+            loginBtn: document.getElementById('loginBtn'),
+            testTokenBtn: document.getElementById('testTokenBtn'),
+            userAvatar: document.getElementById('userAvatar'),
+            userName: document.getElementById('userName'),
+            userId: document.getElementById('userId'),
+            userEmail: document.getElementById('userEmail'),
+            sourceId: document.getElementById('sourceId'),
+            targetId: document.getElementById('targetId'),
+            cloneBtn: document.getElementById('cloneBtn'),
+            cancelCloneBtn: document.getElementById('cancelCloneBtn'),
+            progressFill: document.getElementById('progressFill'),
+            backgroundStatus: document.getElementById('backgroundStatus'),
+            backgroundProgress: document.getElementById('backgroundProgress'),
+            backgroundStage: document.getElementById('backgroundStage'),
+            serverListContainer: document.getElementById('serverListContainer'),
+            serverValidationResult: document.getElementById('serverValidationResult'),
+            cloneError: document.getElementById('cloneError'),
+            log: document.getElementById('log'),
+            themeBtn: document.querySelector('.control-btn'),
+            agreementModal: document.getElementById('agreementModal'),
+            rule1: document.getElementById('rule1'),
+            rule2: document.getElementById('rule2'),
+            rule3: document.getElementById('rule3'),
+            confirmBtn: document.getElementById('confirmBtn'),
+            mainContent: document.getElementById('mainContent'),
+            fixesContent: document.getElementById('fixesContent'),
+            supportContent: document.getElementById('supportContent'),
+            aboutContent: document.getElementById('aboutContent'),
+            progressDetails: document.getElementById('progressDetails'),
+            rolesProgressBar: document.getElementById('rolesProgressBar'),
+            channelsProgressBar: document.getElementById('channelsProgressBar'),
+            rolesCount: document.getElementById('rolesCount'),
+            channelsCount: document.getElementById('channelsCount')
+        };
 
-    <div id="previewModal" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
-            <div class="modal-title">ПРЕДПРОСМОТР КЛОНИРОВАНИЯ</div>
-            <div id="previewContent"></div>
-            <div class="modal-buttons" style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
-                <button class="btn" onclick="window.closePreviewModal()">ОТМЕНА</button>
-                <button class="btn btn-primary" onclick="window.startCloneAfterPreview()">ПРОДОЛЖИТЬ</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="config.js"></script>
-    <script src="utils.js"></script>
-    <script src="api.js"></script>
-    <script src="ui.js"></script>
-    <script src="cloner.js"></script>
-    <script src="app.js"></script>
+        // Вспомогательные функции
+        function escapeHtml(str) { const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
+        function validateGuildId(id) { return /^\d{17,20}$/.test(id); }
+        function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+        
+        function addLog(msg, type = 'info') {
+            if (!els.log) return;
+            const t = new Date().toLocaleTimeString('ru-RU');
+            const icons = { success: '<i class="fas fa-check-circle"></i>', error: '<i class="fas fa-exclamation-circle"></i>', warning: '<i class="fas fa-exclamation-triangle"></i>', info: '<i class="fas fa-info-circle"></i>' };
+            const e = document.createElement('div');
+            e.className = `log-entry log-${type}`;
+            e.innerHTML = `<span class="log-time">${t}</span><span class="log-msg">${icons[type] || icons.info} ${escapeHtml(msg)}</span>`;
+            els.log.appendChild(e);
+            els.log.scrollTop = els.log.scrollHeight;
+            if (els.log.children.length > window.CONFIG.maxLogs) els.log.removeChild(els.log.children[0]);
+        }
+        
+        function showToast(msg) {
+            const t = document.createElement('div');
+            t.className = 'toast';
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2000);
+        }
+        
+        function showError(element, msg) {
+            const el = typeof element === 'string' ? document.getElementById(element) : element;
+            if (el) {
+                el.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${escapeHtml(msg)}`;
+                el.classList.add('show');
+                setTimeout(() => el.classList.remove('show'), 3000);
+            }
+        }
+        
+        function resetInactivityTimer() {
+            if (window.state.inactivityTimer) clearTimeout(window.state.inactivityTimer);
+            window.state.inactivityTimer = setTimeout(() => {
+                if (window.state.token) window.logout();
+            }, 30 * 60 * 1000);
+        }
+        
+        // Пул соединений
+        class APIPool {
+            constructor(max = 5) { this.max = max; this.queue = []; this.active = 0; }
+            async request(url, options) {
+                return new Promise((res, rej) => { this.queue.push({ url, options, resolve: res, reject: rej }); this.process(); });
+            }
+            async process() {
+                if (this.active >= this.max || this.queue.length === 0) return;
+                this.active++;
+                const { url, options, resolve, reject } = this.queue.shift();
+                try { const response = await fetch(url, options); resolve(response); } catch (err) { reject(err); } finally { this.active--; this.process(); }
+            }
+        }
+        const apiPool = new APIPool(window.CONFIG.maxConcurrent);
+        
+        async function fetchWithRetry(url, options, maxRetries = window.CONFIG.retryAttempts) {
+            for (let i = 0; i < maxRetries; i++) {
+                if (window.state.cancelRequested) throw new Error('CANCELLED');
+                try {
+                    const res = await apiPool.request(url, options);
+                    if (res.status === 429) { const wait = parseInt(res.headers.get('Retry-After')) || 2; await sleep(wait * 1000); continue; }
+                    if (res.status === 400) { const txt = await res.text(); throw new Error(`HTTP 400: ${txt.substring(0, 200)}`); }
+                    if (!res.ok && i === maxRetries - 1) throw new Error(`HTTP ${res.status}`);
+                    if (!res.ok) { await sleep(window.CONFIG.rateLimitDelay * (i + 1)); continue; }
+                    return res;
+                } catch (e) {
+                    if (e.message === 'CANCELLED') throw e;
+                    if (i === maxRetries - 1) throw e;
+                    await sleep(window.CONFIG.rateLimitDelay * (i + 1));
+                }
+            }
+            throw new Error('MAX_RETRIES');
+        }
+        
+        // Основные функции
+        window.toggleTokenVisibility = function() {
+            const inp = els.tokenInput;
+            const icon = inp.nextElementSibling.querySelector('i');
+            if (inp.type === 'password') { inp.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
+            else { inp.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
+        };
+        
+        window.toggleInstructions = function() {
+            const cont = document.getElementById('instructionContent');
+            const head = document.querySelector('.instruction-header');
+            if (cont) cont.classList.toggle('show');
+            if (head) head.classList.toggle('active');
+        };
+        
+        window.toggleTheme = function() {
+            document.body.classList.toggle('light-theme');
+            const icon = els.themeBtn.querySelector('i');
+            icon.classList.toggle('fa-moon');
+            icon.classList.toggle('fa-sun');
+        };
+        
+        window.toggleEmail = function() {
+            window.state.emailVisible = !window.state.emailVisible;
+            const span = els.userEmail, icon = document.querySelector('.email-toggle i');
+            if (window.state.emailVisible && window.state.user?.email) {
+                span.textContent = window.state.user.email;
+                span.classList.add('unblur');
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else if (window.state.user?.email) {
+                span.textContent = window.state.user.email.replace(/./g, '•');
+                span.classList.remove('unblur');
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        };
+        
+        window.testToken = async function() {
+            const t = els.tokenInput.value.trim();
+            if (!t) return showError(els.authError, 'ВВЕДИТЕ ТОКЕН');
+            els.testTokenBtn.innerHTML = '<span class="spinner" style="width:16px;height:16px;"></span>';
+            els.testTokenBtn.disabled = true;
+            try {
+                const res = await fetch(`${window.CONFIG.apiBase}/users/@me`, { headers: { 'Authorization': t } });
+                if (res.ok) {
+                    const u = await res.json();
+                    showToast(`✓ ТОКЕН РАБОЧИЙ (${u.username})`);
+                    const warn = document.getElementById('tokenWarning');
+                    if (warn) { warn.style.display = 'flex'; setTimeout(() => warn.style.display = 'none', 3000); }
+                } else showError(els.authError, 'НЕВЕРНЫЙ ТОКЕН');
+            } catch { showError(els.authError, 'ОШИБКА ПОДКЛЮЧЕНИЯ'); }
+            finally { els.testTokenBtn.innerHTML = '<i class="fas fa-check-circle"></i> ПРОВЕРИТЬ ТОКЕН'; els.testTokenBtn.disabled = false; }
+        };
+        
+        window.authorize = async function() {
+            const t = els.tokenInput.value.trim();
+            if (!t) return showError(els.authError, 'ВВЕДИТЕ ТОКЕН');
+            els.loginBtn.innerHTML = '<span class="spinner" style="width:16px;height:16px;"></span>';
+            els.loginBtn.disabled = true;
+            try {
+                const res = await fetch(`${window.CONFIG.apiBase}/users/@me`, { headers: { 'Authorization': t } });
+                if (res.ok) {
+                    const u = await res.json();
+                    window.state.token = t;
+                    window.state.user = u;
+                    sessionStorage.setItem('discord_token', t);
+                    sessionStorage.setItem('discord_user', JSON.stringify(u));
+                    els.userName.textContent = u.global_name || u.username;
+                    els.userId.textContent = `ID: ${u.id}`;
+                    if (u.email) els.userEmail.textContent = u.email.replace(/./g, '•');
+                    if (u.avatar) els.userAvatar.src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=128`;
+                    els.authView.classList.add('hidden');
+                    els.mainView.classList.remove('hidden');
+                    addLog(`АВТОРИЗАЦИЯ: ${u.username}`, 'success');
+                    await window.loadServers();
+                } else showError(els.authError, 'НЕВЕРНЫЙ ТОКЕН');
+            } catch { showError(els.authError, 'ОШИБКА ПОДКЛЮЧЕНИЯ'); }
+            finally { els.loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> ВОЙТИ'; els.loginBtn.disabled = false; }
+        };
+        
+        window.loadServers = async function() {
+            if (!window.state.token) return [];
+            try {
+                const res = await fetch(`${window.CONFIG.apiBase}/users/@me/guilds`, { headers: { 'Authorization': window.state.token } });
+                if (res.ok) {
+                    window.state.userGuilds = await res.json();
+                    window.state.userGuilds.sort((a, b) => a.name.localeCompare(b.name));
+                    addLog(`ЗАГРУЖЕНО СЕРВЕРОВ: ${window.state.userGuilds.length}`, 'success');
+                    return window.state.userGuilds;
+                }
+            } catch (e) { addLog('ОШИБКА ЗАГРУЗКИ СЕРВЕРОВ', 'error'); }
+            return [];
+        };
+        
+        window.showServerList = async function() {
+            if (window.state.userGuilds.length === 0) await window.loadServers();
+            if (window.state.userGuilds.length) {
+                let html = '<div style="color:var(--text-secondary); margin-bottom:0.5rem;">НАЖМИТЕ ДЛЯ ВСТАВКИ ID:</div>';
+                window.state.userGuilds.slice(0, 20).forEach(g => {
+                    html += `<div class="server-item" onclick="window.setSourceId('${g.id}')"><span>${escapeHtml(g.name)}</span><span class="server-id">${g.id}</span></div>`;
+                });
+                els.serverListContainer.innerHTML = html;
+                els.serverListContainer.classList.remove('hidden');
+            }
+        };
+        
+        window.setSourceId = function(id) {
+            els.sourceId.value = id;
+            els.serverListContainer.classList.add('hidden');
+            addLog(`ВСТАВЛЕН ID: ${id}`, 'info');
+        };
+        
+        window.validateServers = async function() {
+            const s = els.sourceId.value.trim(), t = els.targetId.value.trim();
+            if (!s || !t) {
+                els.serverValidationResult.style.display = 'flex';
+                els.serverValidationResult.style.color = '#ff5555';
+                els.serverValidationResult.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ВВЕДИТЕ ID';
+                setTimeout(() => els.serverValidationResult.style.display = 'none', 3000);
+                return;
+            }
+            if (!validateGuildId(s) || !validateGuildId(t)) {
+                els.serverValidationResult.style.display = 'flex';
+                els.serverValidationResult.style.color = '#ff5555';
+                els.serverValidationResult.innerHTML = '<i class="fas fa-exclamation-triangle"></i> НЕВЕРНЫЙ ФОРМАТ ID';
+                setTimeout(() => els.serverValidationResult.style.display = 'none', 3000);
+                return;
+            }
+            els.serverValidationResult.style.display = 'flex';
+            els.serverValidationResult.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> ПРОВЕРКА...';
+            try {
+                const [src, tgt] = await Promise.all([
+                    fetch(`${window.CONFIG.apiBase}/guilds/${s}`, { headers: { 'Authorization': window.state.token } }),
+                    fetch(`${window.CONFIG.apiBase}/guilds/${t}`, { headers: { 'Authorization': window.state.token } })
+                ]);
+                if (!src.ok && !tgt.ok) { els.serverValidationResult.style.color = '#ff5555'; els.serverValidationResult.innerHTML = '<i class="fas fa-exclamation-circle"></i> ОБА СЕРВЕРА НЕ НАЙДЕНЫ'; }
+                else if (!src.ok) { els.serverValidationResult.style.color = '#ff5555'; els.serverValidationResult.innerHTML = '<i class="fas fa-exclamation-circle"></i> ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН'; }
+                else if (!tgt.ok) { els.serverValidationResult.style.color = '#ff5555'; els.serverValidationResult.innerHTML = '<i class="fas fa-exclamation-circle"></i> ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН'; }
+                else {
+                    const sg = await src.json(), tg = await tgt.json();
+                    els.serverValidationResult.style.color = '#88ff88';
+                    els.serverValidationResult.innerHTML = `<i class="fas fa-check-circle"></i> ${escapeHtml(sg.name)} → ${escapeHtml(tg.name)}`;
+                    if (s === t) els.serverValidationResult.innerHTML += ' <i class="fas fa-exclamation-triangle"></i> ОДИНАКОВЫЕ';
+                }
+                setTimeout(() => els.serverValidationResult.style.display = 'none', 5000);
+            } catch { els.serverValidationResult.style.display = 'none'; }
+        };
+        
+        window.showAgreement = function() {
+            if (!els.sourceId.value.trim() || !els.targetId.value.trim()) return showError(els.cloneError, 'ВВЕДИТЕ ID СЕРВЕРОВ');
+            if (els.sourceId.value.trim() === els.targetId.value.trim()) return showError(els.cloneError, 'СЕРВЕРЫ НЕ МОГУТ БЫТЬ ОДИНАКОВЫМИ');
+            els.agreementModal.classList.add('active');
+        };
+        
+        window.closeModal = function() { els.agreementModal.classList.remove('active'); };
+        
+        function checkAllRules() { els.confirmBtn.disabled = !(els.rule1.checked && els.rule2.checked && els.rule3.checked); }
+        
+        window.confirmAllRules = function() {
+            if (els.rule1.checked && els.rule2.checked && els.rule3.checked) {
+                window.closeModal();
+                window.startCloning();
+            }
+        };
+        
+        window.cancelCloning = function() {
+            if (window.state.cloning) {
+                window.state.cancelRequested = true;
+                addLog('ОТМЕНА КЛОНИРОВАНИЯ...', 'warning');
+                els.cancelCloneBtn.disabled = true;
+            }
+        };
+        
+        function convertOverwrites(overwrites, targetId, roleMap) {
+            if (!overwrites || !Array.isArray(overwrites)) return [];
+            return overwrites.map(ow => {
+                if (!ow || !ow.id) return null;
+                let id = ow.id;
+                if (ow.type === 0) { if (roleMap && roleMap[ow.id]) id = roleMap[ow.id]; else return null; }
+                else if (ow.type === 1) { id = targetId; }
+                return { id: id, type: ow.type, allow: ow.allow?.toString() || '0', deny: ow.deny?.toString() || '0' };
+            }).filter(ow => ow !== null);
+        }
+        
+        async function copyGuildIcon(sourceId, targetId, token) {
+            try {
+                const res = await fetch(`${window.CONFIG.apiBase}/guilds/${sourceId}`, { headers: { 'Authorization': token } });
+                if (!res.ok) return false;
+                const guild = await res.json();
+                if (!guild.icon) return false;
+                const iconUrl = `https://cdn.discordapp.com/icons/${sourceId}/${guild.icon}.png?size=256`;
+                const img = await fetch(iconUrl);
+                if (!img.ok) return false;
+                const blob = await img.blob();
+                if (blob.size > 256 * 1024) { addLog('ИКОНКА СЛИШКОМ БОЛЬШАЯ, ПРОПУСК', 'warning'); return false; }
+                const reader = new FileReader();
+                const data = await new Promise(resolve => { reader.onloadend = () => resolve(reader.result); reader.readAsDataURL(blob); });
+                const base64 = data.split(',')[1];
+                const upd = await fetch(`${window.CONFIG.apiBase}/guilds/${targetId}`, {
+                    method: 'PATCH',
+                    headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ icon: base64 })
+                });
+                return upd.ok;
+            } catch (e) { addLog(`ОШИБКА КОПИРОВАНИЯ ИКОНКИ: ${e.message}`, 'warning'); return false; }
+        }
+        
+        function createConfetti() {
+            const colors = ['#9ca3af', '#ffffff', '#6b7280'];
+            for (let i = 0; i < 40; i++) {
+                const p = document.createElement('div');
+                p.className = 'confetti';
+                p.style.left = Math.random() * window.innerWidth + 'px';
+                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                p.style.width = Math.random() * 8 + 4 + 'px';
+                p.style.height = p.style.width;
+                document.body.appendChild(p);
+                p.addEventListener('animationend', () => p.remove());
+            }
+        }
+        
+        window.startCloning = async function() {
+            if (window.state.cloning) return;
+            window.state.cloning = true;
+            window.state.cancelRequested = false;
+            els.cloneBtn.disabled = true;
+            els.cancelCloneBtn.disabled = false;
+            els.backgroundStatus.classList.add('show');
+            els.progressDetails.style.display = 'block';
+            const sourceId = els.sourceId.value.trim(), targetId = els.targetId.value.trim();
+            if (!validateGuildId(sourceId) || !validateGuildId(targetId)) {
+                addLog('НЕВЕРНЫЙ ФОРМАТ ID СЕРВЕРА', 'error');
+                window.state.cloning = false;
+                els.cloneBtn.disabled = false;
+                els.cancelCloneBtn.disabled = true;
+                els.backgroundStatus.classList.remove('show');
+                return;
+            }
+            try {
+                addLog('НАЧАЛО КЛОНИРОВАНИЯ', 'info');
+                addLog(`ИСТОЧНИК: ${sourceId} → ЦЕЛЬ: ${targetId}`, 'info');
+                const guildsRes = await fetch(`${window.CONFIG.apiBase}/users/@me/guilds`, { headers: { 'Authorization': window.state.token } });
+                const guilds = await guildsRes.json();
+                const targetGuild = guilds.find(g => g.id === targetId);
+                if (!targetGuild || !(BigInt(targetGuild.permissions) & 0x8n)) throw new Error('НЕТ ПРАВ АДМИНИСТРАТОРА');
+                els.backgroundStage.textContent = 'ЭТАП: ОЧИСТКА 0%';
+                els.progressFill.style.width = '0%';
+                const channelsRes = await fetchWithRetry(`${window.CONFIG.apiBase}/guilds/${targetId}/channels`, { headers: { 'Authorization': window.state.token } });
+                const channels = await channelsRes.json();
+                for (let i = 0; i < channels.length; i++) {
+                    if (window.state.cancelRequested) throw new Error('CANCELLED');
+                    try { await fetchWithRetry(`${window.CONFIG.apiBase}/channels/${channels[i].id}`, { method: 'DELETE', headers: { 'Authorization': window.state.token } }); addLog(`УДАЛЕН КАНАЛ: ${channels[i].name}`, 'warning'); } catch (e) { addLog(`НЕ УДАЛОСЬ УДАЛИТЬ КАНАЛ: ${channels[i].name}`, 'error'); }
+                    await sleep(300);
+                    els.progressFill.style.width = `${Math.min(20, (i / Math.max(channels.length, 1)) * 20)}%`;
+                }
+                const rolesRes = await fetchWithRetry(`${window.CONFIG.apiBase}/guilds/${targetId}/roles`, { headers: { 'Authorization': window.state.token } });
+                const roles = await rolesRes.json();
+                const deletable = roles.filter(r => r.name !== '@everyone' && !r.managed).sort((a, b) => b.position - a.position);
+                for (let i = 0; i < deletable.length; i++) {
+                    if (window.state.cancelRequested) throw new Error('CANCELLED');
+                    try { await fetchWithRetry(`${window.CONFIG.apiBase}/guilds/${targetId}/roles/${deletable[i].id}`, { method: 'DELETE', headers: { 'Authorization': window.state.token } }); addLog(`УДАЛЕНА РОЛЬ: ${deletable[i].name}`, 'warning'); } catch (e) { addLog(`НЕ УДАЛОСЬ УДАЛИТЬ РОЛЬ: ${deletable[i].name}`, 'error'); }
+                    await sleep(300);
+                }
+                els.progressFill.style.width = '20%';
+                els.backgroundStage.textContent = 'ЭТАП: КОПИРОВАНИЕ ИНФОРМАЦИИ';
+                const srcGuild = await (await fetchWithRetry(`${window.CONFIG.apiBase}/guilds/${sourceId}`, { headers: { 'Authorization': window.state.token } })).json();
+                await fetchWithRetry(`${window.CONFIG.apiBase}/guilds/${targetId}`, { method: 'PATCH', headers: { 'Authorization': window.state.token, 'Content-Type': 'application/json' }, body: JSON.stringify({ name: srcGuild.name }) });
+                addLog(`НАЗВАНИЕ: ${srcGuild.name}`, 'success');
+                await copyGuildIcon(sourceId, targetId, window.state.token);
+                els.progressFill.style.width = '30%';
+                els.backgroundStage.textContent = 'ЭТАП: СОЗДАНИЕ РОЛЕЙ 0%';
+                const srcRoles = await (await fetchWithRetry(`${window.CONFIG.apiBase}/guilds/${sourceId}/roles`, { headers: { 'Authorization': window.state.token } })).json();
+                const rolesToCreate = srcRoles.filter(r => r.name !== '@everyone' && !r.managed).sort((a, b) => b.position - a.position);
+                const roleMap = {};
+                if (els.rolesCount) els.rolesCount.textContent = `0/${rolesToCreate.length}`;
+                for (let i = 0; i < rolesToCreate.length; i++) {
+                    if (window.state.cancelRequested) throw new Error('CANCELLED');
+                    try {
+                        const create = await fetchWithRetry(`${window.CONFIG.apiBase}/guilds/${targetId}/roles`, {
+                            method: 'POST',
+                            headers: { 'Authorization': window.state.token, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: rolesToCreate[i].name.substring(0, 100), color: rolesToCreate[i].color || 0, hoist: rolesToCreate[i].hoist || false, mentionable: rolesToCreate[i].mentionable || false, permissions: rolesToCreate[i].permissions?.toString() || '0' })
+                        });
+                        if (create.ok) { const newRole = await create.json(); roleMap[rolesToCreate[i].id] = newRole.id; addLog(`СОЗДАНА РОЛЬ: ${rolesToCreate[i].name}`, 'success'); }
+                        else addLog(`ОШИБКА СОЗДАНИЯ РОЛИ ${rolesToCreate[i].name}: ${create.status}`, 'error');
+                    } catch (e) { addLog(`ОШИБКА: ${e.message}`, 'error'); }
+                    await sleep(400);
+                    const percent = (i + 1) / Math.max(rolesToCreate.length, 1) * 100;
+                    els.progressFill.style.width = `${30 + percent * 0.3}%`;
+                    if (els.rolesProgressBar) els.rolesProgressBar.style.width = `${percent}%`;
+                    if (els.rolesCount) els.rolesCount.textContent = `${i + 1}/${rolesToCreate.length}`;
+                    els.backgroundStage.textContent = `ЭТАП: СОЗДАНИЕ РОЛЕЙ ${Math.floor(percent)}%`;
+                }
+                els.backgroundStage.textContent = 'ЭТАП: СОЗДАНИЕ КАНАЛОВ 0%';
+                const srcChannels = await (await fetchWithRetry(`${window.CONFIG.apiBase}/guilds/${sourceId}/channels`, { headers: { 'Authorization': window.state.token } })).json();
+                const categories = srcChannels.filter(c => c.type === 4).sort((a, b) => a.position - b.position);
+                const others = srcChannels.filter(c => c.type !== 4).sort((a, b) => a.position - b.position);
+                const categoryMap = {};
+                let channelCount = 0;
+                const totalChannels = categories.length + others.length;
+                if (els.channelsCount) els.channelsCount.textContent = `0/${totalChannels}`;
+                for (let i = 0; i < categories.length; i++) {
+                    if (window.state.cancelRequested) throw new Error('CANCELLED');
+                    try {
+                        const catData = { name: categories[i].name.substring(0, 100), type: 4, position: categories[i].position, permission_overwrites: convertOverwrites(categories[i].permission_overwrites, targetId, roleMap) };
+                        const create = await fetchWithRetry(`${window.CONFIG.apiBase}/guilds/${targetId}/channels`, { method: 'POST', headers: { 'Authorization': window.state.token, 'Content-Type': 'application/json' }, body: JSON.stringify(catData) });
+                        if (create.ok) { const newCat = await create.json(); categoryMap[categories[i].id] = newCat.id; addLog(`СОЗДАНА КАТЕГОРИЯ: ${categories[i].name}`, 'success'); channelCount++; }
+                        else addLog(`ОШИБКА СОЗДАНИЯ КАТЕГОРИИ ${categories[i].name}: ${create.status}`, 'error');
+                    } catch (e) { addLog(`ОШИБКА: ${e.message}`, 'error'); }
+                    await sleep(400);
+                    const percent = (i + 1) / Math.max(totalChannels, 1) * 100;
+                    els.progressFill.style.width = `${60 + percent * 0.4}%`;
+                    if (els.channelsProgressBar) els.channelsProgressBar.style.width = `${percent}%`;
+                    if (els.channelsCount) els.channelsCount.textContent = `${channelCount}/${totalChannels}`;
+                }
+                for (let i = 0; i < others.length; i++) {
+                    if (window.state.cancelRequested) throw new Error('CANCELLED');
+                    const ch = others[i];
+                    try {
+                        const chData = { name: ch.name.substring(0, 100), type: ch.type, position: ch.position, permission_overwrites: convertOverwrites(ch.permission_overwrites, targetId, roleMap) };
+                        if (ch.type === 0 || ch.type === 5) {
+                            if (ch.topic) chData.topic = ch.topic.substring(0, 1024);
+                            if (ch.rate_limit_per_user) chData.rate_limit_per_user = Math.min(ch.rate_limit_per_user, 21600);
+                            if (ch.nsfw) chData.nsfw = ch.nsfw;
+                        }
+                        if (ch.type === 2) {
+                            if (ch.bitrate) chData.bitrate = Math.min(ch.bitrate, 384000);
+                            if (ch.user_limit) chData.user_limit = Math.min(ch.user_limit, 99);
+                        }
+                        if (ch.parent_id && categoryMap[ch.parent_id]) chData.parent_id = categoryMap[ch.parent_id];
+                        const create = await fetchWithRetry(`${window.CONFIG.apiBase}/guilds/${targetId}/channels`, { method: 'POST', headers: { 'Authorization': window.state.token, 'Content-Type': 'application/json' }, body: JSON.stringify(chData) });
+                        if (create.ok) { addLog(`СОЗДАН КАНАЛ: ${ch.name}`, 'success'); channelCount++; }
+                        else addLog(`ОШИБКА СОЗДАНИЯ КАНАЛА ${ch.name}: ${create.status}`, 'error');
+                    } catch (e) { addLog(`ОШИБКА: ${e.message}`, 'error'); }
+                    await sleep(400);
+                    const processed = categories.length + i + 1;
+                    const percent = processed / Math.max(totalChannels, 1) * 100;
+                    els.progressFill.style.width = `${60 + percent * 0.4}%`;
+                    if (els.channelsProgressBar) els.channelsProgressBar.style.width = `${percent}%`;
+                    if (els.channelsCount) els.channelsCount.textContent = `${channelCount}/${totalChannels}`;
+                    els.backgroundStage.textContent = `ЭТАП: СОЗДАНИЕ КАНАЛОВ ${Math.floor(percent)}%`;
+                }
+                els.progressFill.style.width = '100%';
+                addLog(`КЛОНИРОВАНИЕ ЗАВЕРШЕНО!`, 'success');
+                addLog(`СОЗДАНО: ${rolesToCreate.length} РОЛЕЙ, ${channelCount} КАНАЛОВ`, 'success');
+                showToast('КЛОНИРОВАНИЕ ЗАВЕРШЕНО');
+                createConfetti();
+            } catch (e) {
+                if (e.message === 'CANCELLED') addLog('КЛОНИРОВАНИЕ ОТМЕНЕНО', 'warning');
+                else { addLog(`ОШИБКА: ${e.message}`, 'error'); showError(els.cloneError, e.message); }
+                els.progressFill.style.width = '0%';
+            } finally {
+                window.state.cloning = false;
+                els.cloneBtn.disabled = false;
+                els.cancelCloneBtn.disabled = true;
+                els.backgroundStatus.classList.remove('show');
+                setTimeout(() => { if (els.progressDetails) els.progressDetails.style.display = 'none'; }, 3000);
+            }
+        };
+        
+        window.clearLogs = function() { els.log.innerHTML = ''; addLog('ЛОГИ ОЧИЩЕНЫ', 'info'); };
+        
+        window.exportLogs = function() {
+            const logs = Array.from(els.log.children).map(entry => { const t = entry.querySelector('.log-time')?.textContent, m = entry.querySelector('.log-msg')?.textContent; return `[${t}] ${m}`; }).join('\n');
+            const blob = new Blob([`DISCORD CLONER LOGS\n${new Date().toLocaleString()}\n${'='.repeat(50)}\n${logs}`], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `clone_logs_${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showToast('ЛОГИ ЭКСПОРТИРОВАНЫ');
+        };
+        
+        window.logout = function() {
+            window.state.token = null;
+            window.state.user = null;
+            sessionStorage.clear();
+            els.authView.classList.remove('hidden');
+            els.mainView.classList.add('hidden');
+            addLog('ВЫХОД', 'info');
+        };
+        
+        // Навигация
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+                const s = link.dataset.section;
+                if (s === 'main') { els.mainContent.classList.remove('hidden'); els.fixesContent.classList.add('hidden'); els.supportContent.classList.add('hidden'); els.aboutContent.classList.add('hidden'); }
+                else if (s === 'fixes') { els.mainContent.classList.add('hidden'); els.fixesContent.classList.remove('hidden'); els.supportContent.classList.add('hidden'); els.aboutContent.classList.add('hidden'); }
+                else if (s === 'support') { els.mainContent.classList.add('hidden'); els.fixesContent.classList.add('hidden'); els.supportContent.classList.remove('hidden'); els.aboutContent.classList.add('hidden'); }
+                else if (s === 'about') { els.mainContent.classList.add('hidden'); els.fixesContent.classList.add('hidden'); els.supportContent.classList.add('hidden'); els.aboutContent.classList.remove('hidden'); }
+            });
+        });
+        
+        // Чекбоксы
+        els.rule1?.addEventListener('change', checkAllRules);
+        els.rule2?.addEventListener('change', checkAllRules);
+        els.rule3?.addEventListener('change', checkAllRules);
+        
+        // Клавиши
+        document.addEventListener('keydown', e => {
+            if (e.ctrlKey && e.key === 'Enter' && !window.state.cloning && window.state.token) window.showAgreement();
+            if (e.key === 'Escape') window.closeModal();
+        });
+        
+        // Инициализация
+        setTimeout(() => { if (els.loadingOverlay) els.loadingOverlay.classList.add('fade-out'); }, 1200);
+        
+        // Снег
+        function initSnow() {
+            const canvas = els.snowCanvas;
+            function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            resize();
+            window.addEventListener('resize', resize);
+            window.state.snowflakes = Array.from({ length: 60 }, () => ({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.5 + 0.3, speed: Math.random() * 0.4 + 0.2, opacity: Math.random() * 0.2 + 0.1 }));
+            function draw() {
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                window.state.snowflakes.forEach(f => {
+                    ctx.beginPath();
+                    ctx.arc(f.x, f.y, f.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255,255,255,${f.opacity})`;
+                    ctx.fill();
+                    f.y += f.speed;
+                    if (f.y > canvas.height) { f.y = 0; f.x = Math.random() * canvas.width; }
+                });
+                window.state.animationFrame = requestAnimationFrame(draw);
+            }
+            draw();
+        }
+        initSnow();
+        
+        // Динамический фон
+        function initDynamicBackground() {
+            const bgCanvas = document.createElement('canvas');
+            bgCanvas.style.position = 'fixed';
+            bgCanvas.style.top = '0';
+            bgCanvas.style.left = '0';
+            bgCanvas.style.width = '100%';
+            bgCanvas.style.height = '100%';
+            bgCanvas.style.zIndex = '-2';
+            bgCanvas.style.opacity = '0.4';
+            document.body.insertBefore(bgCanvas, document.body.firstChild);
+            const ctx = bgCanvas.getContext('2d');
+            let t = 0;
+            function animate() {
+                const w = window.innerWidth, h = window.innerHeight;
+                bgCanvas.width = w;
+                bgCanvas.height = h;
+                t += 0.002;
+                const grad = ctx.createLinearGradient(w / 2 + Math.sin(t) * 60, h / 2 + Math.cos(t * 0.7) * 60, w / 2 + Math.cos(t) * 60, h / 2 + Math.sin(t * 0.5) * 60);
+                if (document.body.classList.contains('light-theme')) {
+                    grad.addColorStop(0, '#f5f7fa');
+                    grad.addColorStop(0.5, '#eef2f6');
+                    grad.addColorStop(1, '#f5f7fa');
+                } else {
+                    grad.addColorStop(0, '#000000');
+                    grad.addColorStop(0.5, '#111111');
+                    grad.addColorStop(1, '#000000');
+                }
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, w, h);
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+        initDynamicBackground();
+        
+        // Восстановление сессии
+        window.onload = async () => {
+            const savedToken = sessionStorage.getItem('discord_token'), savedUser = sessionStorage.getItem('discord_user');
+            if (savedToken && savedUser) {
+                window.state.token = savedToken;
+                window.state.user = JSON.parse(savedUser);
+                els.userName.textContent = window.state.user.global_name || window.state.user.username;
+                els.userId.textContent = `ID: ${window.state.user.id}`;
+                if (window.state.user.email) els.userEmail.textContent = window.state.user.email.replace(/./g, '•');
+                if (window.state.user.avatar) els.userAvatar.src = `https://cdn.discordapp.com/avatars/${window.state.user.id}/${window.state.user.avatar}.png?size=128`;
+                els.authView.classList.add('hidden');
+                els.mainView.classList.remove('hidden');
+                addLog('СЕССИЯ ВОССТАНОВЛЕНА', 'success');
+                await window.loadServers();
+            }
+            addLog('DISCORD SERVER CLONER PRO by xolirx', 'info');
+            resetInactivityTimer();
+        };
+        
+        window.addEventListener('beforeunload', e => {
+            if (window.state.cloning && !window.state.cancelRequested) {
+                e.preventDefault();
+                e.returnValue = 'Клонирование выполняется!';
+                return e.returnValue;
+            }
+        });
+        
+        // Добавляем ripple эффект на кнопки
+        function addRippleEffect(el) {
+            el.addEventListener('click', function(e) {
+                const ripple = document.createElement('div');
+                ripple.className = 'ripple';
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                ripple.style.width = ripple.style.height = `${size}px`;
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+                ripple.addEventListener('animationend', () => ripple.remove());
+            });
+        }
+        document.querySelectorAll('.btn').forEach(btn => addRippleEffect(btn));
+    </script>
 </body>
 </html>
