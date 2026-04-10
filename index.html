@@ -834,29 +834,267 @@
             font-size: 0.75rem;
             font-style: italic;
         }
+
+        .loading-logo {
+            color: white;
+            font-size: 1.2rem;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 2px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-bar-fill {
+            width: 100%;
+            height: 100%;
+            background: white;
+            animation: shimmer 1.5s infinite;
+        }
     </style>
 </head>
 <body>
-    <div class="loading-overlay" id="loadingOverlay"><div class="loading-content"><div class="loading-logo">DISCORD CLONER PRO</div><div class="loading-bar"><div class="loading-bar-fill"></div></div></div></div>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div style="text-align:center;">
+            <div class="loading-logo">DISCORD CLONER PRO</div>
+            <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+        </div>
+    </div>
     <canvas id="snowCanvas"></canvas>
     <div class="content">
-        <nav class="navbar"><div class="logo">DISCORD SERVER CLONER <span>by xolirx</span></div><div class="nav-links"><span class="nav-link active" data-section="main">ГЛАВНАЯ</span><span class="nav-link" data-section="fixes">ОБНОВЛЕНИЯ</span><span class="nav-link" data-section="support">ПОДДЕРЖКА</span><span class="nav-link" data-section="about">О САЙТЕ</span></div></nav>
+        <nav class="navbar">
+            <div class="logo">DISCORD SERVER CLONER <span>by xolirx</span></div>
+            <div class="nav-links">
+                <span class="nav-link active" data-section="main">ГЛАВНАЯ</span>
+                <span class="nav-link" data-section="fixes">ОБНОВЛЕНИЯ</span>
+                <span class="nav-link" data-section="support">ПОДДЕРЖКА</span>
+                <span class="nav-link" data-section="about">О САЙТЕ</span>
+            </div>
+        </nav>
         <div class="main-container">
-            <div id="authView"><div class="glass-card"><div class="auth-title">DISCORD CLONER PRO</div><div class="auth-subtitle">by xolirx • 2026</div><div class="warning-box" id="tokenWarning" style="display:none;"><i class="fas fa-exclamation-triangle"></i><span>ТОКЕН - ЭТО ВАШ ПАРОЛЬ! НИКОМУ НЕ ПОКАЗЫВАЙТЕ</span></div><div class="form-group"><label class="form-label">DISCORD TOKEN</label><div style="position:relative;"><input type="password" class="form-input" id="tokenInput" placeholder="••••••••••••••••••••••"><span style="position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--text-secondary); cursor:pointer;" id="toggleTokenVisibility"><i class="fas fa-eye"></i></span></div></div><div style="margin:10px 0;"><button class="btn" id="testTokenBtn"><i class="fas fa-check-circle"></i> ПРОВЕРИТЬ ТОКЕН</button></div><div id="authError" class="error-message"></div><button class="btn btn-primary" id="loginBtn"><i class="fas fa-sign-in-alt"></i> ВОЙТИ</button></div></div>
+            <div id="authView">
+                <div class="glass-card">
+                    <div class="auth-title">DISCORD CLONER PRO</div>
+                    <div class="auth-subtitle">by xolirx • 2026</div>
+                    <div class="warning-box" id="tokenWarning" style="display:none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>ТОКЕН - ЭТО ВАШ ПАРОЛЬ! НИКОМУ НЕ ПОКАЗЫВАЙТЕ</span>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">DISCORD TOKEN</label>
+                        <div style="position:relative;">
+                            <input type="password" class="form-input" id="tokenInput" placeholder="••••••••••••••••••••••">
+                            <span style="position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--text-secondary); cursor:pointer;" id="toggleTokenVisibility">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div style="margin:10px 0;">
+                        <button class="btn" id="testTokenBtn"><i class="fas fa-check-circle"></i> ПРОВЕРИТЬ ТОКЕН</button>
+                    </div>
+                    <div id="authError" class="error-message"></div>
+                    <button class="btn btn-primary" id="loginBtn"><i class="fas fa-sign-in-alt"></i> ВОЙТИ</button>
+                </div>
+            </div>
             <div id="mainView" class="hidden">
-                <div class="user-profile"><img id="userAvatar" class="avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23111'/%3E%3Ctext x='32' y='40' text-anchor='middle' fill='%23333' font-size='24'%3E●%3C/text%3E%3C/svg%3E"><div class="user-details"><div class="user-name" id="userName">ЗАГРУЗКА...</div><div class="user-id" id="userId">ID: ...</div><div class="user-email"><span class="email-blur" id="userEmail">••••••@•••••.com</span><span class="email-toggle" id="toggleEmailBtn"><i class="fas fa-eye"></i></span></div></div><button class="btn logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> ВЫЙТИ</button></div>
-                <div id="backgroundStatus" class="background-status"><div class="background-status-title"><div class="spinner"></div><span>КЛОНИРОВАНИЕ ВЫПОЛНЯЕТСЯ</span></div><div id="backgroundProgress">ПРОГРЕСС: 0%</div><div id="backgroundStage" style="color:var(--text-secondary); font-size:0.7rem; margin-top:5px;">ЭТАП: ПОДГОТОВКА</div></div>
-                <div id="mainContent"><div class="clone-card"><div class="clone-title">КЛОНИРОВАНИЕ</div><div class="clone-subtitle">by xolirx • 2026</div><div class="input-group"><label class="input-label">ИСХОДНЫЙ СЕРВЕР</label><input type="text" class="clone-input" id="sourceId" placeholder="000000000000000000"></div><div class="input-group"><label class="input-label">ЦЕЛЕВОЙ СЕРВЕР</label><input type="text" class="clone-input" id="targetId" placeholder="000000000000000000"></div><div style="display:flex; gap:10px; max-width:400px; margin:10px auto;"><button class="btn" id="showServersBtn" style="flex:1;"><i class="fas fa-list"></i> МОИ СЕРВЕРА</button><button class="btn" id="validateBtn" style="flex:1;"><i class="fas fa-check"></i> ПРОВЕРИТЬ</button></div><div class="btn-group"><button class="btn btn-primary" id="cloneBtn"><i class="fas fa-copy"></i> НАЧАТЬ КЛОНИРОВАНИЕ</button><button class="btn btn-danger" id="cancelCloneBtn" disabled><i class="fas fa-times-circle"></i> ОТМЕНИТЬ</button></div><div id="serverListContainer" class="server-list hidden"></div><div id="serverValidationResult" style="color:#88ff88; font-size:0.7rem; margin:5px 0; display:none;"></div><div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div><div id="cloneError" class="error-message"></div></div><div class="info-grid"><div class="info-card"><div class="info-card-title">БУДЕТ СКОПИРОВАНО</div><ul class="info-list"><li>НАЗВАНИЕ СЕРВЕРА</li><li>ИКОНКА СЕРВЕРА</li><li>ВСЕ РОЛИ (С ПРАВАМИ)</li><li>КАТЕГОРИИ И КАНАЛЫ</li><li>ПРАВА ДОСТУПА</li></ul></div><div class="info-card"><div class="info-card-title">НЕ БУДЕТ СКОПИРОВАНО</div><ul class="info-list"><li>СООБЩЕНИЯ</li><li>УЧАСТНИКИ</li><li>ВЕБХУКИ</li><li>ИНТЕГРАЦИИ</li></ul></div></div><div style="margin:10px 0; display:flex; gap:10px; justify-content:flex-end;"><button class="btn" id="clearLogsBtn" style="padding:0.5rem 1rem; font-size:0.7rem;"><i class="fas fa-eraser"></i> ОЧИСТИТЬ ЛОГИ</button></div><div class="log-container" id="log"></div></div>
-                <div id="fixesContent" class="hidden"><div class="glass-card"><div class="fix-title">ИСТОРИЯ ОБНОВЛЕНИЙ</div><div class="fix-subtitle">by xolirx • все изменения по датам</div><div class="fixes-container"><div class="fix-group"><div class="fix-date">06 АПРЕЛЯ 2026</div><div class="fix-title-main"><i class="fas fa-bug"></i><span>КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ ВСЕХ ОШИБОК</span></div><ul class="fix-list"><li>Исправлена проблема с отображением кнопок интерфейса</li><li>Исправлена ошибка HTTP 400 при создании голосовых каналов (bitrate и user_limit)</li><li>Исправлена проблема с правами доступа (permission_overwrites) для ролей</li><li>Исправлено копирование иконки сервера (оптимизирован размер)</li><li>Исправлена обработка rate limit (улучшены задержки между запросами)</li><li>Исправлена валидация ID серверов (формат 17-20 цифр)</li><li>Исправлена авторизация через токен с сохранением сессии</li><li>Исправлено удаление всех каналов и ролей перед клонированием</li><li>Исправлена проблема с category_id при создании каналов</li><li>Добавлена обрезка длинных названий (роли до 100, каналы до 100 символов)</li><li>Улучшена система повторных попыток при ошибках API</li><li>Повышена стабильность работы с большими серверами</li></ul><div class="fix-note"><i class="fas fa-check-circle"></i> Полностью исправленная версия. Все функции работают корректно.</div></div><div class="fix-group"><div class="fix-date">22 МАРТА 2026</div><div class="fix-title-main"><i class="fas fa-headset"></i><span>ИСПРАВЛЕНИЕ ОШИБОК BITRATE И ОПТИМИЗАЦИЯ</span></div><ul class="fix-list"><li>Исправлена критическая ошибка HTTP 400 с bitrate (превышение лимита 96000)</li><li>Автоматическая корректировка bitrate для голосовых каналов (макс. 96000)</li><li>Автоматическая корректировка user_limit для голосовых каналов (макс. 99)</li><li>Улучшена обработка permission_overwrites для предотвращения ошибок</li><li>Оптимизированы задержки между запросами для избежания rate limit</li><li>Улучшена система повторных попыток при ошибках API</li><li>Добавлена валидация всех полей перед отправкой в Discord API</li></ul></div><div class="fix-group"><div class="fix-date">21 МАРТА 2026</div><div class="fix-title-main"><i class="fas fa-sync-alt"></i><span>ОПТИМИЗАЦИЯ И УЛУЧШЕНИЯ ПРОИЗВОДИТЕЛЬНОСТИ</span></div><ul class="fix-list"><li>Функция повторных попыток при ошибках 429</li><li>Улучшена анимация прогресса</li><li>Возможность отмены клонирования</li><li>Пул соединений для API запросов</li></ul></div></div></div></div>
-                <div id="supportContent" class="hidden"><div class="glass-card"><div class="auth-title">ПОДДЕРЖКА РАЗРАБОТЧИКА</div><div class="auth-subtitle">by xolirx • 2026</div><div class="contact-single" style="text-align:center;"><a href="https://t.me/xolirx" target="_blank" class="btn btn-primary" style="display:inline-flex;"><i class="fab fa-telegram"></i> НАПИСАТЬ В TELEGRAM</a></div><div style="margin-top:2rem; color:var(--text-secondary); font-size:0.8rem; text-align:center;">ОТВЕЧАЮ В ТЕЧЕНИЕ ЧАСА</div></div></div>
-                <div id="aboutContent" class="hidden"><div class="glass-card"><div class="auth-title">О ПРОЕКТЕ</div><div class="auth-subtitle">by xolirx • 2026</div><div class="about-section"><p>Профессиональный инструмент для полного клонирования структуры Discord серверов.</p><h3 style="margin:1rem 0 0.5rem; color:var(--accent);">ОСНОВНЫЕ ВОЗМОЖНОСТИ</h3><ul class="info-list"><li>Полное клонирование структуры сервера</li><li>Сохранение всех ролей с правами</li><li>Воссоздание категорий и каналов</li><li>Копирование иконки и названия</li><li>Автоматическая корректировка параметров каналов</li></ul><h3 style="margin:1rem 0 0.5rem; color:var(--accent);">АВТОР</h3><ul class="info-list"><li>XOLIRX • 2026</li></ul></div></div></div>
+                <div class="user-profile">
+                    <img id="userAvatar" class="avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23111'/%3E%3Ctext x='32' y='40' text-anchor='middle' fill='%23333' font-size='24'%3E●%3C/text%3E%3C/svg%3E">
+                    <div class="user-details">
+                        <div class="user-name" id="userName">ЗАГРУЗКА...</div>
+                        <div class="user-id" id="userId">ID: ...</div>
+                        <div class="user-email">
+                            <span class="email-blur" id="userEmail">••••••@•••••.com</span>
+                            <span class="email-toggle" id="toggleEmailBtn"><i class="fas fa-eye"></i></span>
+                        </div>
+                    </div>
+                    <button class="btn logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> ВЫЙТИ</button>
+                </div>
+                <div id="backgroundStatus" class="background-status">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div class="spinner"></div>
+                        <span>КЛОНИРОВАНИЕ ВЫПОЛНЯЕТСЯ</span>
+                    </div>
+                    <div id="backgroundProgress">ПРОГРЕСС: 0%</div>
+                    <div id="backgroundStage" style="color:var(--text-secondary); font-size:0.7rem; margin-top:5px;">ЭТАП: ПОДГОТОВКА</div>
+                </div>
+                <div id="mainContent">
+                    <div class="clone-card">
+                        <div class="clone-title">КЛОНИРОВАНИЕ</div>
+                        <div class="clone-subtitle">by xolirx • 2026</div>
+                        <div class="input-group">
+                            <label class="input-label">ИСХОДНЫЙ СЕРВЕР</label>
+                            <input type="text" class="clone-input" id="sourceId" placeholder="000000000000000000">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">ЦЕЛЕВОЙ СЕРВЕР</label>
+                            <input type="text" class="clone-input" id="targetId" placeholder="000000000000000000">
+                        </div>
+                        <div style="display:flex; gap:10px; max-width:400px; margin:10px auto;">
+                            <button class="btn" id="showServersBtn" style="flex:1;"><i class="fas fa-list"></i> МОИ СЕРВЕРА</button>
+                            <button class="btn" id="validateBtn" style="flex:1;"><i class="fas fa-check"></i> ПРОВЕРИТЬ</button>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" id="cloneBtn"><i class="fas fa-copy"></i> НАЧАТЬ КЛОНИРОВАНИЕ</button>
+                            <button class="btn btn-danger" id="cancelCloneBtn" disabled><i class="fas fa-times-circle"></i> ОТМЕНИТЬ</button>
+                        </div>
+                        <div id="serverListContainer" class="server-list hidden"></div>
+                        <div id="serverValidationResult" style="color:#88ff88; font-size:0.7rem; margin:5px 0; display:none;"></div>
+                        <div class="progress-bar" id="progressBar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div id="cloneError" class="error-message"></div>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <div class="info-card-title">БУДЕТ СКОПИРОВАНО</div>
+                            <ul class="info-list">
+                                <li>НАЗВАНИЕ СЕРВЕРА</li>
+                                <li>ИКОНКА СЕРВЕРА</li>
+                                <li>ВСЕ РОЛИ (С ПРАВАМИ)</li>
+                                <li>КАТЕГОРИИ И КАНАЛЫ</li>
+                                <li>ПРАВА ДОСТУПА</li>
+                            </ul>
+                        </div>
+                        <div class="info-card">
+                            <div class="info-card-title">НЕ БУДЕТ СКОПИРОВАНО</div>
+                            <ul class="info-list">
+                                <li>СООБЩЕНИЯ</li>
+                                <li>УЧАСТНИКИ</li>
+                                <li>ВЕБХУКИ</li>
+                                <li>ИНТЕГРАЦИИ</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div style="margin:10px 0; display:flex; gap:10px; justify-content:flex-end;">
+                        <button class="btn" id="clearLogsBtn" style="padding:0.5rem 1rem; font-size:0.7rem;"><i class="fas fa-eraser"></i> ОЧИСТИТЬ ЛОГИ</button>
+                    </div>
+                    <div class="log-container" id="log"></div>
+                </div>
+                <div id="fixesContent" class="hidden">
+                    <div class="glass-card">
+                        <div class="fix-title">ИСТОРИЯ ОБНОВЛЕНИЙ</div>
+                        <div class="fix-subtitle">by xolirx • все изменения по датам</div>
+                        <div class="fixes-container">
+                            <div class="fix-group">
+                                <div class="fix-date">06 АПРЕЛЯ 2026</div>
+                                <div class="fix-title-main"><i class="fas fa-bug"></i><span>КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ ВСЕХ ОШИБОК</span></div>
+                                <ul class="fix-list">
+                                    <li>Исправлена проблема с отображением кнопок интерфейса</li>
+                                    <li>Исправлена ошибка HTTP 400 при создании голосовых каналов (bitrate и user_limit)</li>
+                                    <li>Исправлена проблема с правами доступа (permission_overwrites) для ролей</li>
+                                    <li>Исправлено копирование иконки сервера (оптимизирован размер)</li>
+                                    <li>Исправлена обработка rate limit (улучшены задержки между запросами)</li>
+                                    <li>Исправлена валидация ID серверов (формат 17-20 цифр)</li>
+                                    <li>Исправлена авторизация через токен с сохранением сессии</li>
+                                    <li>Исправлено удаление всех каналов и ролей перед клонированием</li>
+                                    <li>Исправлена проблема с category_id при создании каналов</li>
+                                    <li>Добавлена обрезка длинных названий (роли до 100, каналы до 100 символов)</li>
+                                    <li>Улучшена система повторных попыток при ошибках API</li>
+                                    <li>Повышена стабильность работы с большими серверами</li>
+                                </ul>
+                                <div class="fix-note"><i class="fas fa-check-circle"></i> Полностью исправленная версия. Все функции работают корректно.</div>
+                            </div>
+                            <div class="fix-group">
+                                <div class="fix-date">22 МАРТА 2026</div>
+                                <div class="fix-title-main"><i class="fas fa-headset"></i><span>ИСПРАВЛЕНИЕ ОШИБОК BITRATE И ОПТИМИЗАЦИЯ</span></div>
+                                <ul class="fix-list">
+                                    <li>Исправлена критическая ошибка HTTP 400 с bitrate (превышение лимита 96000)</li>
+                                    <li>Автоматическая корректировка bitrate для голосовых каналов (макс. 96000)</li>
+                                    <li>Автоматическая корректировка user_limit для голосовых каналов (макс. 99)</li>
+                                    <li>Улучшена обработка permission_overwrites для предотвращения ошибок</li>
+                                    <li>Оптимизированы задержки между запросами для избежания rate limit</li>
+                                    <li>Улучшена система повторных попыток при ошибках API</li>
+                                    <li>Добавлена валидация всех полей перед отправкой в Discord API</li>
+                                </ul>
+                            </div>
+                            <div class="fix-group">
+                                <div class="fix-date">21 МАРТА 2026</div>
+                                <div class="fix-title-main"><i class="fas fa-sync-alt"></i><span>ОПТИМИЗАЦИЯ И УЛУЧШЕНИЯ ПРОИЗВОДИТЕЛЬНОСТИ</span></div>
+                                <ul class="fix-list">
+                                    <li>Функция повторных попыток при ошибках 429</li>
+                                    <li>Улучшена анимация прогресса</li>
+                                    <li>Возможность отмены клонирования</li>
+                                    <li>Пул соединений для API запросов</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="supportContent" class="hidden">
+                    <div class="glass-card">
+                        <div class="auth-title">ПОДДЕРЖКА РАЗРАБОТЧИКА</div>
+                        <div class="auth-subtitle">by xolirx • 2026</div>
+                        <div class="contact-single" style="text-align:center;">
+                            <a href="https://t.me/xolirx" target="_blank" class="btn btn-primary" style="display:inline-flex;"><i class="fab fa-telegram"></i> НАПИСАТЬ В TELEGRAM</a>
+                        </div>
+                        <div style="margin-top:2rem; color:var(--text-secondary); font-size:0.8rem; text-align:center;">ОТВЕЧАЮ В ТЕЧЕНИЕ ЧАСА</div>
+                    </div>
+                </div>
+                <div id="aboutContent" class="hidden">
+                    <div class="glass-card">
+                        <div class="auth-title">О ПРОЕКТЕ</div>
+                        <div class="auth-subtitle">by xolirx • 2026</div>
+                        <div class="about-section">
+                            <p>Профессиональный инструмент для полного клонирования структуры Discord серверов.</p>
+                            <h3 style="margin:1rem 0 0.5rem; color:var(--accent);">ОСНОВНЫЕ ВОЗМОЖНОСТИ</h3>
+                            <ul class="info-list">
+                                <li>Полное клонирование структуры сервера</li>
+                                <li>Сохранение всех ролей с правами</li>
+                                <li>Воссоздание категорий и каналов</li>
+                                <li>Копирование иконки и названия</li>
+                                <li>Автоматическая корректировка параметров каналов</li>
+                            </ul>
+                            <h3 style="margin:1rem 0 0.5rem; color:var(--accent);">АВТОР</h3>
+                            <ul class="info-list">
+                                <li>XOLIRX • 2026</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="footer">DISCORD SERVER CLONER PRO • 2026 • by xolirx</div>
     </div>
-    <div class="bottom-controls"><button class="control-btn" id="themeToggle"><i class="fas fa-moon"></i></button></div>
+    <div class="bottom-controls">
+        <button class="control-btn" id="themeToggle"><i class="fas fa-moon"></i></button>
+    </div>
     <button class="export-btn" id="exportLogsBtn"><i class="fas fa-download"></i></button>
-    <div id="agreementModal" class="modal"><div class="modal-content"><div class="modal-title">ПРАВИЛА И ОТВЕТСТВЕННОСТЬ</div><ul class="fix-list" style="margin-bottom:1rem;"><li>Я использую программу НА СВОЙ РИСК</li><li>Автор НЕ НЕСЕТ ответственности за последствия</li><li>Я принимаю ответственность за блокировку аккаунта</li><li>Я использую программу ТОЛЬКО на своих серверах</li><li>Я имею права администратора на обоих серверах</li><li>Все каналы и роли на целевом сервере будут УДАЛЕНЫ</li></ul><div class="checkbox-group"><div class="checkbox-item"><input type="checkbox" id="rule1"><label>Я ПРОЧИТАЛ И ПОНЯЛ ПРАВИЛА</label></div><div class="checkbox-item"><input type="checkbox" id="rule2"><label>Я ОСОЗНАЮ ВСЕ РИСКИ</label></div><div class="checkbox-item"><input type="checkbox" id="rule3"><label>Я ПРИНИМАЮ ПОЛНУЮ ОТВЕТСТВЕННОСТЬ</label></div></div><div class="modal-buttons" style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem;"><button class="btn" id="closeModalBtn">ОТМЕНА</button><button class="btn btn-primary" id="confirmRulesBtn" disabled>ПРОДОЛЖИТЬ</button></div></div></div>
+    <div id="agreementModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title" style="font-size:1.2rem; margin-bottom:1rem; text-align:center;">ПРАВИЛА И ОТВЕТСТВЕННОСТЬ</div>
+            <ul class="fix-list" style="margin-bottom:1rem;">
+                <li>Я использую программу НА СВОЙ РИСК</li>
+                <li>Автор НЕ НЕСЕТ ответственности за последствия</li>
+                <li>Я принимаю ответственность за блокировку аккаунта</li>
+                <li>Я использую программу ТОЛЬКО на своих серверах</li>
+                <li>Я имею права администратора на обоих серверах</li>
+                <li>Все каналы и роли на целевом сервере будут УДАЛЕНЫ</li>
+            </ul>
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule1">
+                    <label>Я ПРОЧИТАЛ И ПОНЯЛ ПРАВИЛА</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule2">
+                    <label>Я ОСОЗНАЮ ВСЕ РИСКИ</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="rule3">
+                    <label>Я ПРИНИМАЮ ПОЛНУЮ ОТВЕТСТВЕННОСТЬ</label>
+                </div>
+            </div>
+            <div class="modal-buttons" style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem;">
+                <button class="btn" id="closeModalBtn">ОТМЕНА</button>
+                <button class="btn btn-primary" id="confirmRulesBtn" disabled>ПРОДОЛЖИТЬ</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         (function(){
@@ -898,8 +1136,9 @@
 
             function toggleTokenVisibility() {
                 const inp = elements.tokenInput;
-                if(inp.type === 'password') { inp.type = 'text'; inp.nextElementSibling.querySelector('i').classList.replace('fa-eye', 'fa-eye-slash'); }
-                else { inp.type = 'password'; inp.nextElementSibling.querySelector('i').classList.replace('fa-eye-slash', 'fa-eye'); }
+                const icon = inp.parentElement.querySelector('i');
+                if(inp.type === 'password') { inp.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
+                else { inp.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
             }
 
             function toggleTheme() {
@@ -1105,10 +1344,27 @@
                 }
             }
             function cancelCloning() { if(state.cloning) { state.cancelRequested = true; addLog('ОТМЕНА КЛОНИРОВАНИЯ...', 'warning'); elements.cancelCloneBtn.disabled = true; } }
-            function showAgreement() { if(!elements.sourceId.value.trim() || !elements.targetId.value.trim()) return showError(elements.cloneError, 'ВВЕДИТЕ ID СЕРВЕРОВ'); if(elements.sourceId.value.trim() === elements.targetId.value.trim()) return showError(elements.cloneError, 'СЕРВЕРЫ НЕ МОГУТ БЫТЬ ОДИНАКОВЫМИ'); elements.agreementModal.classList.add('active'); }
+            
+            function showAgreement() {
+                if(!elements.sourceId.value.trim() || !elements.targetId.value.trim()) return showError(elements.cloneError, 'ВВЕДИТЕ ID СЕРВЕРОВ');
+                if(elements.sourceId.value.trim() === elements.targetId.value.trim()) return showError(elements.cloneError, 'СЕРВЕРЫ НЕ МОГУТ БЫТЬ ОДИНАКОВЫМИ');
+                elements.rule1.checked = false;
+                elements.rule2.checked = false;
+                elements.rule3.checked = false;
+                elements.confirmRulesBtn.disabled = true;
+                elements.agreementModal.classList.add('active');
+            }
             function closeModal() { elements.agreementModal.classList.remove('active'); }
-            function checkRules() { elements.confirmBtn.disabled = !(elements.rule1.checked && elements.rule2.checked && elements.rule3.checked); }
-            function confirmAllRules() { if(elements.rule1.checked && elements.rule2.checked && elements.rule3.checked) { closeModal(); startCloning(); } }
+            function checkRules() { 
+                const btn = elements.confirmRulesBtn;
+                if (btn) btn.disabled = !(elements.rule1.checked && elements.rule2.checked && elements.rule3.checked);
+            }
+            function confirmAllRules() { 
+                if(elements.rule1.checked && elements.rule2.checked && elements.rule3.checked) { 
+                    closeModal(); 
+                    startCloning(); 
+                } 
+            }
             
             async function authorize() {
                 const t = elements.tokenInput.value.trim();
@@ -1148,12 +1404,31 @@
                     progressFill: getEl('progressFill'), backgroundStatus: getEl('backgroundStatus'), backgroundProgress: getEl('backgroundProgress'),
                     backgroundStage: getEl('backgroundStage'), serverListContainer: getEl('serverListContainer'), serverValidationResult: getEl('serverValidationResult'),
                     cloneError: getEl('cloneError'), log: getEl('log'), themeBtn: getEl('themeToggle'), agreementModal: getEl('agreementModal'),
-                    rule1: getEl('rule1'), rule2: getEl('rule2'), rule3: getEl('rule3'), confirmBtn: getEl('confirmRulesBtn'),
+                    rule1: getEl('rule1'), rule2: getEl('rule2'), rule3: getEl('rule3'), confirmRulesBtn: getEl('confirmRulesBtn'),
                     mainContent: getEl('mainContent'), fixesContent: getEl('fixesContent'), supportContent: getEl('supportContent'), aboutContent: getEl('aboutContent')
                 };
-                document.querySelectorAll('.nav-link').forEach(link => { link.addEventListener('click', () => { document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); link.classList.add('active'); const s = link.dataset.section; if(s === 'main') { elements.mainContent.classList.remove('hidden'); elements.fixesContent.classList.add('hidden'); elements.supportContent.classList.add('hidden'); elements.aboutContent.classList.add('hidden'); } else if(s === 'fixes') { elements.mainContent.classList.add('hidden'); elements.fixesContent.classList.remove('hidden'); elements.supportContent.classList.add('hidden'); elements.aboutContent.classList.add('hidden'); } else if(s === 'support') { elements.mainContent.classList.add('hidden'); elements.fixesContent.classList.add('hidden'); elements.supportContent.classList.remove('hidden'); elements.aboutContent.classList.add('hidden'); } else if(s === 'about') { elements.mainContent.classList.add('hidden'); elements.fixesContent.classList.add('hidden'); elements.supportContent.classList.add('hidden'); elements.aboutContent.classList.remove('hidden'); } }); });
-                elements.rule1?.addEventListener('change', checkRules); elements.rule2?.addEventListener('change', checkRules); elements.rule3?.addEventListener('change', checkRules);
+                
+                document.querySelectorAll('.nav-link').forEach(link => { 
+                    link.addEventListener('click', () => { 
+                        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); 
+                        link.classList.add('active'); 
+                        const s = link.dataset.section; 
+                        elements.mainContent.classList.add('hidden');
+                        elements.fixesContent.classList.add('hidden');
+                        elements.supportContent.classList.add('hidden');
+                        elements.aboutContent.classList.add('hidden');
+                        if(s === 'main') elements.mainContent.classList.remove('hidden');
+                        else if(s === 'fixes') elements.fixesContent.classList.remove('hidden');
+                        else if(s === 'support') elements.supportContent.classList.remove('hidden');
+                        else if(s === 'about') elements.aboutContent.classList.remove('hidden');
+                    }); 
+                });
+                
+                elements.rule1?.addEventListener('change', checkRules); 
+                elements.rule2?.addEventListener('change', checkRules); 
+                elements.rule3?.addEventListener('change', checkRules);
                 getEl('closeModalBtn')?.addEventListener('click', closeModal);
+                elements.confirmRulesBtn?.addEventListener('click', confirmAllRules);
                 getEl('showServersBtn')?.addEventListener('click', showServerList);
                 getEl('validateBtn')?.addEventListener('click', validateServers);
                 elements.cloneBtn?.addEventListener('click', showAgreement);
