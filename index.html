@@ -3,1466 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Discord Server Cloner Pro | xolirx</title>
+    <title>DISCORD CLONER · XOLIRX</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap');
-
-        :root {
-            --bg-primary: #000000;
-            --bg-secondary: rgba(15,15,15,0.7);
-            --text-primary: #ffffff;
-            --text-secondary: #9ca3af;
-            --accent: #9ca3af;
-            --accent-glow: rgba(128,128,128,0.2);
-            --border: rgba(255,255,255,0.05);
-            --error: #ff5555;
-            --warning: #ffaa44;
-            --success: #88ff88;
-            --fix-bg: rgba(128,128,128,0.05);
-            --card-hover: rgba(128,128,128,0.1);
-        }
-
-        body.light-theme {
-            --bg-primary: #f5f7fa;
-            --bg-secondary: rgba(255,255,255,0.8);
-            --text-primary: #1f2937;
-            --text-secondary: #4b5563;
-            --border: rgba(0,0,0,0.05);
-            --accent: #6b7280;
-            --fix-bg: rgba(107,114,128,0.1);
-            --card-hover: rgba(0,0,0,0.02);
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .content {
-            position: relative;
-            z-index: 1;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); filter: blur(10px); }
-            to { opacity: 1; transform: translateY(0); filter: blur(0); }
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.02); }
-        }
-
-        @keyframes shimmer {
-            0% { background-position: -1000px 0; }
-            100% { background-position: 1000px 0; }
-        }
-
-        @keyframes confettiFall {
-            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-        }
-
-        .fade-in { animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .slide-in { animation: slideIn 0.4s ease forwards; }
-        .slide-up { animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            animation: slideIn 0.5s ease;
-        }
-
-        body.light-theme .navbar {
-            background: rgba(255,255,255,0.8);
-        }
-
-        .logo {
-            font-size: 0.85rem;
-            font-weight: 400;
-            letter-spacing: 2px;
-            color: var(--text-primary);
-            opacity: 0.9;
-            transition: all 0.3s;
-        }
-
-        .logo:hover {
-            letter-spacing: 4px;
-            color: var(--accent);
-        }
-
-        @media (min-width: 768px) {
-            .navbar { padding: 1.25rem 3rem; }
-            .logo { font-size: 1rem; letter-spacing: 4px; }
-        }
-
-        .logo span {
-            color: var(--text-secondary);
-            font-size: 0.6rem;
-            margin-left: 0.3rem;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 1rem;
-        }
-
-        @media (min-width: 768px) {
-            .nav-links { gap: 2.5rem; }
-        }
-
-        .nav-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.7rem;
-            font-weight: 400;
-            cursor: pointer;
-            transition: all 0.3s;
-            padding: 0.5rem 0;
-            position: relative;
-        }
-
-        @media (min-width: 768px) {
-            .nav-link { font-size: 0.85rem; }
-        }
-
-        .nav-link:hover { color: var(--text-primary); transform: translateY(-1px); }
-        .nav-link.active { color: var(--text-primary); }
-
-        .nav-link.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: var(--accent);
-            animation: slideIn 0.3s ease;
-        }
-
-        .main-container {
-            max-width: 1200px;
-            margin: 80px auto 2rem;
-            padding: 0 1rem;
-            width: 100%;
-            flex: 1;
-        }
-
-        @media (min-width: 768px) {
-            .main-container { margin: 100px auto 2rem; padding: 0 2rem; }
-        }
-
-        .glass-card {
-            background: var(--bg-secondary);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 1.5rem;
-            transition: all 0.2s ease;
-            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-        }
-
-        .glass-card:hover {
-            transform: translateY(-3px);
-            backdrop-filter: blur(16px);
-            border-color: var(--accent);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
-        }
-
-        @media (min-width: 768px) {
-            .glass-card { border-radius: 28px; padding: 2.5rem; }
-        }
-
-        .auth-title, .clone-title, .fix-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            text-align: center;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, var(--text-primary), var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-
-        @media (min-width: 768px) {
-            .auth-title, .clone-title, .fix-title { font-size: 1.4rem; letter-spacing: 3px; }
-        }
-
-        .auth-subtitle, .clone-subtitle, .fix-subtitle {
-            color: var(--text-secondary);
-            text-align: center;
-            margin-bottom: 1.5rem;
-            font-size: 0.65rem;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group { margin-bottom: 1.5rem; }
-        .form-label, .input-label {
-            display: block;
-            color: var(--text-secondary);
-            font-size: 0.65rem;
-            margin-bottom: 0.5rem;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .form-input, .clone-input {
-            width: 100%;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 0.9rem 1.2rem;
-            color: var(--text-primary);
-            font-size: 0.85rem;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.2s;
-        }
-
-        body.light-theme .form-input, body.light-theme .clone-input {
-            background: rgba(0,0,0,0.05);
-        }
-
-        .form-input:focus, .clone-input:focus {
-            outline: none;
-            border-color: var(--accent);
-            background: rgba(20,20,20,0.8);
-            transform: scale(1.01);
-            box-shadow: 0 0 12px var(--accent-glow);
-        }
-
-        .btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 0.9rem 1.5rem;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 400;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Inter', sans-serif;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.08);
-            transform: translate(-50%, -50%);
-            transition: width 0.5s, height 0.5s;
-        }
-
-        .btn:active::before {
-            width: 280px;
-            height: 280px;
-        }
-
-        .btn:hover {
-            border-color: var(--accent);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .btn-primary {
-            background: rgba(128,128,128,0.08);
-            border-color: var(--accent-glow);
-        }
-
-        .btn-primary:hover {
-            background: rgba(128,128,128,0.12);
-            box-shadow: 0 0 16px var(--accent-glow);
-        }
-
-        .btn-danger {
-            background: rgba(255,80,80,0.05);
-            border-color: rgba(255,80,80,0.2);
-            color: #ff8888;
-        }
-
-        .btn-danger:hover {
-            background: rgba(255,80,80,0.1);
-        }
-
-        .btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
-
-        .user-profile {
-            background: var(--bg-secondary);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            transition: all 0.2s;
-        }
-
-        .user-profile:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent-glow);
-        }
-
-        .avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #6b7280, #374151);
-            border: 2px solid var(--accent-glow);
-            object-fit: cover;
-        }
-
-        @media (min-width: 768px) {
-            .avatar { width: 64px; height: 64px; }
-        }
-
-        .user-details { flex: 1; min-width: 0; }
-        .user-name { font-size: 1rem; font-weight: 500; margin-bottom: 0.2rem; }
-        .user-id { color: var(--text-secondary); font-size: 0.7rem; font-family: monospace; }
-
-        .user-email {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 0.3rem;
-        }
-
-        .email-blur {
-            filter: blur(3px);
-            background: rgba(255,255,255,0.02);
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            transition: filter 0.2s;
-        }
-
-        .email-blur.unblur { filter: blur(0); }
-
-        .email-toggle {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 0.2rem 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .logout-btn {
-            padding: 0.5rem 1rem;
-            font-size: 0.7rem;
-            border-radius: 30px;
-            width: auto;
-        }
-
-        .clone-card {
-            background: var(--bg-secondary);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 1.5rem;
-            text-align: center;
-            margin-bottom: 1.5rem;
-            transition: all 0.2s ease;
-            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            animation-delay: 0.2s;
-        }
-
-        .input-group { max-width: 400px; margin: 0 auto 1rem; text-align: left; }
-
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8rem;
-            max-width: 400px;
-            margin: 1.5rem auto 0.5rem;
-        }
-
-        @media (min-width: 480px) {
-            .btn-group { flex-direction: row; gap: 1rem; }
-        }
-
-        .btn-group .btn { flex: 1; }
-
-        .progress-bar {
-            width: 100%;
-            height: 3px;
-            background: var(--border);
-            margin: 1.5rem 0;
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), #aaa, var(--accent));
-            background-size: 200% 100%;
-            width: 0%;
-            transition: width 0.3s ease;
-            animation: shimmer 2s infinite;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        @media (min-width: 640px) {
-            .info-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-        }
-
-        .info-card {
-            background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1rem;
-        }
-
-        .info-card-title {
-            color: var(--accent);
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.8rem;
-        }
-
-        .info-list {
-            list-style: none;
-        }
-
-        .info-list li {
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            padding: 0.3rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .log-container {
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 1rem;
-            height: 280px;
-            overflow-y: auto;
-            font-size: 0.7rem;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .log-entry {
-            padding: 0.3rem 0;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            align-items: flex-start;
-            gap: 0.8rem;
-            cursor: pointer;
-            transition: all 0.1s;
-        }
-
-        .log-entry:hover {
-            background: var(--accent-glow);
-            transform: translateX(3px);
-        }
-
-        .log-time {
-            color: var(--text-secondary);
-            min-width: 70px;
-            font-size: 0.65rem;
-            font-family: monospace;
-        }
-
-        .log-msg {
-            color: var(--accent);
-            word-break: break-word;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex: 1;
-        }
-
-        .log-success .log-msg { color: var(--success); }
-        .log-error .log-msg { color: var(--error); }
-        .log-warning .log-msg { color: var(--warning); }
-
-        .fixes-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        .fix-group {
-            background: var(--fix-bg);
-            border-left: 3px solid var(--accent);
-            border-radius: 16px;
-            padding: 1.2rem;
-            transition: all 0.2s;
-        }
-
-        .fix-date {
-            display: inline-block;
-            background: var(--accent);
-            color: #000;
-            padding: 0.2rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            margin-bottom: 0.8rem;
-        }
-
-        .fix-title-main {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .fix-list {
-            list-style: none;
-            padding-left: 1.5rem;
-        }
-
-        .fix-list li {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            padding: 0.4rem 0;
-            position: relative;
-            line-height: 1.4;
-        }
-
-        .fix-list li::before {
-            content: "✓";
-            color: var(--success);
-            position: absolute;
-            left: -1.2rem;
-            font-weight: bold;
-        }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(15px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-        }
-
-        .modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            background: var(--bg-secondary);
-            border: 1px solid var(--accent-glow);
-            border-radius: 24px;
-            padding: 1.5rem;
-            max-width: 600px;
-            width: 90%;
-            transform: scale(0.95);
-            transition: all 0.2s;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal.active .modal-content { transform: scale(1); }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            padding: 0.6rem;
-            background: rgba(255,255,255,0.01);
-            border-radius: 10px;
-            margin-bottom: 0.5rem;
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            accent-color: var(--accent);
-        }
-
-        .warning-box {
-            background: rgba(255,80,80,0.03);
-            border: 1px solid rgba(255,80,80,0.1);
-            border-radius: 14px;
-            padding: 1rem;
-            margin: 1rem 0;
-            color: #ff8888;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .server-list {
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            padding: 0.8rem;
-            margin-top: 1rem;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .server-item {
-            padding: 0.5rem;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.1s;
-        }
-
-        .server-item:hover {
-            background: var(--accent-glow);
-            transform: translateX(3px);
-        }
-
-        .background-status {
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            padding: 0.8rem;
-            margin-bottom: 1rem;
-            border-left: 3px solid var(--accent);
-            display: none;
-        }
-
-        .background-status.show { display: block; }
-
-        .spinner {
-            width: 14px;
-            height: 14px;
-            border: 2px solid var(--accent);
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            display: inline-block;
-        }
-
-        .bottom-controls {
-            position: fixed;
-            bottom: 15px;
-            left: 15px;
-            display: flex;
-            gap: 8px;
-            z-index: 1000;
-        }
-
-        .control-btn, .export-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--bg-secondary);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            transition: all 0.2s;
-        }
-
-        .export-btn {
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            transition: opacity 0.5s;
-        }
-
-        .loading-overlay.fade-out {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.9);
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 30px;
-            z-index: 10000;
-            animation: fadeIn 0.2s;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            pointer-events: none;
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--accent-glow);
-        }
-
-        .hidden { display: none !important; }
-        .error-message {
-            color: #ff5555;
-            font-size: 0.75rem;
-            margin-top: 0.5rem;
-            padding: 0.5rem;
-            background: rgba(255,80,80,0.03);
-            border-radius: 8px;
-            display: none;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .error-message.show { display: flex; }
-
-        .footer {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            text-align: center;
-            color: var(--accent);
-            font-size: 0.65rem;
-            border-top: 1px solid var(--accent-glow);
-        }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--border); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
-        
-        .confetti {
-            position: fixed;
-            top: -10px;
-            pointer-events: none;
-            animation: confettiFall 2s ease-out forwards;
-            z-index: 10000;
-            border-radius: 2px;
-        }
-        
-        .fix-note {
-            margin-top: 0.8rem;
-            padding: 0.6rem;
-            background: rgba(128,128,128,0.1);
-            border-radius: 10px;
-            color: var(--accent);
-            font-size: 0.75rem;
-            font-style: italic;
-        }
-
-        .loading-logo {
-            color: white;
-            font-size: 1.2rem;
-            letter-spacing: 4px;
-            margin-bottom: 20px;
-        }
-
-        .loading-bar {
-            width: 200px;
-            height: 2px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .loading-bar-fill {
-            width: 100%;
-            height: 100%;
-            background: white;
-            animation: shimmer 1.5s infinite;
-        }
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500&display=swap');:root{--bg-primary:#0b0b0b;--bg-secondary:rgba(22,22,22,0.8);--text-primary:#e0e0e0;--text-secondary:#8a8a8a;--accent:#a0a0a0;--accent-glow:rgba(160,160,160,0.15);--border:rgba(255,255,255,0.06);--error:#ff7b7b;--warning:#e6b450;--success:#7fe07f;--fix-bg:rgba(120,120,120,0.08);--card-hover:rgba(120,120,120,0.12);}body.light-theme{--bg-primary:#eaeef2;--bg-secondary:rgba(255,255,255,0.8);--text-primary:#1a1e24;--text-secondary:#3f4856;--border:rgba(0,0,0,0.06);--accent:#5e6b7c;--fix-bg:rgba(94,107,124,0.08);--card-hover:rgba(0,0,0,0.02);}body{font-family:'Inter',sans-serif;background:var(--bg-primary);color:var(--text-primary);min-height:100vh;position:relative;overflow-x:hidden;transition:background-color 0.3s,color 0.3s;}canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;}.content{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;}@keyframes fadeIn{from{opacity:0;transform:translateY(20px);filter:blur(8px);}to{opacity:1;transform:translateY(0);filter:blur(0);}}@keyframes slideIn{from{opacity:0;transform:translateX(-20px);}to{opacity:1;transform:translateX(0);}}@keyframes slideUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}@keyframes shimmer{0%{background-position:-1000px 0;}100%{background-position:1000px 0;}}@keyframes confettiFall{0%{transform:translateY(-100vh) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}.fade-in{animation:fadeIn 0.5s cubic-bezier(0.4,0,0.2,1) forwards;}.slide-in{animation:slideIn 0.4s ease forwards;}.slide-up{animation:slideUp 0.5s cubic-bezier(0.4,0,0.2,1) forwards;}.navbar{position:fixed;top:0;width:100%;padding:1rem 1.5rem;display:flex;justify-content:space-between;align-items:center;z-index:100;background:rgba(11,11,11,0.75);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);animation:slideIn 0.5s ease;}body.light-theme .navbar{background:rgba(234,238,242,0.7);}.logo{font-size:0.85rem;font-weight:400;letter-spacing:2px;color:var(--text-primary);opacity:0.9;transition:all 0.3s;}.logo:hover{letter-spacing:4px;color:var(--accent);}@media (min-width:768px){.navbar{padding:1.25rem 3rem;}.logo{font-size:1rem;letter-spacing:4px;}}.logo span{color:var(--text-secondary);font-size:0.6rem;margin-left:0.3rem;}.nav-links{display:flex;gap:1rem;}@media (min-width:768px){.nav-links{gap:2.5rem;}}.nav-link{color:var(--text-secondary);text-decoration:none;font-size:0.7rem;font-weight:400;cursor:pointer;transition:all 0.3s;padding:0.5rem 0;position:relative;}@media (min-width:768px){.nav-link{font-size:0.85rem;}}.nav-link:hover{color:var(--text-primary);transform:translateY(-1px);}.nav-link.active{color:var(--text-primary);}.nav-link.active::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;background:var(--accent);animation:slideIn 0.3s ease;}.main-container{max-width:1200px;margin:80px auto 2rem;padding:0 1rem;width:100%;flex:1;}@media (min-width:768px){.main-container{margin:100px auto 2rem;padding:0 2rem;}}.glass-card{background:var(--bg-secondary);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:24px;padding:1.5rem;transition:all 0.2s ease;animation:slideUp 0.5s cubic-bezier(0.4,0,0.2,1) forwards;}.glass-card:hover{transform:translateY(-3px);backdrop-filter:blur(16px);border-color:var(--accent);box-shadow:0 12px 24px rgba(0,0,0,0.2);}@media (min-width:768px){.glass-card{border-radius:28px;padding:2.5rem;}}.auth-title,.clone-title,.fix-title{font-size:1.2rem;font-weight:700;text-align:center;letter-spacing:2px;background:linear-gradient(135deg,var(--text-primary),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent;}@media (min-width:768px){.auth-title,.clone-title,.fix-title{font-size:1.4rem;letter-spacing:3px;}}.auth-subtitle,.clone-subtitle,.fix-subtitle{color:var(--text-secondary);text-align:center;margin-bottom:1.5rem;font-size:0.65rem;letter-spacing:0.5px;}.form-group{margin-bottom:1.5rem;}.form-label,.input-label{display:block;color:var(--text-secondary);font-size:0.65rem;margin-bottom:0.5rem;letter-spacing:0.5px;text-transform:uppercase;}.form-input,.clone-input{width:100%;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1.2rem;color:var(--text-primary);font-size:0.85rem;font-family:'Inter',sans-serif;transition:all 0.2s;}body.light-theme .form-input,body.light-theme .clone-input{background:rgba(0,0,0,0.05);}.form-input:focus,.clone-input:focus{outline:none;border-color:var(--accent);background:rgba(20,20,20,0.8);transform:scale(1.01);box-shadow:0 0 12px var(--accent-glow);}.btn{background:transparent;border:1px solid var(--border);color:var(--text-primary);padding:0.9rem 1.5rem;border-radius:12px;font-size:0.8rem;font-weight:400;cursor:pointer;transition:all 0.2s ease;font-family:'Inter',sans-serif;letter-spacing:0.5px;display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;position:relative;overflow:hidden;}.btn::before{content:'';position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;background:rgba(255,255,255,0.06);transform:translate(-50%,-50%);transition:width 0.5s,height 0.5s;}.btn:active::before{width:280px;height:280px;}.btn:hover{border-color:var(--accent);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.15);}.btn-primary{background:rgba(120,120,120,0.08);border-color:var(--accent-glow);}.btn-primary:hover{background:rgba(120,120,120,0.12);box-shadow:0 0 16px var(--accent-glow);}.btn-danger{background:rgba(255,100,100,0.05);border-color:rgba(255,100,100,0.2);color:#ff9f9f;}.btn-danger:hover{background:rgba(255,100,100,0.1);}.btn:disabled{opacity:0.4;cursor:not-allowed;pointer-events:none;}.user-profile{background:var(--bg-secondary);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:20px;padding:1rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;transition:all 0.2s;}.user-profile:hover{transform:translateY(-2px);border-color:var(--accent-glow);}.avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#6b7280,#374151);border:2px solid var(--accent-glow);object-fit:cover;}@media (min-width:768px){.avatar{width:64px;height:64px;}}.user-details{flex:1;min-width:0;}.user-name{font-size:1rem;font-weight:500;margin-bottom:0.2rem;}.user-id{color:var(--text-secondary);font-size:0.7rem;font-family:monospace;}.user-email{display:flex;align-items:center;gap:0.5rem;margin-top:0.3rem;}.email-blur{filter:blur(3px);background:rgba(255,255,255,0.02);padding:0.2rem 0.5rem;border-radius:4px;font-size:0.7rem;transition:filter 0.2s;}.email-blur.unblur{filter:blur(0);}.email-toggle{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:4px;padding:0.2rem 0.5rem;cursor:pointer;transition:all 0.2s;}.logout-btn{padding:0.5rem 1rem;font-size:0.7rem;border-radius:30px;width:auto;}.clone-card{background:var(--bg-secondary);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:24px;padding:1.5rem;text-align:center;margin-bottom:1.5rem;transition:all 0.2s ease;animation:slideUp 0.5s cubic-bezier(0.4,0,0.2,1) forwards;animation-delay:0.2s;}.input-group{max-width:400px;margin:0 auto 1rem;text-align:left;}.btn-group{display:flex;flex-direction:column;gap:0.8rem;max-width:400px;margin:1.5rem auto 0.5rem;}@media (min-width:480px){.btn-group{flex-direction:row;gap:1rem;}}.btn-group .btn{flex:1;}.progress-bar{width:100%;height:3px;background:var(--border);margin:1.5rem 0;border-radius:3px;overflow:hidden;}.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),#c0c0c0,var(--accent));background-size:200% 100%;width:0%;transition:width 0.3s ease;animation:shimmer 2s infinite;}.info-grid{display:grid;grid-template-columns:1fr;gap:1rem;margin-bottom:1.5rem;}@media (min-width:640px){.info-grid{grid-template-columns:1fr 1fr;gap:1.5rem;}}.info-card{background:rgba(0,0,0,0.3);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:16px;padding:1rem;}.info-card-title{color:var(--accent);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.8rem;}.info-list{list-style:none;}.info-list li{color:var(--text-secondary);font-size:0.8rem;padding:0.3rem 0;border-bottom:1px solid var(--border);}.log-container{background:rgba(0,0,0,0.5);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:18px;padding:1rem;height:280px;overflow-y:auto;font-size:0.7rem;font-family:'JetBrains Mono',monospace;}.log-entry{padding:0.3rem 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:0.8rem;cursor:pointer;transition:all 0.1s;}.log-entry:hover{background:var(--accent-glow);transform:translateX(3px);}.log-time{color:var(--text-secondary);min-width:70px;font-size:0.65rem;font-family:monospace;}.log-msg{color:var(--accent);word-break:break-word;display:flex;align-items:center;gap:0.5rem;flex:1;}.log-success .log-msg{color:var(--success);}.log-error .log-msg{color:var(--error);}.log-warning .log-msg{color:var(--warning);}.fixes-container{display:flex;flex-direction:column;gap:1.5rem;}.fix-group{background:var(--fix-bg);border-left:3px solid var(--accent);border-radius:16px;padding:1.2rem;transition:all 0.2s;}.fix-date{display:inline-block;background:var(--accent);color:#000;padding:0.2rem 0.8rem;border-radius:20px;font-size:0.7rem;font-weight:600;margin-bottom:0.8rem;}.fix-title-main{font-size:1rem;font-weight:600;color:var(--text-primary);margin-bottom:0.8rem;display:flex;align-items:center;gap:0.5rem;}.fix-list{list-style:none;padding-left:1.5rem;}.fix-list li{color:var(--text-secondary);font-size:0.85rem;padding:0.4rem 0;position:relative;line-height:1.4;}.fix-list li::before{content:"✓";color:var(--success);position:absolute;left:-1.2rem;font-weight:bold;}.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);backdrop-filter:blur(15px);display:flex;justify-content:center;align-items:center;z-index:1000;opacity:0;visibility:hidden;transition:all 0.3s;}.modal.active{opacity:1;visibility:visible;}.modal-content{background:var(--bg-secondary);border:1px solid var(--accent-glow);border-radius:24px;padding:1.5rem;max-width:600px;width:90%;transform:scale(0.95);transition:all 0.2s;max-height:80vh;overflow-y:auto;}.modal.active .modal-content{transform:scale(1);}.checkbox-item{display:flex;align-items:center;gap:0.8rem;padding:0.6rem;background:rgba(255,255,255,0.01);border-radius:10px;margin-bottom:0.5rem;}.checkbox-item input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color:var(--accent);}.warning-box{background:rgba(255,100,100,0.03);border:1px solid rgba(255,100,100,0.1);border-radius:14px;padding:1rem;margin:1rem 0;color:#ff9f9f;font-size:0.8rem;display:flex;align-items:center;gap:0.8rem;}.server-list{background:rgba(0,0,0,0.3);border-radius:10px;padding:0.8rem;margin-top:1rem;max-height:200px;overflow-y:auto;}.server-item{padding:0.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;color:var(--text-secondary);font-size:0.8rem;cursor:pointer;transition:all 0.1s;}.server-item:hover{background:var(--accent-glow);transform:translateX(3px);}.background-status{background:rgba(0,0,0,0.3);border-radius:10px;padding:0.8rem;margin-bottom:1rem;border-left:3px solid var(--accent);display:none;}.background-status.show{display:block;}.spinner{width:14px;height:14px;border:2px solid var(--accent);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;display:inline-block;}.bottom-controls{position:fixed;bottom:15px;left:15px;display:flex;gap:8px;z-index:1000;}.control-btn,.export-btn{width:40px;height:40px;border-radius:50%;background:var(--bg-secondary);backdrop-filter:blur(12px);border:1px solid var(--border);color:var(--text-primary);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem;transition:all 0.2s;}.export-btn{position:fixed;bottom:15px;right:15px;}.loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#0b0b0b;display:flex;justify-content:center;align-items:center;z-index:10000;transition:opacity 0.5s;}.loading-overlay.fade-out{opacity:0;pointer-events:none;}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.9);color:#fff;padding:12px 24px;border-radius:30px;z-index:10000;animation:fadeIn 0.2s;font-size:0.8rem;white-space:nowrap;pointer-events:none;backdrop-filter:blur(10px);border:1px solid var(--accent-glow);}.hidden{display:none !important;}.error-message{color:#ff7b7b;font-size:0.75rem;margin-top:0.5rem;padding:0.5rem;background:rgba(255,100,100,0.03);border-radius:8px;display:none;align-items:center;gap:0.5rem;}.error-message.show{display:flex;}.footer{margin-top:2rem;padding:1.5rem;text-align:center;color:var(--accent);font-size:0.65rem;border-top:1px solid var(--accent-glow);}::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--border);border-radius:4px;}::-webkit-scrollbar-thumb{background:var(--accent);border-radius:4px;}.confetti{position:fixed;top:-10px;pointer-events:none;animation:confettiFall 2s ease-out forwards;z-index:10000;border-radius:2px;}.fix-note{margin-top:0.8rem;padding:0.6rem;background:rgba(120,120,120,0.1);border-radius:10px;color:var(--accent);font-size:0.75rem;font-style:italic;}.loading-logo{color:white;font-size:1.2rem;letter-spacing:4px;margin-bottom:20px;}.loading-bar{width:200px;height:2px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden;}.loading-bar-fill{width:100%;height:100%;background:white;animation:shimmer 1.5s infinite;}
     </style>
 </head>
 <body>
-    <div class="loading-overlay" id="loadingOverlay">
-        <div style="text-align:center;">
-            <div class="loading-logo">DISCORD CLONER PRO</div>
-            <div class="loading-bar"><div class="loading-bar-fill"></div></div>
-        </div>
-    </div>
+    <div class="loading-overlay" id="loadingOverlay"><div style="text-align:center;"><div class="loading-logo">DISCORD CLONER PRO</div><div class="loading-bar"><div class="loading-bar-fill"></div></div></div></div>
     <canvas id="snowCanvas"></canvas>
     <div class="content">
-        <nav class="navbar">
-            <div class="logo">DISCORD SERVER CLONER <span>by xolirx</span></div>
-            <div class="nav-links">
-                <span class="nav-link active" data-section="main">ГЛАВНАЯ</span>
-                <span class="nav-link" data-section="fixes">ОБНОВЛЕНИЯ</span>
-                <span class="nav-link" data-section="support">ПОДДЕРЖКА</span>
-                <span class="nav-link" data-section="about">О САЙТЕ</span>
-            </div>
-        </nav>
+        <nav class="navbar"><div class="logo">DISCORD SERVER CLONER <span>by xolirx</span></div><div class="nav-links"><span class="nav-link active" data-section="main">ГЛАВНАЯ</span><span class="nav-link" data-section="fixes">ОБНОВЛЕНИЯ</span><span class="nav-link" data-section="support">ПОДДЕРЖКА</span><span class="nav-link" data-section="about">О САЙТЕ</span></div></nav>
         <div class="main-container">
             <div id="authView">
                 <div class="glass-card">
-                    <div class="auth-title">DISCORD CLONER PRO</div>
-                    <div class="auth-subtitle">by xolirx • 2026</div>
-                    <div class="warning-box" id="tokenWarning" style="display:none;">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span>ТОКЕН - ЭТО ВАШ ПАРОЛЬ! НИКОМУ НЕ ПОКАЗЫВАЙТЕ</span>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">DISCORD TOKEN</label>
-                        <div style="position:relative;">
-                            <input type="password" class="form-input" id="tokenInput" placeholder="••••••••••••••••••••••">
-                            <span style="position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--text-secondary); cursor:pointer;" id="toggleTokenVisibility">
-                                <i class="fas fa-eye"></i>
-                            </span>
-                        </div>
-                    </div>
-                    <div style="margin:10px 0;">
-                        <button class="btn" id="testTokenBtn"><i class="fas fa-check-circle"></i> ПРОВЕРИТЬ ТОКЕН</button>
-                    </div>
+                    <div class="auth-title">DISCORD CLONER PRO</div><div class="auth-subtitle">by xolirx • 2026</div>
+                    <div class="warning-box" id="tokenWarning" style="display:none;"><i class="fas fa-exclamation-triangle"></i><span>ТОКЕН — ЭТО ВАШ ПАРОЛЬ! НЕ ПОКАЗЫВАЙТЕ</span></div>
+                    <div class="form-group"><label class="form-label">DISCORD TOKEN</label><div style="position:relative;"><input type="password" class="form-input" id="tokenInput" placeholder="••••••••••••••••••••••"><span style="position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--text-secondary); cursor:pointer;" id="toggleTokenVisibility"><i class="fas fa-eye"></i></span></div></div>
+                    <div style="margin:10px 0;"><button class="btn" id="testTokenBtn"><i class="fas fa-check-circle"></i> ПРОВЕРИТЬ ТОКЕН</button></div>
                     <div id="authError" class="error-message"></div>
                     <button class="btn btn-primary" id="loginBtn"><i class="fas fa-sign-in-alt"></i> ВОЙТИ</button>
                 </div>
             </div>
             <div id="mainView" class="hidden">
-                <div class="user-profile">
-                    <img id="userAvatar" class="avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23111'/%3E%3Ctext x='32' y='40' text-anchor='middle' fill='%23333' font-size='24'%3E●%3C/text%3E%3C/svg%3E">
-                    <div class="user-details">
-                        <div class="user-name" id="userName">ЗАГРУЗКА...</div>
-                        <div class="user-id" id="userId">ID: ...</div>
-                        <div class="user-email">
-                            <span class="email-blur" id="userEmail">••••••@•••••.com</span>
-                            <span class="email-toggle" id="toggleEmailBtn"><i class="fas fa-eye"></i></span>
-                        </div>
-                    </div>
-                    <button class="btn logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> ВЫЙТИ</button>
-                </div>
-                <div id="backgroundStatus" class="background-status">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <div class="spinner"></div>
-                        <span>КЛОНИРОВАНИЕ ВЫПОЛНЯЕТСЯ</span>
-                    </div>
-                    <div id="backgroundProgress">ПРОГРЕСС: 0%</div>
-                    <div id="backgroundStage" style="color:var(--text-secondary); font-size:0.7rem; margin-top:5px;">ЭТАП: ПОДГОТОВКА</div>
-                </div>
+                <div class="user-profile"><img id="userAvatar" class="avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23111'/%3E%3Ctext x='32' y='40' text-anchor='middle' fill='%23333' font-size='24'%3E●%3C/text%3E%3C/svg%3E"><div class="user-details"><div class="user-name" id="userName">ЗАГРУЗКА...</div><div class="user-id" id="userId">ID: ...</div><div class="user-email"><span class="email-blur" id="userEmail">••••••@•••••.com</span><span class="email-toggle" id="toggleEmailBtn"><i class="fas fa-eye"></i></span></div></div><button class="btn logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> ВЫЙТИ</button></div>
+                <div id="backgroundStatus" class="background-status"><div style="display:flex; align-items:center; gap:10px;"><div class="spinner"></div><span>КЛОНИРОВАНИЕ ВЫПОЛНЯЕТСЯ</span></div><div id="backgroundProgress">ПРОГРЕСС: 0%</div><div id="backgroundStage" style="color:var(--text-secondary); font-size:0.7rem; margin-top:5px;">ЭТАП: ПОДГОТОВКА</div></div>
                 <div id="mainContent">
                     <div class="clone-card">
-                        <div class="clone-title">КЛОНИРОВАНИЕ</div>
-                        <div class="clone-subtitle">by xolirx • 2026</div>
-                        <div class="input-group">
-                            <label class="input-label">ИСХОДНЫЙ СЕРВЕР</label>
-                            <input type="text" class="clone-input" id="sourceId" placeholder="000000000000000000">
-                        </div>
-                        <div class="input-group">
-                            <label class="input-label">ЦЕЛЕВОЙ СЕРВЕР</label>
-                            <input type="text" class="clone-input" id="targetId" placeholder="000000000000000000">
-                        </div>
-                        <div style="display:flex; gap:10px; max-width:400px; margin:10px auto;">
-                            <button class="btn" id="showServersBtn" style="flex:1;"><i class="fas fa-list"></i> МОИ СЕРВЕРА</button>
-                            <button class="btn" id="validateBtn" style="flex:1;"><i class="fas fa-check"></i> ПРОВЕРИТЬ</button>
-                        </div>
-                        <div class="btn-group">
-                            <button class="btn btn-primary" id="cloneBtn"><i class="fas fa-copy"></i> НАЧАТЬ КЛОНИРОВАНИЕ</button>
-                            <button class="btn btn-danger" id="cancelCloneBtn" disabled><i class="fas fa-times-circle"></i> ОТМЕНИТЬ</button>
-                        </div>
+                        <div class="clone-title">КЛОНИРОВАНИЕ</div><div class="clone-subtitle">by xolirx • 2026</div>
+                        <div class="input-group"><label class="input-label">ИСХОДНЫЙ СЕРВЕР</label><input type="text" class="clone-input" id="sourceId" placeholder="000000000000000000"></div>
+                        <div class="input-group"><label class="input-label">ЦЕЛЕВОЙ СЕРВЕР</label><input type="text" class="clone-input" id="targetId" placeholder="000000000000000000"></div>
+                        <div style="display:flex; gap:10px; max-width:400px; margin:10px auto;"><button class="btn" id="showServersBtn" style="flex:1;"><i class="fas fa-list"></i> МОИ СЕРВЕРА</button><button class="btn" id="validateBtn" style="flex:1;"><i class="fas fa-check"></i> ПРОВЕРИТЬ</button></div>
+                        <div class="btn-group"><button class="btn btn-primary" id="cloneBtn"><i class="fas fa-copy"></i> НАЧАТЬ КЛОНИРОВАНИЕ</button><button class="btn btn-danger" id="cancelCloneBtn" disabled><i class="fas fa-times-circle"></i> ОТМЕНИТЬ</button></div>
                         <div id="serverListContainer" class="server-list hidden"></div>
-                        <div id="serverValidationResult" style="color:#88ff88; font-size:0.7rem; margin:5px 0; display:none;"></div>
-                        <div class="progress-bar" id="progressBar">
-                            <div class="progress-fill" id="progressFill"></div>
-                        </div>
+                        <div id="serverValidationResult" style="color:#7fe07f; font-size:0.7rem; margin:5px 0; display:none;"></div>
+                        <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
                         <div id="cloneError" class="error-message"></div>
                     </div>
-                    <div class="info-grid">
-                        <div class="info-card">
-                            <div class="info-card-title">БУДЕТ СКОПИРОВАНО</div>
-                            <ul class="info-list">
-                                <li>НАЗВАНИЕ СЕРВЕРА</li>
-                                <li>ИКОНКА СЕРВЕРА</li>
-                                <li>ВСЕ РОЛИ (С ПРАВАМИ)</li>
-                                <li>КАТЕГОРИИ И КАНАЛЫ</li>
-                                <li>ПРАВА ДОСТУПА</li>
-                            </ul>
-                        </div>
-                        <div class="info-card">
-                            <div class="info-card-title">НЕ БУДЕТ СКОПИРОВАНО</div>
-                            <ul class="info-list">
-                                <li>СООБЩЕНИЯ</li>
-                                <li>УЧАСТНИКИ</li>
-                                <li>ВЕБХУКИ</li>
-                                <li>ИНТЕГРАЦИИ</li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div style="margin:10px 0; display:flex; gap:10px; justify-content:flex-end;">
-                        <button class="btn" id="clearLogsBtn" style="padding:0.5rem 1rem; font-size:0.7rem;"><i class="fas fa-eraser"></i> ОЧИСТИТЬ ЛОГИ</button>
-                    </div>
+                    <div class="info-grid"><div class="info-card"><div class="info-card-title">БУДЕТ СКОПИРОВАНО</div><ul class="info-list"><li>НАЗВАНИЕ СЕРВЕРА</li><li>ИКОНКА СЕРВЕРА</li><li>ВСЕ РОЛИ (С ПРАВАМИ)</li><li>КАТЕГОРИИ И КАНАЛЫ</li><li>ПРАВА ДОСТУПА</li></ul></div><div class="info-card"><div class="info-card-title">НЕ БУДЕТ СКОПИРОВАНО</div><ul class="info-list"><li>СООБЩЕНИЯ</li><li>УЧАСТНИКИ</li><li>ВЕБХУКИ</li><li>ИНТЕГРАЦИИ</li></ul></div></div>
+                    <div style="margin:10px 0; display:flex; gap:10px; justify-content:flex-end;"><button class="btn" id="clearLogsBtn" style="padding:0.5rem 1rem; font-size:0.7rem;"><i class="fas fa-eraser"></i> ОЧИСТИТЬ ЛОГИ</button></div>
                     <div class="log-container" id="log"></div>
                 </div>
                 <div id="fixesContent" class="hidden">
-                    <div class="glass-card">
-                        <div class="fix-title">ИСТОРИЯ ОБНОВЛЕНИЙ</div>
-                        <div class="fix-subtitle">by xolirx • все изменения по датам</div>
-                        <div class="fixes-container">
-                            <div class="fix-group">
-                                <div class="fix-date">06 АПРЕЛЯ 2026</div>
-                                <div class="fix-title-main"><i class="fas fa-bug"></i><span>КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ ВСЕХ ОШИБОК</span></div>
-                                <ul class="fix-list">
-                                    <li>Исправлена проблема с отображением кнопок интерфейса</li>
-                                    <li>Исправлена ошибка HTTP 400 при создании голосовых каналов (bitrate и user_limit)</li>
-                                    <li>Исправлена проблема с правами доступа (permission_overwrites) для ролей</li>
-                                    <li>Исправлено копирование иконки сервера (оптимизирован размер)</li>
-                                    <li>Исправлена обработка rate limit (улучшены задержки между запросами)</li>
-                                    <li>Исправлена валидация ID серверов (формат 17-20 цифр)</li>
-                                    <li>Исправлена авторизация через токен с сохранением сессии</li>
-                                    <li>Исправлено удаление всех каналов и ролей перед клонированием</li>
-                                    <li>Исправлена проблема с category_id при создании каналов</li>
-                                    <li>Добавлена обрезка длинных названий (роли до 100, каналы до 100 символов)</li>
-                                    <li>Улучшена система повторных попыток при ошибках API</li>
-                                    <li>Повышена стабильность работы с большими серверами</li>
-                                </ul>
-                                <div class="fix-note"><i class="fas fa-check-circle"></i> Полностью исправленная версия. Все функции работают корректно.</div>
-                            </div>
-                            <div class="fix-group">
-                                <div class="fix-date">22 МАРТА 2026</div>
-                                <div class="fix-title-main"><i class="fas fa-headset"></i><span>ИСПРАВЛЕНИЕ ОШИБОК BITRATE И ОПТИМИЗАЦИЯ</span></div>
-                                <ul class="fix-list">
-                                    <li>Исправлена критическая ошибка HTTP 400 с bitrate (превышение лимита 96000)</li>
-                                    <li>Автоматическая корректировка bitrate для голосовых каналов (макс. 96000)</li>
-                                    <li>Автоматическая корректировка user_limit для голосовых каналов (макс. 99)</li>
-                                    <li>Улучшена обработка permission_overwrites для предотвращения ошибок</li>
-                                    <li>Оптимизированы задержки между запросами для избежания rate limit</li>
-                                    <li>Улучшена система повторных попыток при ошибках API</li>
-                                    <li>Добавлена валидация всех полей перед отправкой в Discord API</li>
-                                </ul>
-                            </div>
-                            <div class="fix-group">
-                                <div class="fix-date">21 МАРТА 2026</div>
-                                <div class="fix-title-main"><i class="fas fa-sync-alt"></i><span>ОПТИМИЗАЦИЯ И УЛУЧШЕНИЯ ПРОИЗВОДИТЕЛЬНОСТИ</span></div>
-                                <ul class="fix-list">
-                                    <li>Функция повторных попыток при ошибках 429</li>
-                                    <li>Улучшена анимация прогресса</li>
-                                    <li>Возможность отмены клонирования</li>
-                                    <li>Пул соединений для API запросов</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="glass-card"><div class="fix-title">ИСТОРИЯ ОБНОВЛЕНИЙ</div><div class="fix-subtitle">by xolirx • все изменения по датам</div><div class="fixes-container">
+                        <div class="fix-group"><div class="fix-date">15 АПРЕЛЯ 2026</div><div class="fix-title-main"><i class="fas fa-star"></i><span>ГЛОБАЛЬНОЕ УЛУЧШЕНИЕ И ОПТИМИЗАЦИЯ</span></div><ul class="fix-list"><li>Полностью переработан интерфейс: минимализм, серые тона</li><li>Оптимизирована логика клонирования (меньше запросов, умные паузы)</li><li>Исправлены все известные ошибки API (bitrate, permissions, rate limit)</li><li>Улучшена отмена клонирования — мгновенная остановка</li><li>Добавлен AbortController для чистого прерывания fetch</li><li>Объединены дублирующие кнопки, интерфейс стал чище</li><li>Обновлена система прогресса (более точные проценты)</li><li>Защита от повторного запуска клонирования</li><li>Улучшена обработка ошибок и восстановление</li><li>Код минифицирован и обфусцирован (защита от копирования)</li></ul><div class="fix-note"><i class="fas fa-check-circle"></i> Версия 2.0 — стабильность и производительность на максимум.</div></div>
+                        <div class="fix-group"><div class="fix-date">06 АПРЕЛЯ 2026</div><div class="fix-title-main"><i class="fas fa-bug"></i><span>КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ ВСЕХ ОШИБОК</span></div><ul class="fix-list"><li>Исправлена проблема с отображением кнопок интерфейса</li><li>Исправлена ошибка HTTP 400 при создании голосовых каналов</li><li>Исправлена проблема с правами доступа (permission_overwrites)</li><li>Исправлено копирование иконки сервера</li><li>Исправлена обработка rate limit</li><li>Исправлена валидация ID серверов</li><li>Исправлена авторизация через токен</li><li>Исправлено удаление всех каналов и ролей</li><li>Добавлена обрезка длинных названий</li></ul></div>
+                        <div class="fix-group"><div class="fix-date">22 МАРТА 2026</div><div class="fix-title-main"><i class="fas fa-headset"></i><span>ИСПРАВЛЕНИЕ ОШИБОК BITRATE И ОПТИМИЗАЦИЯ</span></div><ul class="fix-list"><li>Исправлена критическая ошибка HTTP 400 с bitrate</li><li>Автоматическая корректировка bitrate (макс. 96000)</li><li>Автоматическая корректировка user_limit (макс. 99)</li><li>Улучшена обработка permission_overwrites</li></ul></div>
+                        <div class="fix-group"><div class="fix-date">21 МАРТА 2026</div><div class="fix-title-main"><i class="fas fa-sync-alt"></i><span>ОПТИМИЗАЦИЯ И УЛУЧШЕНИЯ</span></div><ul class="fix-list"><li>Функция повторных попыток при ошибках 429</li><li>Улучшена анимация прогресса</li><li>Возможность отмены клонирования</li><li>Пул соединений для API запросов</li></ul></div>
+                    </div></div>
                 </div>
-                <div id="supportContent" class="hidden">
-                    <div class="glass-card">
-                        <div class="auth-title">ПОДДЕРЖКА РАЗРАБОТЧИКА</div>
-                        <div class="auth-subtitle">by xolirx • 2026</div>
-                        <div class="contact-single" style="text-align:center;">
-                            <a href="https://t.me/xolirx" target="_blank" class="btn btn-primary" style="display:inline-flex;"><i class="fab fa-telegram"></i> НАПИСАТЬ В TELEGRAM</a>
-                        </div>
-                        <div style="margin-top:2rem; color:var(--text-secondary); font-size:0.8rem; text-align:center;">ОТВЕЧАЮ В ТЕЧЕНИЕ ЧАСА</div>
-                    </div>
-                </div>
-                <div id="aboutContent" class="hidden">
-                    <div class="glass-card">
-                        <div class="auth-title">О ПРОЕКТЕ</div>
-                        <div class="auth-subtitle">by xolirx • 2026</div>
-                        <div class="about-section">
-                            <p>Профессиональный инструмент для полного клонирования структуры Discord серверов.</p>
-                            <h3 style="margin:1rem 0 0.5rem; color:var(--accent);">ОСНОВНЫЕ ВОЗМОЖНОСТИ</h3>
-                            <ul class="info-list">
-                                <li>Полное клонирование структуры сервера</li>
-                                <li>Сохранение всех ролей с правами</li>
-                                <li>Воссоздание категорий и каналов</li>
-                                <li>Копирование иконки и названия</li>
-                                <li>Автоматическая корректировка параметров каналов</li>
-                            </ul>
-                            <h3 style="margin:1rem 0 0.5rem; color:var(--accent);">АВТОР</h3>
-                            <ul class="info-list">
-                                <li>XOLIRX • 2026</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+                <div id="supportContent" class="hidden"><div class="glass-card"><div class="auth-title">ПОДДЕРЖКА РАЗРАБОТЧИКА</div><div class="auth-subtitle">by xolirx • 2026</div><div style="text-align:center;"><a href="https://t.me/xolirx" target="_blank" class="btn btn-primary" style="display:inline-flex;"><i class="fab fa-telegram"></i> НАПИСАТЬ В TELEGRAM</a></div><div style="margin-top:2rem; color:var(--text-secondary); font-size:0.8rem; text-align:center;">ОТВЕЧАЮ В ТЕЧЕНИЕ ЧАСА</div></div></div>
+                <div id="aboutContent" class="hidden"><div class="glass-card"><div class="auth-title">О ПРОЕКТЕ</div><div class="auth-subtitle">by xolirx • 2026</div><div class="about-section"><p>Профессиональный инструмент для полного клонирования структуры Discord серверов.</p><h3 style="margin:1rem 0 0.5rem; color:var(--accent);">ОСНОВНЫЕ ВОЗМОЖНОСТИ</h3><ul class="info-list"><li>Полное клонирование структуры сервера</li><li>Сохранение всех ролей с правами</li><li>Воссоздание категорий и каналов</li><li>Копирование иконки и названия</li></ul><h3 style="margin:1rem 0 0.5rem; color:var(--accent);">АВТОР</h3><ul class="info-list"><li>XOLIRX • 2026</li></ul></div></div></div>
             </div>
         </div>
         <div class="footer">DISCORD SERVER CLONER PRO • 2026 • by xolirx</div>
     </div>
-    <div class="bottom-controls">
-        <button class="control-btn" id="themeToggle"><i class="fas fa-moon"></i></button>
-    </div>
+    <div class="bottom-controls"><button class="control-btn" id="themeToggle"><i class="fas fa-moon"></i></button></div>
     <button class="export-btn" id="exportLogsBtn"><i class="fas fa-download"></i></button>
-    <div id="agreementModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-title" style="font-size:1.2rem; margin-bottom:1rem; text-align:center;">ПРАВИЛА И ОТВЕТСТВЕННОСТЬ</div>
-            <ul class="fix-list" style="margin-bottom:1rem;">
-                <li>Я использую программу НА СВОЙ РИСК</li>
-                <li>Автор НЕ НЕСЕТ ответственности за последствия</li>
-                <li>Я принимаю ответственность за блокировку аккаунта</li>
-                <li>Я использую программу ТОЛЬКО на своих серверах</li>
-                <li>Я имею права администратора на обоих серверах</li>
-                <li>Все каналы и роли на целевом сервере будут УДАЛЕНЫ</li>
-            </ul>
-            <div class="checkbox-group">
-                <div class="checkbox-item">
-                    <input type="checkbox" id="rule1">
-                    <label>Я ПРОЧИТАЛ И ПОНЯЛ ПРАВИЛА</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="rule2">
-                    <label>Я ОСОЗНАЮ ВСЕ РИСКИ</label>
-                </div>
-                <div class="checkbox-item">
-                    <input type="checkbox" id="rule3">
-                    <label>Я ПРИНИМАЮ ПОЛНУЮ ОТВЕТСТВЕННОСТЬ</label>
-                </div>
-            </div>
-            <div class="modal-buttons" style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem;">
-                <button class="btn" id="closeModalBtn">ОТМЕНА</button>
-                <button class="btn btn-primary" id="confirmRulesBtn" disabled>ПРОДОЛЖИТЬ</button>
-            </div>
-        </div>
-    </div>
-
+    <div id="agreementModal" class="modal"><div class="modal-content"><div class="modal-title" style="font-size:1.2rem; margin-bottom:1rem; text-align:center;">ПРАВИЛА И ОТВЕТСТВЕННОСТЬ</div><ul class="fix-list" style="margin-bottom:1rem;"><li>Я использую программу НА СВОЙ РИСК</li><li>Автор НЕ НЕСЕТ ответственности за последствия</li><li>Я принимаю ответственность за блокировку аккаунта</li><li>Я использую программу ТОЛЬКО на своих серверах</li><li>Я имею права администратора на обоих серверах</li><li>Все каналы и роли на целевом сервере будут УДАЛЕНЫ</li></ul><div class="checkbox-group"><div class="checkbox-item"><input type="checkbox" id="rule1"><label>Я ПРОЧИТАЛ И ПОНЯЛ ПРАВИЛА</label></div><div class="checkbox-item"><input type="checkbox" id="rule2"><label>Я ОСОЗНАЮ ВСЕ РИСКИ</label></div><div class="checkbox-item"><input type="checkbox" id="rule3"><label>Я ПРИНИМАЮ ПОЛНУЮ ОТВЕТСТВЕННОСТЬ</label></div></div><div class="modal-buttons" style="display:flex; gap:1rem; justify-content:flex-end; margin-top:1rem;"><button class="btn" id="closeModalBtn">ОТМЕНА</button><button class="btn btn-primary" id="confirmRulesBtn" disabled>ПРОДОЛЖИТЬ</button></div></div></div>
     <script>
         (function(){
-            const CONFIG = { maxLogs: 200, apiBase: 'https://discord.com/api/v10', retryAttempts: 3, rateLimitDelay: 1000 };
-            let state = { token: null, user: null, cloning: false, cancelRequested: false, userGuilds: [], emailVisible: false };
-            let elements = {};
-
-            function getEl(id) { return document.getElementById(id); }
-            function escapeHtml(str) { const div = document.createElement('div'); div.textContent = str; return div.innerHTML; }
-            function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-            function showToast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2000); }
-            function showError(el, msg) { if(el) { el.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${escapeHtml(msg)}`; el.classList.add('show'); setTimeout(() => el.classList.remove('show'), 3000); } }
-            
-            function addLog(msg, type = 'info') {
-                if(!elements.log) return;
-                const t = new Date().toLocaleTimeString('ru-RU');
-                const icons = { success: '<i class="fas fa-check-circle"></i>', error: '<i class="fas fa-exclamation-circle"></i>', warning: '<i class="fas fa-exclamation-triangle"></i>', info: '<i class="fas fa-info-circle"></i>' };
-                const entry = document.createElement('div');
-                entry.className = `log-entry log-${type}`;
-                entry.innerHTML = `<span class="log-time">${t}</span><span class="log-msg">${icons[type] || icons.info} ${escapeHtml(msg)}</span>`;
-                elements.log.appendChild(entry);
-                elements.log.scrollTop = elements.log.scrollHeight;
-                if(elements.log.children.length > CONFIG.maxLogs) elements.log.removeChild(elements.log.children[0]);
+            const C={maxLogs:200,apiBase:'https://discord.com/api/v10',retryAttempts:3,rateLimitDelay:1000};
+            let S={token:null,user:null,cloning:!1,cancelRequested:!1,userGuilds:[],emailVisible:!1,abortController:null};
+            let E={};
+            const $=id=>document.getElementById(id);
+            const esc=(s)=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML;};
+            const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+            const toast=m=>{const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2000);};
+            const errShow=(el,m)=>{if(el){el.innerHTML=`<i class="fas fa-exclamation-circle"></i> ${esc(m)}`;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}};
+            function addLog(m,type='info'){
+                if(!E.log)return;
+                const t=new Date().toLocaleTimeString('ru-RU');
+                const icons={success:'<i class="fas fa-check-circle"></i>',error:'<i class="fas fa-exclamation-circle"></i>',warning:'<i class="fas fa-exclamation-triangle"></i>',info:'<i class="fas fa-info-circle"></i>'};
+                const e=document.createElement('div');e.className=`log-entry log-${type}`;e.innerHTML=`<span class="log-time">${t}</span><span class="log-msg">${icons[type]||icons.info} ${esc(m)}</span>`;
+                E.log.appendChild(e);E.log.scrollTop=E.log.scrollHeight;
+                if(E.log.children.length>C.maxLogs)E.log.removeChild(E.log.children[0]);
             }
-
-            async function fetchWithRetry(url, options, retries = CONFIG.retryAttempts) {
-                for(let i = 0; i < retries; i++) {
-                    if(state.cancelRequested) throw new Error('CANCELLED');
-                    try {
-                        const res = await fetch(url, options);
-                        if(res.status === 429) { const wait = parseInt(res.headers.get('Retry-After')) || 2; await sleep(wait * 1000); continue; }
-                        if(!res.ok && i === retries-1) throw new Error(`HTTP ${res.status}`);
-                        if(!res.ok) { await sleep(CONFIG.rateLimitDelay * (i+1)); continue; }
+            async function fetchWithRetry(url,options,retries=C.retryAttempts){
+                if(S.cancelRequested)throw new Error('CANCELLED');
+                const signal=S.abortController?.signal;
+                for(let i=0;i<retries;i++){
+                    if(S.cancelRequested)throw new Error('CANCELLED');
+                    try{
+                        const res=await fetch(url,{...options,signal});
+                        if(res.status===429){const w=parseInt(res.headers.get('Retry-After'))||2;await sleep(w*1000);continue;}
+                        if(!res.ok && i===retries-1)throw new Error(`HTTP ${res.status}`);
+                        if(!res.ok){await sleep(C.rateLimitDelay*(i+1));continue;}
                         return res;
-                    } catch(e) { if(e.message === 'CANCELLED') throw e; if(i === retries-1) throw e; await sleep(CONFIG.rateLimitDelay * (i+1)); }
+                    }catch(e){if(e.name==='AbortError')throw new Error('CANCELLED');if(i===retries-1)throw e;await sleep(C.rateLimitDelay*(i+1));}
                 }
                 throw new Error('MAX_RETRIES');
             }
-
-            function toggleTokenVisibility() {
-                const inp = elements.tokenInput;
-                const icon = inp.parentElement.querySelector('i');
-                if(inp.type === 'password') { inp.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
-                else { inp.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
+            function toggleTheme(){document.body.classList.toggle('light-theme');E.themeBtn.querySelector('i').classList.toggle('fa-moon');E.themeBtn.querySelector('i').classList.toggle('fa-sun');}
+            function toggleEmail(){S.emailVisible=!S.emailVisible;if(S.emailVisible&&S.user?.email){E.userEmail.textContent=S.user.email;E.userEmail.classList.add('unblur');}else if(S.user?.email){E.userEmail.textContent=S.user.email.replace(/./g,'•');E.userEmail.classList.remove('unblur');}}
+            function logout(){S.token=null;S.user=null;sessionStorage.clear();E.authView.classList.remove('hidden');E.mainView.classList.add('hidden');addLog('ВЫХОД ИЗ АККАУНТА','info');}
+            function clearLogs(){if(E.log){E.log.innerHTML='';addLog('ЛОГИ ОЧИЩЕНЫ','info');}}
+            function exportLogs(){const l=Array.from(E.log.children).map(e=>{const t=e.querySelector('.log-time')?.textContent,m=e.querySelector('.log-msg')?.textContent;return`[${t}] ${m}`;}).join('\n');const b=new Blob([`DISCORD CLONER LOGS\n${new Date().toLocaleString()}\n${'='.repeat(50)}\n${l}`],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`clone_logs_${Date.now()}.txt`;a.click();URL.revokeObjectURL(a.href);toast('ЛОГИ ЭКСПОРТИРОВАНЫ');}
+            async function loadServers(){if(!S.token)return[];try{const r=await fetch(`${C.apiBase}/users/@me/guilds`,{headers:{'Authorization':S.token}});if(r.ok){S.userGuilds=await r.json();S.userGuilds.sort((a,b)=>a.name.localeCompare(b.name));addLog(`ЗАГРУЖЕНО СЕРВЕРОВ: ${S.userGuilds.length}`,'success');return S.userGuilds;}}catch(e){addLog('ОШИБКА ЗАГРУЗКИ СЕРВЕРОВ','error');}return[];}
+            async function showServerList(){if(S.userGuilds.length===0)await loadServers();if(S.userGuilds.length){let h='<div style="color:var(--text-secondary); margin-bottom:0.5rem;">НАЖМИТЕ ДЛЯ ВСТАВКИ ID:</div>';S.userGuilds.slice(0,20).forEach(g=>{h+=`<div class="server-item" onclick="window.setSourceId('${g.id}')"><span>${esc(g.name)}</span><span class="server-id">${g.id}</span></div>`;});E.serverListContainer.innerHTML=h;E.serverListContainer.classList.remove('hidden');}}
+            window.setSourceId=function(id){E.sourceId.value=id;E.serverListContainer.classList.add('hidden');addLog(`ВСТАВЛЕН ID: ${id}`,'info');};
+            async function validateServers(){const s=E.sourceId.value.trim(),t=E.targetId.value.trim();if(!s||!t){E.serverValidationResult.style.display='flex';E.serverValidationResult.style.color='#ff7b7b';E.serverValidationResult.innerHTML='<i class="fas fa-exclamation-triangle"></i> ВВЕДИТЕ ID';setTimeout(()=>E.serverValidationResult.style.display='none',3000);return;}E.serverValidationResult.style.display='flex';E.serverValidationResult.innerHTML='<i class="fas fa-spinner fa-pulse"></i> ПРОВЕРКА...';try{const[src,tgt]=await Promise.all([fetch(`${C.apiBase}/guilds/${s}`,{headers:{'Authorization':S.token}}),fetch(`${C.apiBase}/guilds/${t}`,{headers:{'Authorization':S.token}})]);if(!src.ok&&!tgt.ok){E.serverValidationResult.style.color='#ff7b7b';E.serverValidationResult.innerHTML='<i class="fas fa-exclamation-circle"></i> ОБА СЕРВЕРА НЕ НАЙДЕНЫ';}else if(!src.ok){E.serverValidationResult.style.color='#ff7b7b';E.serverValidationResult.innerHTML='<i class="fas fa-exclamation-circle"></i> ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН';}else if(!tgt.ok){E.serverValidationResult.style.color='#ff7b7b';E.serverValidationResult.innerHTML='<i class="fas fa-exclamation-circle"></i> ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН';}else{const sg=await src.json(),tg=await tgt.json();E.serverValidationResult.style.color='#7fe07f';E.serverValidationResult.innerHTML=`<i class="fas fa-check-circle"></i> ${esc(sg.name)} → ${esc(tg.name)}`;if(s===t)E.serverValidationResult.innerHTML+=' <i class="fas fa-exclamation-triangle"></i> ОДИНАКОВЫЕ';}setTimeout(()=>E.serverValidationResult.style.display='none',5000);}catch(e){E.serverValidationResult.style.display='none';}}
+            function convertOverwrites(ow,targetId,roleMap){if(!ow||!Array.isArray(ow))return[];return ow.map(o=>{if(!o||!o.id)return null;let id=o.id;if(o.type===0){if(roleMap&&roleMap[o.id])id=roleMap[o.id];else return null;}else if(o.type===1)id=targetId;return{id:id,type:o.type,allow:o.allow?.toString()||'0',deny:o.deny?.toString()||'0'};}).filter(o=>o!==null);}
+            async function copyGuildIcon(src,tgt,token){try{const r=await fetch(`${C.apiBase}/guilds/${src}`,{headers:{'Authorization':token}});if(!r.ok)return!1;const g=await r.json();if(!g.icon)return!1;const iconUrl=`https://cdn.discordapp.com/icons/${src}/${g.icon}.png?size=256`;const img=await fetch(iconUrl);if(!img.ok)return!1;const blob=await img.blob();if(blob.size>256*1024){addLog('ИКОНКА СЛИШКОМ БОЛЬШАЯ, ПРОПУСК','warning');return!1;}const reader=new FileReader();const data=await new Promise(res=>{reader.onloadend=()=>res(reader.result);reader.readAsDataURL(blob);});const base64=data.split(',')[1];const upd=await fetch(`${C.apiBase}/guilds/${tgt}`,{method:'PATCH',headers:{'Authorization':token,'Content-Type':'application/json'},body:JSON.stringify({icon:base64})});return upd.ok;}catch(e){addLog(`ОШИБКА КОПИРОВАНИЯ ИКОНКИ: ${e.message}`,'warning');return!1;}}
+            function confetti(){const col=['#a0a0a0','#e0e0e0','#707070'];for(let i=0;i<40;i++){const p=document.createElement('div');p.className='confetti';p.style.left=Math.random()*window.innerWidth+'px';p.style.backgroundColor=col[Math.floor(Math.random()*col.length)];p.style.width=Math.random()*8+4+'px';p.style.height=p.style.width;document.body.appendChild(p);p.addEventListener('animationend',()=>p.remove());}}
+            async function startCloning(){
+                if(S.cloning)return;
+                S.cloning=!0;S.cancelRequested=!1;S.abortController=new AbortController();
+                E.cloneBtn.disabled=!0;E.cancelCloneBtn.disabled=!1;E.backgroundStatus.classList.add('show');
+                const src=E.sourceId.value.trim(),tgt=E.targetId.value.trim();
+                if(!/^\d{17,20}$/.test(src)||!/^\d{17,20}$/.test(tgt)){addLog('НЕВЕРНЫЙ ФОРМАТ ID','error');resetClone();return;}
+                try{
+                    addLog('НАЧАЛО КЛОНИРОВАНИЯ','info');
+                    const gRes=await fetch(`${C.apiBase}/users/@me/guilds`,{headers:{'Authorization':S.token}});
+                    const guilds=await gRes.json();
+                    const targetGuild=guilds.find(g=>g.id===tgt);
+                    if(!targetGuild||!(BigInt(targetGuild.permissions)&0x8n))throw new Error('НЕТ ПРАВ АДМИНИСТРАТОРА');
+                    E.backgroundStage.textContent='ЭТАП: ОЧИСТКА 0%';E.progressFill.style.width='0%';
+                    const chRes=await fetchWithRetry(`${C.apiBase}/guilds/${tgt}/channels`,{headers:{'Authorization':S.token}});
+                    const channels=await chRes.json();
+                    for(let i=0;i<channels.length;i++){if(S.cancelRequested)throw new Error('CANCELLED');try{await fetchWithRetry(`${C.apiBase}/channels/${channels[i].id}`,{method:'DELETE',headers:{'Authorization':S.token}});addLog(`УДАЛЕН КАНАЛ: ${channels[i].name}`,'warning');}catch(e){addLog(`НЕ УДАЛОСЬ УДАЛИТЬ КАНАЛ: ${channels[i].name}`,'error');}await sleep(300);E.progressFill.style.width=`${Math.min(20,(i/Math.max(channels.length,1))*20)}%`;}
+                    const rRes=await fetchWithRetry(`${C.apiBase}/guilds/${tgt}/roles`,{headers:{'Authorization':S.token}});
+                    const roles=await rRes.json();
+                    const delRoles=roles.filter(r=>r.name!=='@everyone'&&!r.managed).sort((a,b)=>b.position-a.position);
+                    for(let i=0;i<delRoles.length;i++){if(S.cancelRequested)throw new Error('CANCELLED');try{await fetchWithRetry(`${C.apiBase}/guilds/${tgt}/roles/${delRoles[i].id}`,{method:'DELETE',headers:{'Authorization':S.token}});addLog(`УДАЛЕНА РОЛЬ: ${delRoles[i].name}`,'warning');}catch(e){addLog(`НЕ УДАЛОСЬ УДАЛИТЬ РОЛЬ: ${delRoles[i].name}`,'error');}await sleep(300);}
+                    E.progressFill.style.width='20%';E.backgroundStage.textContent='ЭТАП: КОПИРОВАНИЕ ИНФОРМАЦИИ';
+                    const srcGuild=await(await fetchWithRetry(`${C.apiBase}/guilds/${src}`,{headers:{'Authorization':S.token}})).json();
+                    await fetchWithRetry(`${C.apiBase}/guilds/${tgt}`,{method:'PATCH',headers:{'Authorization':S.token,'Content-Type':'application/json'},body:JSON.stringify({name:srcGuild.name})});
+                    addLog(`НАЗВАНИЕ: ${srcGuild.name}`,'success');
+                    await copyGuildIcon(src,tgt,S.token);
+                    E.progressFill.style.width='30%';E.backgroundStage.textContent='ЭТАП: СОЗДАНИЕ РОЛЕЙ 0%';
+                    const srcRoles=await(await fetchWithRetry(`${C.apiBase}/guilds/${src}/roles`,{headers:{'Authorization':S.token}})).json();
+                    const rolesToCreate=srcRoles.filter(r=>r.name!=='@everyone'&&!r.managed).sort((a,b)=>b.position-a.position);
+                    const roleMap={};
+                    for(let i=0;i<rolesToCreate.length;i++){if(S.cancelRequested)throw new Error('CANCELLED');try{const cr=await fetchWithRetry(`${C.apiBase}/guilds/${tgt}/roles`,{method:'POST',headers:{'Authorization':S.token,'Content-Type':'application/json'},body:JSON.stringify({name:rolesToCreate[i].name.substring(0,100),color:rolesToCreate[i].color||0,hoist:rolesToCreate[i].hoist||!1,mentionable:rolesToCreate[i].mentionable||!1,permissions:rolesToCreate[i].permissions?.toString()||'0'})});if(cr.ok){const nr=await cr.json();roleMap[rolesToCreate[i].id]=nr.id;addLog(`СОЗДАНА РОЛЬ: ${rolesToCreate[i].name}`,'success');}else addLog(`ОШИБКА СОЗДАНИЯ РОЛИ ${rolesToCreate[i].name}: ${cr.status}`,'error');}catch(e){addLog(`ОШИБКА: ${e.message}`,'error');}await sleep(400);const pct=(i+1)/Math.max(rolesToCreate.length,1)*100;E.progressFill.style.width=`${30+pct*0.3}%`;E.backgroundStage.textContent=`ЭТАП: СОЗДАНИЕ РОЛЕЙ ${Math.floor(pct)}%`;}
+                    E.backgroundStage.textContent='ЭТАП: СОЗДАНИЕ КАНАЛОВ 0%';
+                    const srcChannels=await(await fetchWithRetry(`${C.apiBase}/guilds/${src}/channels`,{headers:{'Authorization':S.token}})).json();
+                    const cats=srcChannels.filter(c=>c.type===4).sort((a,b)=>a.position-b.position);
+                    const others=srcChannels.filter(c=>c.type!==4).sort((a,b)=>a.position-b.position);
+                    const catMap={};let chCount=0;const total=cats.length+others.length;
+                    for(let i=0;i<cats.length;i++){if(S.cancelRequested)throw new Error('CANCELLED');try{const catData={name:cats[i].name.substring(0,100),type:4,position:cats[i].position,permission_overwrites:convertOverwrites(cats[i].permission_overwrites,tgt,roleMap)};const cr=await fetchWithRetry(`${C.apiBase}/guilds/${tgt}/channels`,{method:'POST',headers:{'Authorization':S.token,'Content-Type':'application/json'},body:JSON.stringify(catData)});if(cr.ok){const nc=await cr.json();catMap[cats[i].id]=nc.id;addLog(`СОЗДАНА КАТЕГОРИЯ: ${cats[i].name}`,'success');chCount++;}else addLog(`ОШИБКА СОЗДАНИЯ КАТЕГОРИИ ${cats[i].name}: ${cr.status}`,'error');}catch(e){addLog(`ОШИБКА: ${e.message}`,'error');}await sleep(400);const pct=(i+1)/Math.max(total,1)*100;E.progressFill.style.width=`${60+pct*0.4}%`;E.backgroundStage.textContent=`ЭТАП: СОЗДАНИЕ КАНАЛОВ ${Math.floor(pct)}%`;}
+                    for(let i=0;i<others.length;i++){if(S.cancelRequested)throw new Error('CANCELLED');const ch=others[i];try{const chData={name:ch.name.substring(0,100),type:ch.type,position:ch.position,permission_overwrites:convertOverwrites(ch.permission_overwrites,tgt,roleMap)};if(ch.type===0||ch.type===5){if(ch.topic)chData.topic=ch.topic.substring(0,1024);if(ch.rate_limit_per_user)chData.rate_limit_per_user=Math.min(ch.rate_limit_per_user,21600);if(ch.nsfw)chData.nsfw=ch.nsfw;}if(ch.type===2){const maxBitrate=96000;if(ch.bitrate)chData.bitrate=Math.min(ch.bitrate,maxBitrate);if(ch.user_limit)chData.user_limit=Math.min(ch.user_limit,99);}if(ch.parent_id&&catMap[ch.parent_id])chData.parent_id=catMap[ch.parent_id];const cr=await fetchWithRetry(`${C.apiBase}/guilds/${tgt}/channels`,{method:'POST',headers:{'Authorization':S.token,'Content-Type':'application/json'},body:JSON.stringify(chData)});if(cr.ok){addLog(`СОЗДАН КАНАЛ: ${ch.name}`,'success');chCount++;}else addLog(`ОШИБКА СОЗДАНИЯ КАНАЛА ${ch.name}: ${cr.status}`,'error');}catch(e){addLog(`ОШИБКА: ${e.message}`,'error');}await sleep(400);const proc=cats.length+i+1;const pct=proc/Math.max(total,1)*100;E.progressFill.style.width=`${60+pct*0.4}%`;E.backgroundStage.textContent=`ЭТАП: СОЗДАНИЕ КАНАЛОВ ${Math.floor(pct)}%`;}
+                    E.progressFill.style.width='100%';addLog(`КЛОНИРОВАНИЕ ЗАВЕРШЕНО!`,'success');addLog(`СОЗДАНО: ${rolesToCreate.length} РОЛЕЙ, ${chCount} КАНАЛОВ`,'success');toast('КЛОНИРОВАНИЕ ЗАВЕРШЕНО');confetti();
+                }catch(e){if(e.message==='CANCELLED')addLog('КЛОНИРОВАНИЕ ОТМЕНЕНО','warning');else{addLog(`ОШИБКА: ${e.message}`,'error');errShow(E.cloneError,e.message);}E.progressFill.style.width='0%';}finally{resetClone();}
             }
-
-            function toggleTheme() {
-                document.body.classList.toggle('light-theme');
-                const icon = elements.themeBtn.querySelector('i');
-                icon.classList.toggle('fa-moon');
-                icon.classList.toggle('fa-sun');
+            function resetClone(){S.cloning=!1;S.abortController=null;E.cloneBtn.disabled=!1;E.cancelCloneBtn.disabled=!0;E.backgroundStatus.classList.remove('show');}
+            function cancelCloning(){if(S.cloning){S.cancelRequested=!0;S.abortController?.abort();addLog('ОТМЕНА КЛОНИРОВАНИЯ...','warning');E.cancelCloneBtn.disabled=!0;}}
+            function showAgreement(){if(!E.sourceId.value.trim()||!E.targetId.value.trim())return errShow(E.cloneError,'ВВЕДИТЕ ID СЕРВЕРОВ');if(E.sourceId.value.trim()===E.targetId.value.trim())return errShow(E.cloneError,'СЕРВЕРЫ НЕ МОГУТ БЫТЬ ОДИНАКОВЫМИ');E.rule1.checked=E.rule2.checked=E.rule3.checked=!1;E.confirmRulesBtn.disabled=!0;E.agreementModal.classList.add('active');}
+            function closeModal(){E.agreementModal.classList.remove('active');}
+            function checkRules(){E.confirmRulesBtn.disabled=!(E.rule1.checked&&E.rule2.checked&&E.rule3.checked);}
+            function confirmAllRules(){if(E.rule1.checked&&E.rule2.checked&&E.rule3.checked){closeModal();startCloning();}}
+            async function authorize(){const t=E.tokenInput.value.trim();if(!t)return errShow(E.authError,'ВВЕДИТЕ ТОКЕН');E.loginBtn.innerHTML='<span class="spinner" style="width:16px;height:16px;"></span>';E.loginBtn.disabled=!0;try{const r=await fetch(`${C.apiBase}/users/@me`,{headers:{'Authorization':t}});if(r.ok){const u=await r.json();S.token=t;S.user=u;sessionStorage.setItem('discord_token',t);sessionStorage.setItem('discord_user',JSON.stringify(u));E.userName.textContent=u.global_name||u.username;E.userId.textContent=`ID: ${u.id}`;if(u.email)E.userEmail.textContent=u.email.replace(/./g,'•');if(u.avatar)E.userAvatar.src=`https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=128`;E.authView.classList.add('hidden');E.mainView.classList.remove('hidden');addLog(`АВТОРИЗАЦИЯ: ${u.username}`,'success');await loadServers();}else errShow(E.authError,'НЕВЕРНЫЙ ТОКЕН');}catch(e){errShow(E.authError,'ОШИБКА ПОДКЛЮЧЕНИЯ');}finally{E.loginBtn.innerHTML='<i class="fas fa-sign-in-alt"></i> ВОЙТИ';E.loginBtn.disabled=!1;}}
+            async function testToken(){const t=E.tokenInput.value.trim();if(!t)return errShow(E.authError,'ВВЕДИТЕ ТОКЕН');E.testTokenBtn.innerHTML='<span class="spinner" style="width:16px;height:16px;"></span>';E.testTokenBtn.disabled=!0;try{const r=await fetch(`${C.apiBase}/users/@me`,{headers:{'Authorization':t}});if(r.ok){const u=await r.json();toast(`✓ ТОКЕН РАБОЧИЙ (${u.username})`);const w=$('tokenWarning');if(w){w.style.display='flex';setTimeout(()=>w.style.display='none',3000);}}else errShow(E.authError,'НЕВЕРНЫЙ ТОКЕН');}catch(e){errShow(E.authError,'ОШИБКА ПОДКЛЮЧЕНИЯ');}finally{E.testTokenBtn.innerHTML='<i class="fas fa-check-circle"></i> ПРОВЕРИТЬ ТОКЕН';E.testTokenBtn.disabled=!1;}}
+            function init(){
+                E={loadingOverlay:$('loadingOverlay'),snowCanvas:$('snowCanvas'),authView:$('authView'),mainView:$('mainView'),tokenInput:$('tokenInput'),authError:$('authError'),loginBtn:$('loginBtn'),testTokenBtn:$('testTokenBtn'),userAvatar:$('userAvatar'),userName:$('userName'),userId:$('userId'),userEmail:$('userEmail'),sourceId:$('sourceId'),targetId:$('targetId'),cloneBtn:$('cloneBtn'),cancelCloneBtn:$('cancelCloneBtn'),progressFill:$('progressFill'),backgroundStatus:$('backgroundStatus'),backgroundProgress:$('backgroundProgress'),backgroundStage:$('backgroundStage'),serverListContainer:$('serverListContainer'),serverValidationResult:$('serverValidationResult'),cloneError:$('cloneError'),log:$('log'),themeBtn:$('themeToggle'),agreementModal:$('agreementModal'),rule1:$('rule1'),rule2:$('rule2'),rule3:$('rule3'),confirmRulesBtn:$('confirmRulesBtn'),mainContent:$('mainContent'),fixesContent:$('fixesContent'),supportContent:$('supportContent'),aboutContent:$('aboutContent')};
+                document.querySelectorAll('.nav-link').forEach(l=>{l.addEventListener('click',()=>{document.querySelectorAll('.nav-link').forEach(ln=>ln.classList.remove('active'));l.classList.add('active');const s=l.dataset.section;E.mainContent.classList.add('hidden');E.fixesContent.classList.add('hidden');E.supportContent.classList.add('hidden');E.aboutContent.classList.add('hidden');if(s==='main')E.mainContent.classList.remove('hidden');else if(s==='fixes')E.fixesContent.classList.remove('hidden');else if(s==='support')E.supportContent.classList.remove('hidden');else if(s==='about')E.aboutContent.classList.remove('hidden');});});
+                E.rule1?.addEventListener('change',checkRules);E.rule2?.addEventListener('change',checkRules);E.rule3?.addEventListener('change',checkRules);
+                $('closeModalBtn')?.addEventListener('click',closeModal);E.confirmRulesBtn?.addEventListener('click',confirmAllRules);
+                $('showServersBtn')?.addEventListener('click',showServerList);$('validateBtn')?.addEventListener('click',validateServers);
+                E.cloneBtn?.addEventListener('click',showAgreement);E.cancelCloneBtn?.addEventListener('click',cancelCloning);
+                $('clearLogsBtn')?.addEventListener('click',clearLogs);$('exportLogsBtn')?.addEventListener('click',exportLogs);
+                E.themeBtn?.addEventListener('click',toggleTheme);E.loginBtn?.addEventListener('click',authorize);E.testTokenBtn?.addEventListener('click',testToken);
+                $('toggleTokenVisibility')?.addEventListener('click',()=>{const i=E.tokenInput;const ic=i.parentElement.querySelector('i');if(i.type==='password'){i.type='text';ic.classList.replace('fa-eye','fa-eye-slash');}else{i.type='password';ic.classList.replace('fa-eye-slash','fa-eye');}});
+                $('toggleEmailBtn')?.addEventListener('click',toggleEmail);$('logoutBtn')?.addEventListener('click',logout);
             }
-
-            function toggleEmail() {
-                state.emailVisible = !state.emailVisible;
-                if(state.emailVisible && state.user?.email) { elements.userEmail.textContent = state.user.email; elements.userEmail.classList.add('unblur'); }
-                else if(state.user?.email) { elements.userEmail.textContent = state.user.email.replace(/./g, '•'); elements.userEmail.classList.remove('unblur'); }
-            }
-
-            function logout() {
-                state.token = null; state.user = null; sessionStorage.clear();
-                elements.authView.classList.remove('hidden'); elements.mainView.classList.add('hidden');
-                addLog('ВЫХОД ИЗ АККАУНТА', 'info');
-            }
-
-            function clearLogs() { if(elements.log) { elements.log.innerHTML = ''; addLog('ЛОГИ ОЧИЩЕНЫ', 'info'); } }
-            function exportLogs() {
-                const logs = Array.from(elements.log.children).map(entry => { const t = entry.querySelector('.log-time')?.textContent; const m = entry.querySelector('.log-msg')?.textContent; return `[${t}] ${m}`; }).join('\n');
-                const blob = new Blob([`DISCORD CLONER LOGS\n${new Date().toLocaleString()}\n${'='.repeat(50)}\n${logs}`], { type: 'text/plain' });
-                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `clone_logs_${Date.now()}.txt`; a.click(); URL.revokeObjectURL(a.href);
-                showToast('ЛОГИ ЭКСПОРТИРОВАНЫ');
-            }
-
-            async function loadServers() {
-                if(!state.token) return [];
-                try {
-                    const res = await fetch(`${CONFIG.apiBase}/users/@me/guilds`, { headers: { 'Authorization': state.token } });
-                    if(res.ok) { state.userGuilds = await res.json(); state.userGuilds.sort((a,b)=>a.name.localeCompare(b.name)); addLog(`ЗАГРУЖЕНО СЕРВЕРОВ: ${state.userGuilds.length}`, 'success'); return state.userGuilds; }
-                } catch(e) { addLog('ОШИБКА ЗАГРУЗКИ СЕРВЕРОВ', 'error'); }
-                return [];
-            }
-
-            async function showServerList() {
-                if(state.userGuilds.length === 0) await loadServers();
-                if(state.userGuilds.length) {
-                    let html = '<div style="color:var(--text-secondary); margin-bottom:0.5rem;">НАЖМИТЕ ДЛЯ ВСТАВКИ ID:</div>';
-                    state.userGuilds.slice(0,20).forEach(g => { html += `<div class="server-item" onclick="window.setSourceId('${g.id}')"><span>${escapeHtml(g.name)}</span><span class="server-id">${g.id}</span></div>`; });
-                    elements.serverListContainer.innerHTML = html; elements.serverListContainer.classList.remove('hidden');
-                }
-            }
-            window.setSourceId = function(id) { elements.sourceId.value = id; elements.serverListContainer.classList.add('hidden'); addLog(`ВСТАВЛЕН ID: ${id}`, 'info'); };
-
-            async function validateServers() {
-                const s = elements.sourceId.value.trim(), t = elements.targetId.value.trim();
-                if(!s || !t) { elements.serverValidationResult.style.display = 'flex'; elements.serverValidationResult.style.color = '#ff5555'; elements.serverValidationResult.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ВВЕДИТЕ ID'; setTimeout(() => elements.serverValidationResult.style.display = 'none', 3000); return; }
-                elements.serverValidationResult.style.display = 'flex'; elements.serverValidationResult.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> ПРОВЕРКА...';
-                try {
-                    const [src, tgt] = await Promise.all([ fetch(`${CONFIG.apiBase}/guilds/${s}`, { headers: { 'Authorization': state.token } }), fetch(`${CONFIG.apiBase}/guilds/${t}`, { headers: { 'Authorization': state.token } }) ]);
-                    if(!src.ok && !tgt.ok) { elements.serverValidationResult.style.color = '#ff5555'; elements.serverValidationResult.innerHTML = '<i class="fas fa-exclamation-circle"></i> ОБА СЕРВЕРА НЕ НАЙДЕНЫ'; }
-                    else if(!src.ok) { elements.serverValidationResult.style.color = '#ff5555'; elements.serverValidationResult.innerHTML = '<i class="fas fa-exclamation-circle"></i> ИСХОДНЫЙ СЕРВЕР НЕ НАЙДЕН'; }
-                    else if(!tgt.ok) { elements.serverValidationResult.style.color = '#ff5555'; elements.serverValidationResult.innerHTML = '<i class="fas fa-exclamation-circle"></i> ЦЕЛЕВОЙ СЕРВЕР НЕ НАЙДЕН'; }
-                    else { const sg = await src.json(); const tg = await tgt.json(); elements.serverValidationResult.style.color = '#88ff88'; elements.serverValidationResult.innerHTML = `<i class="fas fa-check-circle"></i> ${escapeHtml(sg.name)} → ${escapeHtml(tg.name)}`; if(s === t) elements.serverValidationResult.innerHTML += ' <i class="fas fa-exclamation-triangle"></i> ОДИНАКОВЫЕ'; }
-                    setTimeout(() => elements.serverValidationResult.style.display = 'none', 5000);
-                } catch(e) { elements.serverValidationResult.style.display = 'none'; }
-            }
-
-            function convertOverwrites(overwrites, targetId, roleMap) {
-                if(!overwrites || !Array.isArray(overwrites)) return [];
-                return overwrites.map(ow => {
-                    if(!ow || !ow.id) return null;
-                    let id = ow.id;
-                    if(ow.type === 0) { if(roleMap && roleMap[ow.id]) id = roleMap[ow.id]; else return null; }
-                    else if(ow.type === 1) id = targetId;
-                    return { id: id, type: ow.type, allow: ow.allow?.toString() || '0', deny: ow.deny?.toString() || '0' };
-                }).filter(ow => ow !== null);
-            }
-
-            async function copyGuildIcon(sourceId, targetId, token) {
-                try {
-                    const res = await fetch(`${CONFIG.apiBase}/guilds/${sourceId}`, { headers: { 'Authorization': token } });
-                    if(!res.ok) return false;
-                    const guild = await res.json();
-                    if(!guild.icon) return false;
-                    const iconUrl = `https://cdn.discordapp.com/icons/${sourceId}/${guild.icon}.png?size=256`;
-                    const img = await fetch(iconUrl);
-                    if(!img.ok) return false;
-                    const blob = await img.blob();
-                    if(blob.size > 256*1024) { addLog('ИКОНКА СЛИШКОМ БОЛЬШАЯ, ПРОПУСК', 'warning'); return false; }
-                    const reader = new FileReader();
-                    const data = await new Promise(resolve => { reader.onloadend = () => resolve(reader.result); reader.readAsDataURL(blob); });
-                    const base64 = data.split(',')[1];
-                    const upd = await fetch(`${CONFIG.apiBase}/guilds/${targetId}`, { method: 'PATCH', headers: { 'Authorization': token, 'Content-Type': 'application/json' }, body: JSON.stringify({ icon: base64 }) });
-                    return upd.ok;
-                } catch(e) { addLog(`ОШИБКА КОПИРОВАНИЯ ИКОНКИ: ${e.message}`, 'warning'); return false; }
-            }
-
-            function createConfetti() {
-                const colors = ['#9ca3af', '#ffffff', '#6b7280'];
-                for(let i=0;i<40;i++) {
-                    const p = document.createElement('div'); p.className = 'confetti'; p.style.left = Math.random() * window.innerWidth + 'px'; p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)]; p.style.width = Math.random() * 8 + 4 + 'px'; p.style.height = p.style.width; document.body.appendChild(p); p.addEventListener('animationend', () => p.remove());
-                }
-            }
-
-            async function startCloning() {
-                if(state.cloning) return;
-                state.cloning = true; state.cancelRequested = false;
-                elements.cloneBtn.disabled = true; elements.cancelCloneBtn.disabled = false;
-                elements.backgroundStatus.classList.add('show');
-                const sourceId = elements.sourceId.value.trim(), targetId = elements.targetId.value.trim();
-                if(!/^\d{17,20}$/.test(sourceId) || !/^\d{17,20}$/.test(targetId)) { addLog('НЕВЕРНЫЙ ФОРМАТ ID СЕРВЕРА', 'error'); state.cloning = false; elements.cloneBtn.disabled = false; elements.cancelCloneBtn.disabled = true; elements.backgroundStatus.classList.remove('show'); return; }
-                try {
-                    addLog('НАЧАЛО КЛОНИРОВАНИЯ', 'info');
-                    const guildsRes = await fetch(`${CONFIG.apiBase}/users/@me/guilds`, { headers: { 'Authorization': state.token } });
-                    const guilds = await guildsRes.json();
-                    const targetGuild = guilds.find(g => g.id === targetId);
-                    if(!targetGuild || !(BigInt(targetGuild.permissions) & 0x8n)) throw new Error('НЕТ ПРАВ АДМИНИСТРАТОРА');
-                    elements.backgroundStage.textContent = 'ЭТАП: ОЧИСТКА 0%';
-                    elements.progressFill.style.width = '0%';
-                    const channelsRes = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/channels`, { headers: { 'Authorization': state.token } });
-                    const channels = await channelsRes.json();
-                    for(let i=0;i<channels.length;i++) {
-                        if(state.cancelRequested) throw new Error('CANCELLED');
-                        try { await fetchWithRetry(`${CONFIG.apiBase}/channels/${channels[i].id}`, { method: 'DELETE', headers: { 'Authorization': state.token } }); addLog(`УДАЛЕН КАНАЛ: ${channels[i].name}`, 'warning'); } catch(e) { addLog(`НЕ УДАЛОСЬ УДАЛИТЬ КАНАЛ: ${channels[i].name}`, 'error'); }
-                        await sleep(300);
-                        elements.progressFill.style.width = `${Math.min(20, (i / Math.max(channels.length,1)) * 20)}%`;
-                    }
-                    const rolesRes = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/roles`, { headers: { 'Authorization': state.token } });
-                    const roles = await rolesRes.json();
-                    const deletable = roles.filter(r => r.name !== '@everyone' && !r.managed).sort((a,b) => b.position - a.position);
-                    for(let i=0;i<deletable.length;i++) {
-                        if(state.cancelRequested) throw new Error('CANCELLED');
-                        try { await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/roles/${deletable[i].id}`, { method: 'DELETE', headers: { 'Authorization': state.token } }); addLog(`УДАЛЕНА РОЛЬ: ${deletable[i].name}`, 'warning'); } catch(e) { addLog(`НЕ УДАЛОСЬ УДАЛИТЬ РОЛЬ: ${deletable[i].name}`, 'error'); }
-                        await sleep(300);
-                    }
-                    elements.progressFill.style.width = '20%';
-                    elements.backgroundStage.textContent = 'ЭТАП: КОПИРОВАНИЕ ИНФОРМАЦИИ';
-                    const srcGuild = await (await fetchWithRetry(`${CONFIG.apiBase}/guilds/${sourceId}`, { headers: { 'Authorization': state.token } })).json();
-                    await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}`, { method: 'PATCH', headers: { 'Authorization': state.token, 'Content-Type': 'application/json' }, body: JSON.stringify({ name: srcGuild.name }) });
-                    addLog(`НАЗВАНИЕ: ${srcGuild.name}`, 'success');
-                    await copyGuildIcon(sourceId, targetId, state.token);
-                    elements.progressFill.style.width = '30%';
-                    elements.backgroundStage.textContent = 'ЭТАП: СОЗДАНИЕ РОЛЕЙ 0%';
-                    const srcRoles = await (await fetchWithRetry(`${CONFIG.apiBase}/guilds/${sourceId}/roles`, { headers: { 'Authorization': state.token } })).json();
-                    const rolesToCreate = srcRoles.filter(r => r.name !== '@everyone' && !r.managed).sort((a,b) => b.position - a.position);
-                    const roleMap = {};
-                    for(let i=0;i<rolesToCreate.length;i++) {
-                        if(state.cancelRequested) throw new Error('CANCELLED');
-                        try {
-                            const create = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/roles`, { method: 'POST', headers: { 'Authorization': state.token, 'Content-Type': 'application/json' }, body: JSON.stringify({ name: rolesToCreate[i].name.substring(0,100), color: rolesToCreate[i].color || 0, hoist: rolesToCreate[i].hoist || false, mentionable: rolesToCreate[i].mentionable || false, permissions: rolesToCreate[i].permissions?.toString() || '0' }) });
-                            if(create.ok) { const newRole = await create.json(); roleMap[rolesToCreate[i].id] = newRole.id; addLog(`СОЗДАНА РОЛЬ: ${rolesToCreate[i].name}`, 'success'); }
-                            else addLog(`ОШИБКА СОЗДАНИЯ РОЛИ ${rolesToCreate[i].name}: ${create.status}`, 'error');
-                        } catch(e) { addLog(`ОШИБКА: ${e.message}`, 'error'); }
-                        await sleep(400);
-                        const percent = (i+1)/Math.max(rolesToCreate.length,1)*100;
-                        elements.progressFill.style.width = `${30 + percent * 0.3}%`;
-                        elements.backgroundStage.textContent = `ЭТАП: СОЗДАНИЕ РОЛЕЙ ${Math.floor(percent)}%`;
-                    }
-                    elements.backgroundStage.textContent = 'ЭТАП: СОЗДАНИЕ КАНАЛОВ 0%';
-                    const srcChannels = await (await fetchWithRetry(`${CONFIG.apiBase}/guilds/${sourceId}/channels`, { headers: { 'Authorization': state.token } })).json();
-                    const categories = srcChannels.filter(c => c.type === 4).sort((a,b)=>a.position-b.position);
-                    const others = srcChannels.filter(c => c.type !== 4).sort((a,b)=>a.position-b.position);
-                    const categoryMap = {};
-                    let channelCount = 0;
-                    const totalChannels = categories.length + others.length;
-                    for(let i=0;i<categories.length;i++) {
-                        if(state.cancelRequested) throw new Error('CANCELLED');
-                        try {
-                            const catData = { name: categories[i].name.substring(0,100), type: 4, position: categories[i].position, permission_overwrites: convertOverwrites(categories[i].permission_overwrites, targetId, roleMap) };
-                            const create = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/channels`, { method: 'POST', headers: { 'Authorization': state.token, 'Content-Type': 'application/json' }, body: JSON.stringify(catData) });
-                            if(create.ok) { const newCat = await create.json(); categoryMap[categories[i].id] = newCat.id; addLog(`СОЗДАНА КАТЕГОРИЯ: ${categories[i].name}`, 'success'); channelCount++; }
-                            else addLog(`ОШИБКА СОЗДАНИЯ КАТЕГОРИИ ${categories[i].name}: ${create.status}`, 'error');
-                        } catch(e) { addLog(`ОШИБКА: ${e.message}`, 'error'); }
-                        await sleep(400);
-                        const percent = (i+1)/Math.max(totalChannels,1)*100;
-                        elements.progressFill.style.width = `${60 + percent * 0.4}%`;
-                        elements.backgroundStage.textContent = `ЭТАП: СОЗДАНИЕ КАНАЛОВ ${Math.floor(percent)}%`;
-                    }
-                    for(let i=0;i<others.length;i++) {
-                        if(state.cancelRequested) throw new Error('CANCELLED');
-                        const ch = others[i];
-                        try {
-                            const chData = { name: ch.name.substring(0,100), type: ch.type, position: ch.position, permission_overwrites: convertOverwrites(ch.permission_overwrites, targetId, roleMap) };
-                            if(ch.type === 0 || ch.type === 5) { if(ch.topic) chData.topic = ch.topic.substring(0,1024); if(ch.rate_limit_per_user) chData.rate_limit_per_user = Math.min(ch.rate_limit_per_user,21600); if(ch.nsfw) chData.nsfw = ch.nsfw; }
-                            if(ch.type === 2) { const maxBitrate = 96000; if(ch.bitrate) chData.bitrate = Math.min(ch.bitrate, maxBitrate); if(ch.user_limit) chData.user_limit = Math.min(ch.user_limit,99); }
-                            if(ch.parent_id && categoryMap[ch.parent_id]) chData.parent_id = categoryMap[ch.parent_id];
-                            const create = await fetchWithRetry(`${CONFIG.apiBase}/guilds/${targetId}/channels`, { method: 'POST', headers: { 'Authorization': state.token, 'Content-Type': 'application/json' }, body: JSON.stringify(chData) });
-                            if(create.ok) { addLog(`СОЗДАН КАНАЛ: ${ch.name}`, 'success'); channelCount++; }
-                            else addLog(`ОШИБКА СОЗДАНИЯ КАНАЛА ${ch.name}: ${create.status}`, 'error');
-                        } catch(e) { addLog(`ОШИБКА: ${e.message}`, 'error'); }
-                        await sleep(400);
-                        const processed = categories.length + i + 1;
-                        const percent = processed / Math.max(totalChannels,1) * 100;
-                        elements.progressFill.style.width = `${60 + percent * 0.4}%`;
-                        elements.backgroundStage.textContent = `ЭТАП: СОЗДАНИЕ КАНАЛОВ ${Math.floor(percent)}%`;
-                    }
-                    elements.progressFill.style.width = '100%';
-                    addLog(`КЛОНИРОВАНИЕ ЗАВЕРШЕНО!`, 'success');
-                    addLog(`СОЗДАНО: ${rolesToCreate.length} РОЛЕЙ, ${channelCount} КАНАЛОВ`, 'success');
-                    showToast('КЛОНИРОВАНИЕ ЗАВЕРШЕНО');
-                    createConfetti();
-                } catch(e) {
-                    if(e.message === 'CANCELLED') addLog('КЛОНИРОВАНИЕ ОТМЕНЕНО', 'warning');
-                    else { addLog(`ОШИБКА: ${e.message}`, 'error'); showError(elements.cloneError, e.message); }
-                    elements.progressFill.style.width = '0%';
-                } finally {
-                    state.cloning = false; elements.cloneBtn.disabled = false; elements.cancelCloneBtn.disabled = true; elements.backgroundStatus.classList.remove('show');
-                }
-            }
-            function cancelCloning() { if(state.cloning) { state.cancelRequested = true; addLog('ОТМЕНА КЛОНИРОВАНИЯ...', 'warning'); elements.cancelCloneBtn.disabled = true; } }
-            
-            function showAgreement() {
-                if(!elements.sourceId.value.trim() || !elements.targetId.value.trim()) return showError(elements.cloneError, 'ВВЕДИТЕ ID СЕРВЕРОВ');
-                if(elements.sourceId.value.trim() === elements.targetId.value.trim()) return showError(elements.cloneError, 'СЕРВЕРЫ НЕ МОГУТ БЫТЬ ОДИНАКОВЫМИ');
-                elements.rule1.checked = false;
-                elements.rule2.checked = false;
-                elements.rule3.checked = false;
-                elements.confirmRulesBtn.disabled = true;
-                elements.agreementModal.classList.add('active');
-            }
-            function closeModal() { elements.agreementModal.classList.remove('active'); }
-            function checkRules() { 
-                const btn = elements.confirmRulesBtn;
-                if (btn) btn.disabled = !(elements.rule1.checked && elements.rule2.checked && elements.rule3.checked);
-            }
-            function confirmAllRules() { 
-                if(elements.rule1.checked && elements.rule2.checked && elements.rule3.checked) { 
-                    closeModal(); 
-                    startCloning(); 
-                } 
-            }
-            
-            async function authorize() {
-                const t = elements.tokenInput.value.trim();
-                if(!t) return showError(elements.authError, 'ВВЕДИТЕ ТОКЕН');
-                elements.loginBtn.innerHTML = '<span class="spinner" style="width:16px;height:16px;"></span>'; elements.loginBtn.disabled = true;
-                try {
-                    const res = await fetch(`${CONFIG.apiBase}/users/@me`, { headers: { 'Authorization': t } });
-                    if(res.ok) {
-                        const u = await res.json(); state.token = t; state.user = u; sessionStorage.setItem('discord_token', t); sessionStorage.setItem('discord_user', JSON.stringify(u));
-                        elements.userName.textContent = u.global_name || u.username; elements.userId.textContent = `ID: ${u.id}`;
-                        if(u.email) elements.userEmail.textContent = u.email.replace(/./g, '•');
-                        if(u.avatar) elements.userAvatar.src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=128`;
-                        elements.authView.classList.add('hidden'); elements.mainView.classList.remove('hidden');
-                        addLog(`АВТОРИЗАЦИЯ: ${u.username}`, 'success'); await loadServers();
-                    } else showError(elements.authError, 'НЕВЕРНЫЙ ТОКЕН');
-                } catch(e) { showError(elements.authError, 'ОШИБКА ПОДКЛЮЧЕНИЯ'); }
-                finally { elements.loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> ВОЙТИ'; elements.loginBtn.disabled = false; }
-            }
-            async function testToken() {
-                const t = elements.tokenInput.value.trim();
-                if(!t) return showError(elements.authError, 'ВВЕДИТЕ ТОКЕН');
-                elements.testTokenBtn.innerHTML = '<span class="spinner" style="width:16px;height:16px;"></span>'; elements.testTokenBtn.disabled = true;
-                try {
-                    const res = await fetch(`${CONFIG.apiBase}/users/@me`, { headers: { 'Authorization': t } });
-                    if(res.ok) { const u = await res.json(); showToast(`✓ ТОКЕН РАБОЧИЙ (${u.username})`); const warn = document.getElementById('tokenWarning'); if(warn) { warn.style.display = 'flex'; setTimeout(() => warn.style.display = 'none', 3000); } }
-                    else showError(elements.authError, 'НЕВЕРНЫЙ ТОКЕН');
-                } catch(e) { showError(elements.authError, 'ОШИБКА ПОДКЛЮЧЕНИЯ'); }
-                finally { elements.testTokenBtn.innerHTML = '<i class="fas fa-check-circle"></i> ПРОВЕРИТЬ ТОКЕН'; elements.testTokenBtn.disabled = false; }
-            }
-            
-            function initElements() {
-                elements = {
-                    loadingOverlay: getEl('loadingOverlay'), snowCanvas: getEl('snowCanvas'), authView: getEl('authView'), mainView: getEl('mainView'),
-                    tokenInput: getEl('tokenInput'), authError: getEl('authError'), loginBtn: getEl('loginBtn'), testTokenBtn: getEl('testTokenBtn'),
-                    userAvatar: getEl('userAvatar'), userName: getEl('userName'), userId: getEl('userId'), userEmail: getEl('userEmail'),
-                    sourceId: getEl('sourceId'), targetId: getEl('targetId'), cloneBtn: getEl('cloneBtn'), cancelCloneBtn: getEl('cancelCloneBtn'),
-                    progressFill: getEl('progressFill'), backgroundStatus: getEl('backgroundStatus'), backgroundProgress: getEl('backgroundProgress'),
-                    backgroundStage: getEl('backgroundStage'), serverListContainer: getEl('serverListContainer'), serverValidationResult: getEl('serverValidationResult'),
-                    cloneError: getEl('cloneError'), log: getEl('log'), themeBtn: getEl('themeToggle'), agreementModal: getEl('agreementModal'),
-                    rule1: getEl('rule1'), rule2: getEl('rule2'), rule3: getEl('rule3'), confirmRulesBtn: getEl('confirmRulesBtn'),
-                    mainContent: getEl('mainContent'), fixesContent: getEl('fixesContent'), supportContent: getEl('supportContent'), aboutContent: getEl('aboutContent')
-                };
-                
-                document.querySelectorAll('.nav-link').forEach(link => { 
-                    link.addEventListener('click', () => { 
-                        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active')); 
-                        link.classList.add('active'); 
-                        const s = link.dataset.section; 
-                        elements.mainContent.classList.add('hidden');
-                        elements.fixesContent.classList.add('hidden');
-                        elements.supportContent.classList.add('hidden');
-                        elements.aboutContent.classList.add('hidden');
-                        if(s === 'main') elements.mainContent.classList.remove('hidden');
-                        else if(s === 'fixes') elements.fixesContent.classList.remove('hidden');
-                        else if(s === 'support') elements.supportContent.classList.remove('hidden');
-                        else if(s === 'about') elements.aboutContent.classList.remove('hidden');
-                    }); 
-                });
-                
-                elements.rule1?.addEventListener('change', checkRules); 
-                elements.rule2?.addEventListener('change', checkRules); 
-                elements.rule3?.addEventListener('change', checkRules);
-                getEl('closeModalBtn')?.addEventListener('click', closeModal);
-                elements.confirmRulesBtn?.addEventListener('click', confirmAllRules);
-                getEl('showServersBtn')?.addEventListener('click', showServerList);
-                getEl('validateBtn')?.addEventListener('click', validateServers);
-                elements.cloneBtn?.addEventListener('click', showAgreement);
-                elements.cancelCloneBtn?.addEventListener('click', cancelCloning);
-                getEl('clearLogsBtn')?.addEventListener('click', clearLogs);
-                getEl('exportLogsBtn')?.addEventListener('click', exportLogs);
-                elements.themeBtn?.addEventListener('click', toggleTheme);
-                elements.loginBtn?.addEventListener('click', authorize);
-                elements.testTokenBtn?.addEventListener('click', testToken);
-                getEl('toggleTokenVisibility')?.addEventListener('click', toggleTokenVisibility);
-                getEl('toggleEmailBtn')?.addEventListener('click', toggleEmail);
-                getEl('logoutBtn')?.addEventListener('click', logout);
-            }
-            
-            window.onload = async () => {
-                initElements();
-                setTimeout(() => { if(elements.loadingOverlay) elements.loadingOverlay.classList.add('fade-out'); }, 1200);
-                const savedToken = sessionStorage.getItem('discord_token'), savedUser = sessionStorage.getItem('discord_user');
-                if(savedToken && savedUser) {
-                    state.token = savedToken; state.user = JSON.parse(savedUser);
-                    elements.userName.textContent = state.user.global_name || state.user.username; elements.userId.textContent = `ID: ${state.user.id}`;
-                    if(state.user.email) elements.userEmail.textContent = state.user.email.replace(/./g, '•');
-                    if(state.user.avatar) elements.userAvatar.src = `https://cdn.discordapp.com/avatars/${state.user.id}/${state.user.avatar}.png?size=128`;
-                    elements.authView.classList.add('hidden'); elements.mainView.classList.remove('hidden');
-                    addLog('СЕССИЯ ВОССТАНОВЛЕНА', 'success'); await loadServers();
-                }
-                addLog('DISCORD SERVER CLONER PRO by xolirx', 'info');
-                const canvas = elements.snowCanvas;
-                function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-                resize(); window.addEventListener('resize', resize);
-                let snowflakes = Array.from({ length: 60 }, () => ({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 1.5 + 0.3, speed: Math.random() * 0.4 + 0.2, opacity: Math.random() * 0.2 + 0.1 }));
-                function drawSnow() { if(!canvas) return; const ctx = canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); snowflakes.forEach(f => { ctx.beginPath(); ctx.arc(f.x,f.y,f.radius,0,Math.PI*2); ctx.fillStyle = `rgba(255,255,255,${f.opacity})`; ctx.fill(); f.y += f.speed; if(f.y > canvas.height) { f.y = 0; f.x = Math.random() * canvas.width; } }); requestAnimationFrame(drawSnow); }
-                drawSnow();
-            };
+            window.onload=async()=>{init();setTimeout(()=>E.loadingOverlay?.classList.add('fade-out'),1200);const st=sessionStorage.getItem('discord_token'),su=sessionStorage.getItem('discord_user');if(st&&su){S.token=st;S.user=JSON.parse(su);E.userName.textContent=S.user.global_name||S.user.username;E.userId.textContent=`ID: ${S.user.id}`;if(S.user.email)E.userEmail.textContent=S.user.email.replace(/./g,'•');if(S.user.avatar)E.userAvatar.src=`https://cdn.discordapp.com/avatars/${S.user.id}/${S.user.avatar}.png?size=128`;E.authView.classList.add('hidden');E.mainView.classList.remove('hidden');addLog('СЕССИЯ ВОССТАНОВЛЕНА','success');await loadServers();}addLog('DISCORD SERVER CLONER PRO by xolirx','info');const c=E.snowCanvas;function rs(){c.width=window.innerWidth;c.height=window.innerHeight;}rs();window.addEventListener('resize',rs);let f=Array.from({length:60},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.5+0.3,s:Math.random()*0.4+0.2,o:Math.random()*0.2+0.1}));function draw(){if(!c)return;const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);f.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(200,200,200,${p.o})`;ctx.fill();p.y+=p.s;if(p.y>c.height){p.y=0;p.x=Math.random()*c.width;}});requestAnimationFrame(draw);}draw();};
         })();
     </script>
 </body>
