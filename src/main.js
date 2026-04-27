@@ -27,6 +27,7 @@ body{
   justify-content: center;
   padding: 16px;
   overflow-x: hidden;
+  backdrop-filter: blur(2px);
 }
 .wrapper{
   display: flex;
@@ -37,6 +38,7 @@ body{
   animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
 .left{
   flex: 1;
   background: var(--card);
@@ -47,6 +49,7 @@ body{
   gap: 14px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
   transition: 0.2s;
 }
 .right{
@@ -58,6 +61,7 @@ body{
   flex-direction: column;
   border: 1px solid var(--border);
   box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
 }
 .log-title{
   font-size: 0.9rem;
@@ -80,6 +84,7 @@ body{
   color: var(--dim);
   border: 1px solid var(--border);
   scrollbar-width: thin;
+  backdrop-filter: blur(5px);
 }
 .log-box::-webkit-scrollbar{width: 4px}
 .log-box::-webkit-scrollbar-thumb{background: var(--accent);border-radius: 4px}
@@ -131,39 +136,6 @@ button.danger:hover{background: rgba(244,63,94,0.1)}
 .row button{flex: 1}
 .progress{height: 4px;background: rgba(255,255,255,0.06);border-radius: 2px;margin: 10px 0;overflow: hidden}
 .progress-fill{height: 100%;background: var(--accent);width: 0%;transition: width 0.3s;border-radius: 2px}
-.server-list{
-  max-height: 180px;
-  overflow-y: auto;
-  background: var(--card2);
-  border-radius: 12px;
-  margin-top: 6px;
-  display: none;
-  border: 1px solid var(--border);
-}
-.server-item{
-  padding: 10px 14px;
-  cursor: pointer;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.8rem;
-  display: flex;
-  justify-content: space-between;
-  transition: all 0.15s;
-}
-.server-item:hover{background: rgba(124,58,237,0.15)}
-.toast{
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #111;
-  border: 1px solid var(--accent);
-  padding: 10px 24px;
-  border-radius: 30px;
-  z-index: 9999;
-  font-size: 0.8rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-  animation: fadeUp 0.2s ease;
-}
 .status{
   background: var(--card2);
   border-radius: 12px;
@@ -188,11 +160,11 @@ button.danger:hover{background: rgba(244,63,94,0.1)}
   top: 20px;
   right: 20px;
   width: auto;
-  padding: 8px 18px;
+  padding: 10px 16px;
   z-index: 100;
-  background: var(--accent);
+  background: var(--card);
   color: #fff;
-  border: none;
+  border: 1px solid var(--border);
   border-radius: 30px;
   font-size: 0.8rem;
   cursor: pointer;
@@ -200,13 +172,15 @@ button.danger:hover{background: rgba(244,63,94,0.1)}
   display: flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 4px 15px rgba(124,58,237,0.4);
+  box-shadow: var(--shadow);
   transition: 0.3s;
   font-weight: 500;
+  backdrop-filter: blur(10px);
 }
-.donate-btn:hover{background: var(--accent2);transform: translateY(-2px);box-shadow: 0 6px 20px rgba(124,58,237,0.6)}
+.donate-btn svg { width: 18px; height: 18px; }
+.donate-btn:hover{background: var(--accent);border-color: var(--accent);box-shadow: 0 0 20px rgba(124,58,237,0.6);transform: translateY(-2px)}
 
-/* Адаптивность */
+/* Адаптив */
 @media (max-width: 768px) {
   body{padding: 10px;align-items: flex-start}
   .wrapper{flex-direction: column;height: auto;gap: 12px}
@@ -217,18 +191,19 @@ button.danger:hover{background: rgba(244,63,94,0.1)}
 `;
 document.head.appendChild(style);
 
-// SVG-смайлики
+// SVG иконки
 const SVG_ICONS = {
   success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`,
-  error: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
-  warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-  info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`
+  error: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+  warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+  heart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
 };
 
 // Приложение
 (function(){
   const API = 'https://discord.com/api/v10';
-  let cloning = false, cancel = false, controller = null, guilds = [];
+  let cloning = false, cancel = false, controller = null;
 
   const $ = id => document.getElementById(id);
   const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -315,38 +290,6 @@ const SVG_ICONS = {
     }
   }
 
-  async function loadGuilds() {
-    let token = $('tokenInput').value.trim();
-    if (!token) return;
-    try {
-      let r = await fetch(`${API}/users/@me/guilds`, { headers: { Authorization: token } });
-      if (r.ok) {
-        guilds = await r.json();
-        guilds.sort((a, b) => a.name.localeCompare(b.name));
-      }
-    } catch (e) {}
-  }
-
-  async function showServers() {
-    if (!guilds.length) await loadGuilds();
-    let list = $('serverList');
-    if (!guilds.length) {
-      list.innerHTML = '<div style="padding:12px;color:var(--dim)">Нет серверов</div>';
-      list.style.display = 'block';
-      return;
-    }
-    list.innerHTML = guilds.slice(0, 20).map(g =>
-      `<div class="server-item" data-id="${g.id}"><span>${g.name}</span><span style="color:var(--dim);font-size:0.7rem">${g.id}</span></div>`
-    ).join('');
-    list.style.display = 'block';
-    list.querySelectorAll('.server-item').forEach(el => {
-      el.addEventListener('click', () => {
-        $('sourceId').value = el.dataset.id;
-        list.style.display = 'none';
-      });
-    });
-  }
-
   function resetClone() {
     cloning = false;
     controller = null;
@@ -408,18 +351,25 @@ const SVG_ICONS = {
       $('progressBar').style.width = '15%'; $('progressPercent').textContent = '15%';
       $('statusText').textContent = 'Название и иконка';
       await api(`${API}/guilds/${tgt}`, { method: 'PATCH', body: JSON.stringify({ name: srcGuild.name }) });
+      log('Название скопировано', 'success');
+      // Копирование иконки
       if (srcGuild.icon) {
         try {
           let iconRes = await fetch(`https://cdn.discordapp.com/icons/${src}/${srcGuild.icon}.png?size=256`);
-          if (iconRes.ok) {
-            let blob = await iconRes.blob();
-            if (blob.size <= 262144) {
-              let base64 = await new Promise(r => { let reader = new FileReader(); reader.onloadend = () => r(reader.result); reader.readAsDataURL(blob); });
-              await api(`${API}/guilds/${tgt}`, { method: 'PATCH', body: JSON.stringify({ icon: base64.split(',')[1] }) });
-              log('Иконка скопирована', 'success');
-            }
+          if (!iconRes.ok) throw new Error('Не удалось загрузить иконку');
+          let blob = await iconRes.blob();
+          if (blob.size > 262144) {
+            log('Иконка больше 256 КБ, пропускаем', 'warning');
+          } else {
+            let base64 = await new Promise(r => { let reader = new FileReader(); reader.onloadend = () => r(reader.result); reader.readAsDataURL(blob); });
+            let base64Data = base64.split(',')[1];
+            let updRes = await api(`${API}/guilds/${tgt}`, { method: 'PATCH', body: JSON.stringify({ icon: base64Data }) });
+            if (updRes.ok) log('Иконка скопирована', 'success');
+            else log('Не удалось установить иконку', 'error');
           }
-        } catch (e) {}
+        } catch(e) { log(`Ошибка копирования иконки: ${e.message}`, 'error'); }
+      } else {
+        log('У исходного сервера нет иконки', 'info');
       }
       $('progressBar').style.width = '25%'; $('progressPercent').textContent = '25%';
       $('statusText').textContent = 'Создание ролей';
@@ -440,17 +390,19 @@ const SVG_ICONS = {
           let resp = await api(`${API}/guilds/${tgt}/roles`, { method: 'POST', body });
           let newRole = await resp.json();
           roleMap[r.id] = newRole.id;
+          log(`Роль создана: ${r.name}`, 'success');
         } catch (e) { log(`Ошибка роли ${r.name}: ${e.message}`, 'error'); }
         await sleep(250);
         let pct = 25 + ((i + 1) / Math.max(rolesToCreate.length, 1)) * 30;
         $('progressBar').style.width = pct + '%'; $('progressPercent').textContent = Math.floor(pct) + '%';
       }
+      log(`Всего ролей создано: ${Object.keys(roleMap).length}`, 'info');
       $('statusText').textContent = 'Создание каналов';
       let srcChannels = await (await api(`${API}/guilds/${src}/channels`)).json();
       let categories = srcChannels.filter(c => c.type === 4).sort((a, b) => a.position - b.position);
       let others = srcChannels.filter(c => c.type !== 4).sort((a, b) => a.position - b.position);
       let catMap = {};
-      let created = 0, total = categories.length + others.length;
+      let createdCount = 0, total = categories.length + others.length;
       for (let i = 0; i < categories.length; i++) {
         if (cancel) throw new Error('CANCELLED');
         let c = categories[i];
@@ -459,8 +411,9 @@ const SVG_ICONS = {
           let resp = await api(`${API}/guilds/${tgt}/channels`, { method: 'POST', body: JSON.stringify(body) });
           let ch = await resp.json();
           catMap[c.id] = ch.id;
-          created++;
-        } catch (e) { log(`Ошибка категории: ${e.message}`, 'error'); }
+          createdCount++;
+          log(`Категория создана: ${c.name}`, 'success');
+        } catch (e) { log(`Ошибка категории ${c.name}: ${e.message}`, 'error'); }
         await sleep(250);
       }
       for (let i = 0; i < others.length; i++) {
@@ -469,14 +422,15 @@ const SVG_ICONS = {
         try {
           let body = buildChannelData(c, tgt, roleMap, catMap, srcGuild.id);
           await api(`${API}/guilds/${tgt}/channels`, { method: 'POST', body: JSON.stringify(body) });
-          created++;
+          createdCount++;
+          log(`Канал создан: ${c.name}`, 'success');
         } catch (e) { log(`Ошибка канала ${c.name}: ${e.message}`, 'error'); }
         await sleep(200);
         let pct = 60 + ((categories.length + i + 1) / Math.max(total, 1)) * 40;
         $('progressBar').style.width = pct + '%'; $('progressPercent').textContent = Math.floor(pct) + '%';
       }
       $('progressBar').style.width = '100%'; $('progressPercent').textContent = '100%';
-      log(`Клонирование завершено! Ролей: ${rolesToCreate.length}, каналов: ${created}`, 'success');
+      log(`Клонирование завершено! Ролей: ${Object.keys(roleMap).length}, каналов: ${createdCount}`, 'success');
       toast('Готово!');
     } catch (e) {
       if (e.message === 'CANCELLED') { log('Отменено', 'warning'); toast('Отменено'); }
@@ -489,7 +443,7 @@ const SVG_ICONS = {
   function buildUI() {
     document.getElementById('app').innerHTML = `
       <a class="donate-btn" href="https://www.tinkoff.ru/rm/r_AOUzDhUNVZ.xFFkoxrVId/Swdgp93058" target="_blank" rel="noopener">
-        ❤️ Поддержать
+        ${SVG_ICONS.heart}
       </a>
       <div class="wrapper">
         <div class="left">
@@ -498,8 +452,6 @@ const SVG_ICONS = {
           <input type="password" id="tokenInput" placeholder="Токен">
           <input id="sourceId" placeholder="Исходный сервер ID">
           <input id="targetId" placeholder="Целевой сервер ID">
-          <button id="showServersBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> Мои сервера</button>
-          <div id="serverList" class="server-list"></div>
           <div class="row">
             <button id="cloneBtn" class="primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Клонировать</button>
             <button id="cancelBtn" class="danger" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Отмена</button>
@@ -522,7 +474,5 @@ const SVG_ICONS = {
   buildUI();
   $('cloneBtn').addEventListener('click', startClone);
   $('cancelBtn').addEventListener('click', cancelClone);
-  $('showServersBtn').addEventListener('click', showServers);
   $('clearLogsBtn').addEventListener('click', clearLogs);
-  $('tokenInput').addEventListener('change', loadGuilds);
 })();
