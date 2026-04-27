@@ -1,6 +1,4 @@
-const s = document.createElement('style');
-s.textContent = `@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');*{margin:0;padding:0}...`;
-document.head.appendChild(s);
+import './style.css';
 
 (function() {
   const cfg = {
@@ -35,7 +33,6 @@ document.head.appendChild(s);
     document.body.appendChild(t);
     setTimeout(() => {
       t.style.opacity = '0';
-      t.style.transition = 'opacity 0.3s';
       setTimeout(() => t.remove(), 300);
     }, 2000);
   };
@@ -44,9 +41,7 @@ document.head.appendChild(s);
     if (el) {
       el.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${esc(m)}`;
       el.style.display = 'flex';
-      setTimeout(() => {
-        el.style.display = 'none';
-      }, 4000);
+      setTimeout(() => { el.style.display = 'none'; }, 4000);
     }
   };
 
@@ -81,10 +76,7 @@ document.head.appendChild(s);
           continue;
         }
         if (!res.ok && i === retries - 1) throw new Error(`HTTP ${res.status}`);
-        if (!res.ok) {
-          await sleep(cfg.delay * (i + 1));
-          continue;
-        }
+        if (!res.ok) { await sleep(cfg.delay * (i + 1)); continue; }
         return res;
       } catch (e) {
         if (e.name === 'AbortError') throw new Error('CANCELLED');
@@ -133,22 +125,17 @@ document.head.appendChild(s);
 
   function clearLogs() {
     let log = $('log');
-    if (log) {
-      log.innerHTML = '';
-      addLog('Логи очищены', 'info');
-    }
+    if (log) { log.innerHTML = ''; addLog('Логи очищены', 'info'); }
   }
 
   function exportLogs() {
     let log = $('log');
     if (!log) return;
-    let lines = Array.from(log.children)
-      .map((e) => {
-        let t = e.querySelector('.log-time')?.textContent;
-        let m = e.querySelector('.log-msg')?.textContent;
-        return `[${t}] ${m}`;
-      })
-      .join('\n');
+    let lines = Array.from(log.children).map((e) => {
+      let t = e.querySelector('.log-time')?.textContent;
+      let m = e.querySelector('.log-msg')?.textContent;
+      return `[${t}] ${m}`;
+    }).join('\n');
     let blob = new Blob([`Discord Cloner Logs\n${new Date().toLocaleString()}\n${'='.repeat(50)}\n${lines}`], { type: 'text/plain' });
     let a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -161,18 +148,10 @@ document.head.appendChild(s);
   async function loadGuilds() {
     if (!state.token) return [];
     try {
-      let r = await fetch(`${cfg.apiBase}/users/@me/guilds`, {
-        headers: { 'Authorization': state.token }
-      });
-      if (r.ok) {
-        state.guilds = await r.json();
-        state.guilds.sort((a, b) => a.name.localeCompare(b.name));
-        return state.guilds;
-      }
-    } catch (e) {
-      addLog('Ошибка загрузки серверов', 'error');
-    }
-    return [];
+      let r = await fetch(`${cfg.apiBase}/users/@me/guilds`, { headers: { 'Authorization': state.token } });
+      if (r.ok) { state.guilds = await r.json(); state.guilds.sort((a, b) => a.name.localeCompare(b.name)); }
+      return state.guilds;
+    } catch (e) { return []; }
   }
 
   async function showServerList() {
@@ -188,10 +167,9 @@ document.head.appendChild(s);
       container.classList.remove('hidden');
       container.querySelectorAll('.server-item').forEach((item) => {
         item.addEventListener('click', () => {
-          let id = item.dataset.id;
-          $('sourceId').value = id;
+          $('sourceId').value = item.dataset.id;
           container.classList.add('hidden');
-          addLog(`ID вставлен: ${id}`, 'info');
+          addLog(`ID вставлен: ${item.dataset.id}`, 'info');
         });
       });
     }
@@ -201,12 +179,11 @@ document.head.appendChild(s);
     let s = $('sourceId').value.trim();
     let t = $('targetId').value.trim();
     let result = $('serverValidationResult');
-    if (!result) return;
     if (!s || !t) {
       result.style.display = 'flex';
       result.style.color = '#ff7b7b';
       result.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Введите оба ID';
-      setTimeout(() => (result.style.display = 'none'), 3000);
+      setTimeout(() => result.style.display = 'none', 3000);
       return;
     }
     result.style.display = 'flex';
@@ -230,29 +207,25 @@ document.head.appendChild(s);
         let sg = await src.json();
         let tg = await tgt.json();
         result.style.color = '#7fe07f';
-        result.innerHTML = `<i class="fas fa-check-circle"></i> ${esc(sg.name)} → ${esc(tg.name)}`;
+        result.innerHTML = `<i class="fas fa-check-circle"></i> ${esc(sg.name)} \u2192 ${esc(tg.name)}`;
         if (s === t) result.innerHTML += ' <span style="color:#e6b450"><i class="fas fa-exclamation-triangle"></i> Одинаковые ID</span>';
       }
-      setTimeout(() => (result.style.display = 'none'), 5000);
-    } catch (e) {
-      result.style.display = 'none';
-    }
+      setTimeout(() => result.style.display = 'none', 5000);
+    } catch (e) { result.style.display = 'none'; }
   }
 
   function convertOverwrites(ow, targetId, roleMap, srcId) {
     if (!ow || !Array.isArray(ow)) return [];
-    return ow
-      .map((o) => {
-        if (!o || !o.id) return null;
-        let id = o.id;
-        if (o.type === 0) {
-          if (o.id === srcId) id = targetId;
-          else if (roleMap && roleMap[o.id]) id = roleMap[o.id];
-          else return null;
-        } else if (o.type === 1) id = targetId;
-        return { id, type: o.type, allow: o.allow?.toString() || '0', deny: o.deny?.toString() || '0' };
-      })
-      .filter((o) => o !== null);
+    return ow.map((o) => {
+      if (!o || !o.id) return null;
+      let id = o.id;
+      if (o.type === 0) {
+        if (o.id === srcId) id = targetId;
+        else if (roleMap && roleMap[o.id]) id = roleMap[o.id];
+        else return null;
+      } else if (o.type === 1) id = targetId;
+      return { id, type: o.type, allow: o.allow?.toString() || '0', deny: o.deny?.toString() || '0' };
+    }).filter((o) => o !== null);
   }
 
   async function copyIcon(src, tgt, token) {
@@ -264,27 +237,17 @@ document.head.appendChild(s);
       let img = await fetch(`https://cdn.discordapp.com/icons/${src}/${g.icon}.png?size=256`);
       if (!img.ok) return false;
       let blob = await img.blob();
-      if (blob.size > 262144) {
-        addLog('Иконка >256kb, пропуск', 'warning');
-        return false;
-      }
+      if (blob.size > 262144) { addLog('\u0418\u043a\u043e\u043d\u043a\u0430 >256kb', 'warning'); return false; }
       let reader = new FileReader();
-      let data = await new Promise((res) => {
-        reader.onloadend = () => res(reader.result);
-        reader.readAsDataURL(blob);
-      });
+      let data = await new Promise((res) => { reader.onloadend = () => res(reader.result); reader.readAsDataURL(blob); });
       let base64 = data.split(',')[1];
       let upd = await fetch(`${cfg.apiBase}/guilds/${tgt}`, {
-        method: 'PATCH',
-        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
+        method: 'PATCH', headers: { 'Authorization': token, 'Content-Type': 'application/json' },
         body: JSON.stringify({ icon: base64 })
       });
-      if (upd.ok) addLog('Иконка скопирована', 'success');
+      if (upd.ok) addLog('\u0418\u043a\u043e\u043d\u043a\u0430 \u0441\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u0430', 'success');
       return upd.ok;
-    } catch (e) {
-      addLog(`Ошибка иконки: ${e.message}`, 'warning');
-      return false;
-    }
+    } catch (e) { return false; }
   }
 
   function confetti() {
@@ -311,208 +274,18 @@ document.head.appendChild(s);
     $('progressFill').style.width = '0%';
   }
 
-  async function startClone() {
-    if (state.cloning) return;
-    state.cloning = true;
-    state.cancel = false;
-    state.abort = new AbortController();
-    $('cloneBtn').disabled = true;
-    $('cancelCloneBtn').disabled = false;
-    $('backgroundStatus').classList.add('show');
-    $('cloneError').style.display = 'none';
-    let src = $('sourceId').value.trim();
-    let tgt = $('targetId').value.trim();
-    if (!/^\d{17,20}$/.test(src) || !/^\d{17,20}$/.test(tgt)) {
-      addLog('Неверный формат ID', 'error');
-      resetClone();
-      return;
-    }
-    try {
-      addLog('Старт клонирования', 'info');
-      let gRes = await fetch(`${cfg.apiBase}/users/@me/guilds`, { headers: { 'Authorization': state.token } });
-      let guilds = await gRes.json();
-      let targetGuild = guilds.find((g) => g.id === tgt);
-      if (!targetGuild || !(BigInt(targetGuild.permissions) & 0x8n)) throw new Error('Нет прав администратора на целевом сервере');
-      $('backgroundStage').textContent = 'Этап: очистка каналов';
-      $('progressFill').style.width = '0%';
-      $('backgroundProgress').textContent = 'Прогресс: 0%';
-      let chRes = await fetchRetry(`${cfg.apiBase}/guilds/${tgt}/channels`, { headers: { 'Authorization': state.token } });
-      let channels = await chRes.json();
-      for (let i = 0; i < channels.length; i++) {
-        if (state.cancel) throw new Error('CANCELLED');
-        try {
-          await fetchRetry(`${cfg.apiBase}/channels/${channels[i].id}`, { method: 'DELETE', headers: { 'Authorization': state.token } });
-          addLog(`Удалён: ${channels[i].name}`, 'warning');
-        } catch (e) {
-          addLog(`Ошибка удаления канала`, 'error');
-        }
-        await sleep(250);
-        let pct = Math.min(15, ((i + 1) / Math.max(channels.length, 1)) * 15);
-        $('progressFill').style.width = `${pct}%`;
-        $('backgroundProgress').textContent = `Прогресс: ${Math.floor(pct)}%`;
-      }
-      $('backgroundStage').textContent = 'Этап: очистка ролей';
-      let rRes = await fetchRetry(`${cfg.apiBase}/guilds/${tgt}/roles`, { headers: { 'Authorization': state.token } });
-      let roles = await rRes.json();
-      let delRoles = roles.filter((r) => r.name !== '@everyone' && !r.managed).sort((a, b) => b.position - a.position);
-      for (let i = 0; i < delRoles.length; i++) {
-        if (state.cancel) throw new Error('CANCELLED');
-        try {
-          await fetchRetry(`${cfg.apiBase}/guilds/${tgt}/roles/${delRoles[i].id}`, { method: 'DELETE', headers: { 'Authorization': state.token } });
-        } catch (e) {}
-        await sleep(200);
-      }
-      $('progressFill').style.width = '20%';
-      $('backgroundProgress').textContent = 'Прогресс: 20%';
-      $('backgroundStage').textContent = 'Этап: загрузка данных';
-      let srcGuild = await (await fetchRetry(`${cfg.apiBase}/guilds/${src}`, { headers: { 'Authorization': state.token } })).json();
-      await fetchRetry(`${cfg.apiBase}/guilds/${tgt}`, {
-        method: 'PATCH',
-        headers: { 'Authorization': state.token, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: srcGuild.name })
-      });
-      addLog(`Название: ${srcGuild.name}`, 'success');
-      await copyIcon(src, tgt, state.token);
-      $('progressFill').style.width = '30%';
-      $('backgroundProgress').textContent = 'Прогресс: 30%';
-      $('backgroundStage').textContent = 'Этап: создание ролей';
-      let srcRoles = await (await fetchRetry(`${cfg.apiBase}/guilds/${src}/roles`, { headers: { 'Authorization': state.token } })).json();
-      let rolesToCreate = srcRoles.filter((r) => r.name !== '@everyone' && !r.managed).sort((a, b) => b.position - a.position);
-      let roleMap = {};
-      for (let i = 0; i < rolesToCreate.length; i++) {
-        if (state.cancel) throw new Error('CANCELLED');
-        try {
-          let cr = await fetchRetry(`${cfg.apiBase}/guilds/${tgt}/roles`, {
-            method: 'POST',
-            headers: { 'Authorization': state.token, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              name: rolesToCreate[i].name.substring(0, 100),
-              color: rolesToCreate[i].color || 0,
-              hoist: !!rolesToCreate[i].hoist,
-              mentionable: !!rolesToCreate[i].mentionable,
-              permissions: rolesToCreate[i].permissions?.toString() || '0'
-            })
-          });
-          if (cr.ok) {
-            let nr = await cr.json();
-            roleMap[rolesToCreate[i].id] = nr.id;
-            addLog(`Роль: ${rolesToCreate[i].name}`, 'success');
-          } else {
-            addLog(`Ошибка роли: ${cr.status}`, 'error');
-          }
-        } catch (e) {
-          addLog(`Ошибка: ${e.message}`, 'error');
-        }
-        await sleep(300);
-        let pct = 30 + ((i + 1) / Math.max(rolesToCreate.length, 1)) * 30;
-        $('progressFill').style.width = `${pct}%`;
-        $('backgroundProgress').textContent = `Прогресс: ${Math.floor(pct)}%`;
-        $('backgroundStage').textContent = `Создание ролей: ${i + 1}/${rolesToCreate.length}`;
-      }
-      $('backgroundStage').textContent = 'Этап: создание каналов';
-      let srcChannels = await (await fetchRetry(`${cfg.apiBase}/guilds/${src}/channels`, { headers: { 'Authorization': state.token } })).json();
-      let cats = srcChannels.filter((c) => c.type === 4).sort((a, b) => a.position - b.position);
-      let others = srcChannels.filter((c) => c.type !== 4).sort((a, b) => a.position - b.position);
-      let catMap = {};
-      let chCount = 0;
-      let total = cats.length + others.length;
-      for (let i = 0; i < cats.length; i++) {
-        if (state.cancel) throw new Error('CANCELLED');
-        try {
-          let catData = {
-            name: cats[i].name.substring(0, 100),
-            type: 4,
-            position: cats[i].position,
-            permission_overwrites: convertOverwrites(cats[i].permission_overwrites, tgt, roleMap, srcGuild.id)
-          };
-          let cr = await fetchRetry(`${cfg.apiBase}/guilds/${tgt}/channels`, {
-            method: 'POST',
-            headers: { 'Authorization': state.token, 'Content-Type': 'application/json' },
-            body: JSON.stringify(catData)
-          });
-          if (cr.ok) {
-            let nc = await cr.json();
-            catMap[cats[i].id] = nc.id;
-            chCount++;
-          } else {
-            addLog(`Ошибка категории: ${cr.status}`, 'error');
-          }
-        } catch (e) {
-          addLog(`Ошибка: ${e.message}`, 'error');
-        }
-        await sleep(300);
-      }
-      for (let i = 0; i < others.length; i++) {
-        if (state.cancel) throw new Error('CANCELLED');
-        let ch = others[i];
-        try {
-          let chData = {
-            name: ch.name.substring(0, 100),
-            type: ch.type,
-            position: ch.position,
-            permission_overwrites: convertOverwrites(ch.permission_overwrites, tgt, roleMap, srcGuild.id)
-          };
-          if (ch.type === 0 || ch.type === 5) {
-            if (ch.topic) chData.topic = ch.topic.substring(0, 1024);
-            if (ch.rate_limit_per_user) chData.rate_limit_per_user = Math.min(ch.rate_limit_per_user, 21600);
-            if (ch.nsfw) chData.nsfw = ch.nsfw;
-          }
-          if (ch.type === 2) {
-            if (ch.bitrate) chData.bitrate = Math.min(ch.bitrate, 96000);
-            if (ch.user_limit) chData.user_limit = Math.min(ch.user_limit, 99);
-          }
-          if (ch.parent_id && catMap[ch.parent_id]) chData.parent_id = catMap[ch.parent_id];
-          let cr = await fetchRetry(`${cfg.apiBase}/guilds/${tgt}/channels`, {
-            method: 'POST',
-            headers: { 'Authorization': state.token, 'Content-Type': 'application/json' },
-            body: JSON.stringify(chData)
-          });
-          if (cr.ok) {
-            chCount++;
-          } else {
-            addLog(`Ошибка канала: ${cr.status}`, 'error');
-          }
-        } catch (e) {
-          addLog(`Ошибка: ${e.message}`, 'error');
-        }
-        await sleep(300);
-        let pct = 60 + ((cats.length + i + 1) / Math.max(total, 1)) * 40;
-        $('progressFill').style.width = `${pct}%`;
-        $('backgroundProgress').textContent = `Прогресс: ${Math.floor(pct)}%`;
-        $('backgroundStage').textContent = `Каналы: ${cats.length + i + 1}/${total}`;
-      }
-      $('progressFill').style.width = '100%';
-      $('backgroundProgress').textContent = 'Прогресс: 100%';
-      $('backgroundStage').textContent = 'Завершено!';
-      addLog('Клонирование завершено!', 'success');
-      addLog(`Создано: ${rolesToCreate.length} ролей, ${chCount} каналов`, 'success');
-      toast('<i class="fas fa-check-circle"></i> Клонирование завершено!');
-      confetti();
-    } catch (e) {
-      if (e.message === 'CANCELLED') {
-        addLog('Отменено пользователем', 'warning');
-        toast('<i class="fas fa-ban"></i> Клонирование отменено');
-      } else {
-        addLog(`Ошибка: ${e.message}`, 'error');
-        showErr($('cloneError'), e.message);
-      }
-    } finally {
-      resetClone();
-    }
-  }
-
   function cancelClone() {
     if (state.cloning) {
       state.cancel = true;
       state.abort?.abort();
-      addLog('Отмена...', 'warning');
+      addLog('\u041e\u0442\u043c\u0435\u043d\u0430...', 'warning');
       $('cancelCloneBtn').disabled = true;
     }
   }
 
   function showAgreement() {
-    if (!$('sourceId').value.trim() || !$('targetId').value.trim()) return showErr($('cloneError'), 'Введите ID обоих серверов');
-    if ($('sourceId').value.trim() === $('targetId').value.trim()) return showErr($('cloneError'), 'Серверы не могут быть одинаковыми');
+    if (!$('sourceId').value.trim() || !$('targetId').value.trim()) return showErr($('cloneError'), '\u0412\u0432\u0435\u0434\u0438\u0442\u0435 ID \u043e\u0431\u043e\u0438\u0445 \u0441\u0435\u0440\u0432\u0435\u0440\u043e\u0432');
+    if ($('sourceId').value.trim() === $('targetId').value.trim()) return showErr($('cloneError'), '\u0421\u0435\u0440\u0432\u0435\u0440\u044b \u043d\u0435 \u043c\u043e\u0433\u0443\u0442 \u0431\u044b\u0442\u044c \u043e\u0434\u0438\u043d\u0430\u043a\u043e\u0432\u044b\u043c\u0438');
     $('rule1').checked = $('rule2').checked = $('rule3').checked = false;
     $('confirmRulesBtn').disabled = true;
     $('agreementModal').classList.add('active');
@@ -520,7 +293,6 @@ document.head.appendChild(s);
 
   function closeModal() {
     $('agreementModal').classList.remove('active');
-    $('toolModal').classList.remove('active');
   }
 
   function checkRules() {
@@ -536,7 +308,7 @@ document.head.appendChild(s);
 
   async function authorize() {
     let t = $('tokenInput').value.trim();
-    if (!t) return showErr($('authError'), 'Введите токен');
+    if (!t) return showErr($('authError'), '\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u043e\u043a\u0435\u043d');
     $('loginBtn').innerHTML = '<span class="spinner"></span>';
     $('loginBtn').disabled = true;
     try {
@@ -551,59 +323,48 @@ document.head.appendChild(s);
         $('userId').textContent = `ID: ${u.id}`;
         if (u.email) {
           $('userEmail').textContent = u.email.replace(/./g, '\u2022');
-          $('toggleEmailBtn').innerHTML = '<i class="fas fa-eye"></i> Показать';
+          $('toggleEmailBtn').innerHTML = '<i class="fas fa-eye"></i> \u041f\u043e\u043a\u0430\u0437\u0430\u0442\u044c';
         }
         if (u.avatar) $('userAvatar').src = `https://cdn.discordapp.com/avatars/${u.id}/${u.avatar}.png?size=128`;
         $('authView').classList.add('hidden');
         $('mainView').classList.remove('hidden');
-        addLog(`Авторизация: ${u.username}`, 'success');
-        toast(`<i class="fas fa-check-circle"></i> Добро пожаловать, ${esc(u.global_name || u.username)}`);
+        addLog(`\u0410\u0432\u0442\u043e\u0440\u0438\u0437\u0430\u0446\u0438\u044f: ${u.username}`, 'success');
+        toast(`<i class="fas fa-check-circle"></i> \u0414\u043e\u0431\u0440\u043e \u043f\u043e\u0436\u0430\u043b\u043e\u0432\u0430\u0442\u044c, ${esc(u.global_name || u.username)}`);
         await loadGuilds();
       } else {
-        let errMsg = 'Неверный токен';
-        if (r.status === 401) errMsg = 'Токен недействителен или просрочен';
-        else if (r.status === 403) errMsg = 'Доступ запрещён';
+        let errMsg = '\u041d\u0435\u0432\u0435\u0440\u043d\u044b\u0439 \u0442\u043e\u043a\u0435\u043d';
+        if (r.status === 401) errMsg = '\u0422\u043e\u043a\u0435\u043d \u043d\u0435\u0434\u0435\u0439\u0441\u0442\u0432\u0438\u0442\u0435\u043b\u0435\u043d \u0438\u043b\u0438 \u043f\u0440\u043e\u0441\u0440\u043e\u0447\u0435\u043d';
         showErr($('authError'), errMsg);
       }
-    } catch (e) {
-      showErr($('authError'), 'Ошибка подключения к Discord');
-    } finally {
-      $('loginBtn').innerHTML = '<i class="fas fa-sign-in-alt"></i> Войти';
+    } catch (e) { showErr($('authError'), '\u041e\u0448\u0438\u0431\u043a\u0430 \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f'); }
+    finally {
+      $('loginBtn').innerHTML = '<i class="fas fa-sign-in-alt"></i> \u0412\u043e\u0439\u0442\u0438';
       $('loginBtn').disabled = false;
     }
   }
 
   async function testToken() {
     let t = $('tokenInput').value.trim();
-    if (!t) return showErr($('authError'), 'Введите токен');
+    if (!t) return showErr($('authError'), '\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u0442\u043e\u043a\u0435\u043d');
     $('testTokenBtn').innerHTML = '<span class="spinner"></span>';
     $('testTokenBtn').disabled = true;
     try {
       let r = await fetch(`${cfg.apiBase}/users/@me`, { headers: { 'Authorization': t } });
       if (r.ok) {
         let u = await r.json();
-        toast(`<i class="fas fa-check-circle"></i> Токен рабочий (${esc(u.username)})`);
-        let w = $('tokenWarning');
-        if (w) {
-          w.style.display = 'flex';
-          setTimeout(() => (w.style.display = 'none'), 3000);
-        }
-      } else showErr($('authError'), 'Неверный токен');
-    } catch (e) {
-      showErr($('authError'), 'Ошибка проверки');
-    } finally {
-      $('testTokenBtn').innerHTML = '<i class="fas fa-check-circle"></i> Проверить';
+        toast(`<i class="fas fa-check-circle"></i> \u0422\u043e\u043a\u0435\u043d \u0440\u0430\u0431\u043e\u0447\u0438\u0439 (${esc(u.username)})`);
+      } else showErr($('authError'), '\u041d\u0435\u0432\u0435\u0440\u043d\u044b\u0439 \u0442\u043e\u043a\u0435\u043d');
+    } catch (e) { showErr($('authError'), '\u041e\u0448\u0438\u0431\u043a\u0430'); }
+    finally {
+      $('testTokenBtn').innerHTML = '<i class="fas fa-check-circle"></i> \u041f\u0440\u043e\u0432\u0435\u0440\u0438\u0442\u044c';
       $('testTokenBtn').disabled = false;
     }
   }
 
   function pasteToken() {
     navigator.clipboard.readText().then((t) => {
-      if (t) {
-        $('tokenInput').value = t;
-        toast('<i class="fas fa-paste"></i> Токен вставлен из буфера');
-      }
-    }).catch(() => toast('<i class="fas fa-exclamation-triangle"></i> Не удалось вставить'));
+      if (t) { $('tokenInput').value = t; toast('<i class="fas fa-paste"></i> \u0422\u043e\u043a\u0435\u043d \u0432\u0441\u0442\u0430\u0432\u043b\u0435\u043d'); }
+    }).catch(() => toast('<i class="fas fa-exclamation-triangle"></i> \u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c'));
   }
 
   function switchSection(sec) {
@@ -614,151 +375,160 @@ document.head.appendChild(s);
     let map = { main: 'mainContent', tools: 'toolsContent', fixes: 'fixesContent', support: 'supportContent' };
     let target = $(map[sec]);
     if (target) target.classList.remove('hidden');
-    if (sec === 'tools') $('toolResultContainer').innerHTML = '';
+    if (sec === 'tools') { let el = $('toolResultContainer'); if (el) el.innerHTML = ''; }
   }
 
-  async function toolGuildInfo() {
-    let id = prompt('Введите ID сервера:');
-    if (!id) return;
-    $('toolResultContainer').innerHTML = '<div class="glass-card"><div style="text-align:center"><div class="spinner"></div><p>Загрузка...</p></div></div>';
-    try {
-      let r = await fetch(`${cfg.apiBase}/guilds/${id}`, { headers: { 'Authorization': state.token } });
-      if (!r.ok) throw new Error('Сервер не найден или нет доступа');
-      let g = await r.json();
-      let roles = await (await fetch(`${cfg.apiBase}/guilds/${id}/roles`, { headers: { 'Authorization': state.token } })).json();
-      let channels = await (await fetch(`${cfg.apiBase}/guilds/${id}/channels`, { headers: { 'Authorization': state.token } })).json();
-      let h = `<div class="glass-card guild-info-result show">
-        <h3 style="display:flex;align-items:center;gap:0.8rem"><img src="https://cdn.discordapp.com/icons/${g.id}/${g.icon || 'default'}.png?size=64" style="width:40px;height:40px;border-radius:50%" onerror="this.style.display='none'"><span>${esc(g.name)}</span></h3>
-        <div class="stats-row">
-          <div class="stat-item"><div class="stat-value">${g.approximate_member_count || '?'}</div><div class="stat-label">Участников</div></div>
-          <div class="stat-item"><div class="stat-value">${roles.length}</div><div class="stat-label">Ролей</div></div>
-          <div class="stat-item"><div class="stat-value">${channels.length}</div><div class="stat-label">Каналов</div></div>
-        </div>
-        <p style="margin-top:0.8rem;font-size:0.75rem"><strong>ID:</strong> ${g.id}<br><strong>Владелец:</strong> ${g.owner_id}<br><strong>Регион:</strong> ${g.preferred_locale || 'не указан'}</p>
-      </div>`;
-      $('toolResultContainer').innerHTML = h;
-    } catch (e) {
-      $('toolResultContainer').innerHTML = `<div class="glass-card"><p style="color:#ff7b7b"><i class="fas fa-exclamation-circle"></i> ${esc(e.message)}</p></div>`;
-    }
-  }
-
-  async function toolMassClean() {
-    let id = prompt('Введите ID сервера для очистки:');
-    if (!id) return;
-    if (!confirm('ВНИМАНИЕ! Все каналы и роли будут удалены. Продолжить?')) return;
-    $('toolResultContainer').innerHTML = '<div class="glass-card"><div style="text-align:center"><div class="spinner"></div><p>Очистка...</p></div></div>';
-    let cleaned = 0;
-    try {
-      let channels = await (await fetch(`${cfg.apiBase}/guilds/${id}/channels`, { headers: { 'Authorization': state.token } })).json();
-      for (let ch of channels) {
-        try {
-          await fetch(`${cfg.apiBase}/channels/${ch.id}`, { method: 'DELETE', headers: { 'Authorization': state.token } });
-          cleaned++;
-          await sleep(200);
-        } catch (e) {}
-      }
-      let roles = await (await fetch(`${cfg.apiBase}/guilds/${id}/roles`, { headers: { 'Authorization': state.token } })).json();
-      for (let r of roles) {
-        if (r.name !== '@everyone' && !r.managed) {
-          try {
-            await fetch(`${cfg.apiBase}/guilds/${id}/roles/${r.id}`, { method: 'DELETE', headers: { 'Authorization': state.token } });
-            cleaned++;
-            await sleep(200);
-          } catch (e) {}
-        }
-      }
-      $('toolResultContainer').innerHTML = `<div class="glass-card"><p style="color:#7fe07f"><i class="fas fa-check-circle"></i> Очищено: ${cleaned} объектов</p></div>`;
-      toast(`<i class="fas fa-check-circle"></i> Очищено ${cleaned} объектов`);
-    } catch (e) {
-      $('toolResultContainer').innerHTML = `<div class="glass-card"><p style="color:#ff7b7b"><i class="fas fa-exclamation-circle"></i> ${esc(e.message)}</p></div>`;
-    }
-  }
-
-  function toolTokenChecker() {
-    let info = `<div class="glass-card">
-      <h3><i class="fas fa-shield-alt"></i> Информация о токене</h3>
-      <p style="margin-top:0.8rem"><strong>Пользователь:</strong> ${esc(state.user?.username || 'неизвестно')}</p>
-      <p><strong>ID:</strong> ${state.user?.id || 'неизвестно'}</p>
-      <p><strong>Email:</strong> ${state.user?.email || 'не привязан'}</p>
-      <p><strong>Верификация:</strong> ${state.user?.verified ? '<span class="badge badge-green">Да</span>' : '<span class="badge badge-red">Нет</span>'}</p>
-      <p><strong>2FA:</strong> ${state.user?.mfa_enabled ? '<span class="badge badge-green">Включена</span>' : '<span class="badge badge-red">Выключена</span>'}</p>
-      <p style="margin-top:1rem;font-size:0.7rem;color:var(--text-secondary)">Никогда не передавайте токен третьим лицам!</p>
-    </div>`;
-    $('toolResultContainer').innerHTML = info;
-  }
-
-  function toolExportConfig() {
-    if (!$('sourceId').value.trim()) {
-      $('toolResultContainer').innerHTML = '<div class="glass-card"><p style="color:#e6b450"><i class="fas fa-exclamation-triangle"></i> Сначала введите ID исходного сервера</p></div>';
+  async function startClone() {
+    if (state.cloning) return;
+    state.cloning = true;
+    state.cancel = false;
+    state.abort = new AbortController();
+    $('cloneBtn').disabled = true;
+    $('cancelCloneBtn').disabled = false;
+    $('backgroundStatus').classList.add('show');
+    $('cloneError').style.display = 'none';
+    let src = $('sourceId').value.trim();
+    let tgt = $('targetId').value.trim();
+    if (!/^\d{17,20}$/.test(src) || !/^\d{17,20}$/.test(tgt)) {
+      addLog('\u041d\u0435\u0432\u0435\u0440\u043d\u044b\u0439 \u0444\u043e\u0440\u043c\u0430\u0442 ID', 'error');
+      resetClone();
       return;
     }
-    $('toolResultContainer').innerHTML = '<div class="glass-card"><div style="text-align:center"><div class="spinner"></div><p>Экспорт структуры...</p></div></div>';
-    let src = $('sourceId').value.trim();
-    Promise.all([
-      fetch(`${cfg.apiBase}/guilds/${src}`, { headers: { 'Authorization': state.token } }),
-      fetch(`${cfg.apiBase}/guilds/${src}/roles`, { headers: { 'Authorization': state.token } }),
-      fetch(`${cfg.apiBase}/guilds/${src}/channels`, { headers: { 'Authorization': state.token } })
-    ])
-      .then(([gr, rr, cr]) => Promise.all([gr.json(), rr.json(), cr.json()]))
-      .then(([guild, roles, channels]) => {
-        let data = {
-          name: guild.name,
-          icon: guild.icon,
-          roles: roles.filter((r) => r.name !== '@everyone' && !r.managed).map((r) => ({
-            name: r.name, color: r.color, hoist: r.hoist, mentionable: r.mentionable, permissions: r.permissions
-          })),
-          channels: channels.map((c) => ({
-            name: c.name, type: c.type, position: c.position, topic: c.topic || null, parent_id: c.parent_id || null
-          }))
-        };
-        let blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-        let a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `server_structure_${src}.json`;
-        a.click();
-        $('toolResultContainer').innerHTML = '<div class="glass-card"><p style="color:#7fe07f"><i class="fas fa-check-circle"></i> Структура экспортирована</p></div>';
-        toast('<i class="fas fa-download"></i> Файл сохранён');
-      })
-      .catch((e) => {
-        $('toolResultContainer').innerHTML = '<div class="glass-card"><p style="color:#ff7b7b"><i class="fas fa-exclamation-circle"></i> Ошибка экспорта</p></div>';
-      });
-  }
-
-  function toolQuickClone() {
-    if ($('sourceId').value && $('targetId').value) {
-      showAgreement();
-    } else {
-      $('toolResultContainer').innerHTML = '<div class="glass-card"><p style="color:#e6b450"><i class="fas fa-exclamation-triangle"></i> Заполните ID серверов на главной</p></div>';
-    }
-  }
-
-  async function toolPermissions() {
-    let id = prompt('Введите ID сервера для проверки прав:');
-    if (!id) return;
-    $('toolResultContainer').innerHTML = '<div class="glass-card"><div style="text-align:center"><div class="spinner"></div><p>Проверка прав...</p></div></div>';
     try {
-      let r = await fetch(`${cfg.apiBase}/users/@me/guilds`, { headers: { 'Authorization': state.token } });
-      let guilds = await r.json();
-      let g = guilds.find((g) => g.id === id);
-      if (!g) throw new Error('Вы не состоите в этом сервере');
-      let perms = BigInt(g.permissions);
-      let checks = [
-        { name: 'Администратор', bit: 0x8n },
-        { name: 'Управление сервером', bit: 0x20n },
-        { name: 'Управление ролями', bit: 0x10000000n },
-        { name: 'Управление каналами', bit: 0x10n },
-        { name: 'Управление вебхуками', bit: 0x20000000n },
-        { name: 'Создание приглашений', bit: 0x1n }
-      ];
-      let h = `<div class="glass-card"><h3><i class="fas fa-lock"></i> Права на сервере</h3><p style="margin-top:0.8rem"><strong>Сервер:</strong> ${esc(g.name)}</p>`;
-      checks.forEach((c) => {
-        h += `<p>${c.name}: ${(perms & c.bit) === c.bit ? '<span class="badge badge-green">Есть</span>' : '<span class="badge badge-red">Нет</span>'}</p>`;
+      addLog('\u0421\u0442\u0430\u0440\u0442 \u043a\u043b\u043e\u043d\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u044f', 'info');
+      let gRes = await fetch(`${cfg.apiBase}/users/@me/guilds`, { headers: { 'Authorization': state.token } });
+      let guilds = await gRes.json();
+      let targetGuild = guilds.find((g) => g.id === tgt);
+      if (!targetGuild || !(BigInt(targetGuild.permissions) & 0x8n)) throw new Error('\u041d\u0435\u0442 \u043f\u0440\u0430\u0432 \u0430\u0434\u043c\u0438\u043d\u0438\u0441\u0442\u0440\u0430\u0442\u043e\u0440\u0430');
+      $('backgroundStage').textContent = '\u042d\u0442\u0430\u043f: \u043e\u0447\u0438\u0441\u0442\u043a\u0430 \u043a\u0430\u043d\u0430\u043b\u043e\u0432';
+      $('progressFill').style.width = '0%';
+      $('backgroundProgress').textContent = '\u041f\u0440\u043e\u0433\u0440\u0435\u0441\u0441: 0%';
+      let chRes = await fetchRetry(`${cfg.apiBase}/guilds/${tgt}/channels`, { headers: { 'Authorization': state.token } });
+      let channels = await chRes.json();
+      for (let i = 0; i < channels.length; i++) {
+        if (state.cancel) throw new Error('CANCELLED');
+        try {
+          await fetchRetry(`${cfg.apiBase}/channels/${channels[i].id}`, { method: 'DELETE', headers: { 'Authorization': state.token } });
+          addLog(`\u0423\u0434\u0430\u043b\u0451\u043d: ${channels[i].name}`, 'warning');
+        } catch (e) { addLog('\u041e\u0448\u0438\u0431\u043a\u0430 \u0443\u0434\u0430\u043b\u0435\u043d\u0438\u044f \u043a\u0430\u043d\u0430\u043b\u0430', 'error'); }
+        await sleep(250);
+        let pct = Math.min(15, ((i + 1) / Math.max(channels.length, 1)) * 15);
+        $('progressFill').style.width = `${pct}%`;
+        $('backgroundProgress').textContent = `\u041f\u0440\u043e\u0433\u0440\u0435\u0441\u0441: ${Math.floor(pct)}%`;
+      }
+      $('backgroundStage').textContent = '\u042d\u0442\u0430\u043f: \u043e\u0447\u0438\u0441\u0442\u043a\u0430 \u0440\u043e\u043b\u0435\u0439';
+      let rRes = await fetchRetry(`${cfg.apiBase}/guilds/${tgt}/roles`, { headers: { 'Authorization': state.token } });
+      let roles = await rRes.json();
+      let delRoles = roles.filter((r) => r.name !== '@everyone' && !r.managed).sort((a, b) => b.position - a.position);
+      for (let i = 0; i < delRoles.length; i++) {
+        if (state.cancel) throw new Error('CANCELLED');
+        try { await fetchRetry(`${cfg.apiBase}/guilds/${tgt}/roles/${delRoles[i].id}`, { method: 'DELETE', headers: { 'Authorization': state.token } }); } catch (e) {}
+        await sleep(200);
+      }
+      $('progressFill').style.width = '20%';
+      $('backgroundProgress').textContent = '\u041f\u0440\u043e\u0433\u0440\u0435\u0441\u0441: 20%';
+      $('backgroundStage').textContent = '\u042d\u0442\u0430\u043f: \u0437\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u0434\u0430\u043d\u043d\u044b\u0445';
+      let srcGuild = await (await fetchRetry(`${cfg.apiBase}/guilds/${src}`, { headers: { 'Authorization': state.token } })).json();
+      await fetchRetry(`${cfg.apiBase}/guilds/${tgt}`, {
+        method: 'PATCH', headers: { 'Authorization': state.token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: srcGuild.name })
       });
-      h += '</div>';
-      $('toolResultContainer').innerHTML = h;
+      addLog(`\u041d\u0430\u0437\u0432\u0430\u043d\u0438\u0435: ${srcGuild.name}`, 'success');
+      await copyIcon(src, tgt, state.token);
+      $('progressFill').style.width = '30%';
+      $('backgroundProgress').textContent = '\u041f\u0440\u043e\u0433\u0440\u0435\u0441\u0441: 30%';
+      $('backgroundStage').textContent = '\u042d\u0442\u0430\u043f: \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u0435 \u0440\u043e\u043b\u0435\u0439';
+      let srcRoles = await (await fetchRetry(`${cfg.apiBase}/guilds/${src}/roles`, { headers: { 'Authorization': state.token } })).json();
+      let rolesToCreate = srcRoles.filter((r) => r.name !== '@everyone' && !r.managed).sort((a, b) => b.position - a.position);
+      let roleMap = {};
+      for (let i = 0; i < rolesToCreate.length; i++) {
+        if (state.cancel) throw new Error('CANCELLED');
+        try {
+          let cr = await fetchRetry(`${cfg.apiBase}/guilds/${tgt}/roles`, {
+            method: 'POST', headers: { 'Authorization': state.token, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: rolesToCreate[i].name.substring(0, 100), color: rolesToCreate[i].color || 0,
+              hoist: !!rolesToCreate[i].hoist, mentionable: !!rolesToCreate[i].mentionable,
+              permissions: rolesToCreate[i].permissions?.toString() || '0'
+            })
+          });
+          if (cr.ok) { let nr = await cr.json(); roleMap[rolesToCreate[i].id] = nr.id; addLog(`\u0420\u043e\u043b\u044c: ${rolesToCreate[i].name}`, 'success'); }
+          else addLog(`\u041e\u0448\u0438\u0431\u043a\u0430 \u0440\u043e\u043b\u0438: ${cr.status}`, 'error');
+        } catch (e) { addLog(`\u041e\u0448\u0438\u0431\u043a\u0430: ${e.message}`, 'error'); }
+        await sleep(300);
+        let pct = 30 + ((i + 1) / Math.max(rolesToCreate.length, 1)) * 30;
+        $('progressFill').style.width = `${pct}%`;
+        $('backgroundProgress').textContent = `\u041f\u0440\u043e\u0433\u0440\u0435\u0441\u0441: ${Math.floor(pct)}%`;
+        $('backgroundStage').textContent = `\u0420\u043e\u043b\u0438: ${i + 1}/${rolesToCreate.length}`;
+      }
+      $('backgroundStage').textContent = '\u042d\u0442\u0430\u043f: \u0441\u043e\u0437\u0434\u0430\u043d\u0438\u0435 \u043a\u0430\u043d\u0430\u043b\u043e\u0432';
+      let srcChannels = await (await fetchRetry(`${cfg.apiBase}/guilds/${src}/channels`, { headers: { 'Authorization': state.token } })).json();
+      let cats = srcChannels.filter((c) => c.type === 4).sort((a, b) => a.position - b.position);
+      let others = srcChannels.filter((c) => c.type !== 4).sort((a, b) => a.position - b.position);
+      let catMap = {}, chCount = 0, total = cats.length + others.length;
+      for (let i = 0; i < cats.length; i++) {
+        if (state.cancel) throw new Error('CANCELLED');
+        try {
+          let catData = {
+            name: cats[i].name.substring(0, 100), type: 4, position: cats[i].position,
+            permission_overwrites: convertOverwrites(cats[i].permission_overwrites, tgt, roleMap, srcGuild.id)
+          };
+          let cr = await fetchRetry(`${cfg.apiBase}/guilds/${tgt}/channels`, {
+            method: 'POST', headers: { 'Authorization': state.token, 'Content-Type': 'application/json' },
+            body: JSON.stringify(catData)
+          });
+          if (cr.ok) { let nc = await cr.json(); catMap[cats[i].id] = nc.id; chCount++; }
+          else addLog(`\u041e\u0448\u0438\u0431\u043a\u0430 \u043a\u0430\u0442\u0435\u0433\u043e\u0440\u0438\u0438: ${cr.status}`, 'error');
+        } catch (e) { addLog(`\u041e\u0448\u0438\u0431\u043a\u0430: ${e.message}`, 'error'); }
+        await sleep(300);
+      }
+      for (let i = 0; i < others.length; i++) {
+        if (state.cancel) throw new Error('CANCELLED');
+        let ch = others[i];
+        try {
+          let chData = {
+            name: ch.name.substring(0, 100), type: ch.type, position: ch.position,
+            permission_overwrites: convertOverwrites(ch.permission_overwrites, tgt, roleMap, srcGuild.id)
+          };
+          if (ch.type === 0 || ch.type === 5) {
+            if (ch.topic) chData.topic = ch.topic.substring(0, 1024);
+            if (ch.rate_limit_per_user) chData.rate_limit_per_user = Math.min(ch.rate_limit_per_user, 21600);
+            if (ch.nsfw) chData.nsfw = ch.nsfw;
+          }
+          if (ch.type === 2) {
+            if (ch.bitrate) chData.bitrate = Math.min(ch.bitrate, 96000);
+            if (ch.user_limit) chData.user_limit = Math.min(ch.user_limit, 99);
+          }
+          if (ch.parent_id && catMap[ch.parent_id]) chData.parent_id = catMap[ch.parent_id];
+          let cr = await fetchRetry(`${cfg.apiBase}/guilds/${tgt}/channels`, {
+            method: 'POST', headers: { 'Authorization': state.token, 'Content-Type': 'application/json' },
+            body: JSON.stringify(chData)
+          });
+          if (cr.ok) chCount++;
+          else addLog(`\u041e\u0448\u0438\u0431\u043a\u0430 \u043a\u0430\u043d\u0430\u043b\u0430: ${cr.status}`, 'error');
+        } catch (e) { addLog(`\u041e\u0448\u0438\u0431\u043a\u0430: ${e.message}`, 'error'); }
+        await sleep(300);
+        let pct = 60 + ((cats.length + i + 1) / Math.max(total, 1)) * 40;
+        $('progressFill').style.width = `${pct}%`;
+        $('backgroundProgress').textContent = `\u041f\u0440\u043e\u0433\u0440\u0435\u0441\u0441: ${Math.floor(pct)}%`;
+        $('backgroundStage').textContent = `\u041a\u0430\u043d\u0430\u043b\u044b: ${cats.length + i + 1}/${total}`;
+      }
+      $('progressFill').style.width = '100%';
+      $('backgroundProgress').textContent = '\u041f\u0440\u043e\u0433\u0440\u0435\u0441\u0441: 100%';
+      $('backgroundStage').textContent = '\u0417\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u043e!';
+      addLog('\u041a\u043b\u043e\u043d\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u043e!', 'success');
+      addLog(`\u0421\u043e\u0437\u0434\u0430\u043d\u043e: ${rolesToCreate.length} \u0440\u043e\u043b\u0435\u0439, ${chCount} \u043a\u0430\u043d\u0430\u043b\u043e\u0432`, 'success');
+      toast('<i class="fas fa-check-circle"></i> \u041a\u043b\u043e\u043d\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435 \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043d\u043e!');
+      confetti();
     } catch (e) {
-      $('toolResultContainer').innerHTML = `<div class="glass-card"><p style="color:#ff7b7b"><i class="fas fa-exclamation-circle"></i> ${esc(e.message)}</p></div>`;
-    }
+      if (e.message === 'CANCELLED') {
+        addLog('\u041e\u0442\u043c\u0435\u043d\u0435\u043d\u043e \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u043c', 'warning');
+        toast('<i class="fas fa-ban"></i> \u041a\u043b\u043e\u043d\u0438\u0440\u043e\u0432\u0430\u043d\u0438\u0435 \u043e\u0442\u043c\u0435\u043d\u0435\u043d\u043e');
+      } else {
+        addLog(`\u041e\u0448\u0438\u0431\u043a\u0430: ${e.message}`, 'error');
+        showErr($('cloneError'), e.message);
+      }
+    } finally { resetClone(); }
   }
 
   function buildHTML() {
@@ -783,16 +553,11 @@ document.head.appendChild(s);
         <div class="glass-card">
           <div class="auth-title">Discord Cloner Pro</div>
           <div class="auth-subtitle">by xolirx • 2026</div>
-          <div id="tokenWarning" style="display:none;background:rgba(255,100,100,0.1);border:1px solid rgba(255,100,100,0.3);border-radius:16px;padding:0.8rem;margin-bottom:1rem">
-            <i class="fas fa-exclamation-triangle"></i> <span>Токен — это ваш пароль! Никому не показывайте</span>
-          </div>
           <div class="form-group">
             <label class="form-label">Discord токен</label>
             <div style="position:relative">
               <input type="password" class="form-input" id="tokenInput" placeholder="Введите ваш токен">
-              <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-secondary)" id="toggleTokenVisibility">
-                <i class="fas fa-eye"></i>
-              </span>
+              <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);cursor:pointer;color:var(--text-secondary)" id="toggleTokenVisibility"><i class="fas fa-eye"></i></span>
             </div>
           </div>
           <div style="margin:12px 0;display:flex;gap:8px">
@@ -811,18 +576,13 @@ document.head.appendChild(s);
             <div class="user-id" id="userId">ID: ...</div>
             <div class="user-email">
               <span class="email-blur" id="userEmail">••••••@•••••.com</span>
-              <span id="toggleEmailBtn" style="cursor:pointer;background:var(--fix-bg);padding:0.2rem 0.6rem;border-radius:20px;font-size:0.7rem">
-                <i class="fas fa-eye"></i> Показать
-              </span>
+              <span id="toggleEmailBtn" style="cursor:pointer;background:var(--fix-bg);padding:0.2rem 0.6rem;border-radius:20px;font-size:0.7rem"><i class="fas fa-eye"></i> Показать</span>
             </div>
           </div>
-          <button class="btn logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Выйти</button>
+          <button class="btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Выйти</button>
         </div>
         <div id="backgroundStatus" class="background-status">
-          <div style="display:flex;align-items:center;gap:12px">
-            <div class="spinner"></div>
-            <span>Клонирование активно</span>
-          </div>
+          <div style="display:flex;align-items:center;gap:12px"><div class="spinner"></div><span>Клонирование активно</span></div>
           <div id="backgroundProgress">Прогресс: 0%</div>
           <div id="backgroundStage" style="font-size:0.7rem;margin-top:6px;color:var(--text-secondary)">Этап: подготовка</div>
         </div>
@@ -830,14 +590,8 @@ document.head.appendChild(s);
           <div class="clone-card">
             <div class="clone-title">Клонирование сервера</div>
             <div class="clone-subtitle">by xolirx • 2026</div>
-            <div class="input-group">
-              <label class="input-label">Исходный сервер ID</label>
-              <input type="text" class="clone-input" id="sourceId" placeholder="000000000000000000">
-            </div>
-            <div class="input-group">
-              <label class="input-label">Целевой сервер ID</label>
-              <input type="text" class="clone-input" id="targetId" placeholder="000000000000000000">
-            </div>
+            <div class="input-group"><label class="input-label">Исходный сервер ID</label><input type="text" class="clone-input" id="sourceId" placeholder="000000000000000000"></div>
+            <div class="input-group"><label class="input-label">Целевой сервер ID</label><input type="text" class="clone-input" id="targetId" placeholder="000000000000000000"></div>
             <div style="display:flex;gap:12px;max-width:480px;margin:10px auto">
               <button class="btn" id="showServersBtn" style="flex:1"><i class="fas fa-list"></i> Мои сервера</button>
               <button class="btn" id="validateBtn" style="flex:1"><i class="fas fa-check"></i> Проверить</button>
@@ -854,24 +608,11 @@ document.head.appendChild(s);
           <div class="info-grid">
             <div class="info-card">
               <div class="info-card-title"><i class="fas fa-check-circle" style="color:#7fe07f"></i> Будет скопировано</div>
-              <ul class="info-list">
-                <li>Название сервера</li>
-                <li>Иконка сервера</li>
-                <li>Все роли с правами</li>
-                <li>Категории и каналы</li>
-                <li>Права доступа</li>
-                <li>Настройки каналов</li>
-              </ul>
+              <ul class="info-list"><li>Название сервера</li><li>Иконка сервера</li><li>Все роли с правами</li><li>Категории и каналы</li><li>Права доступа</li><li>Настройки каналов</li></ul>
             </div>
             <div class="info-card">
               <div class="info-card-title"><i class="fas fa-ban" style="color:#ff7b7b"></i> Не будет скопировано</div>
-              <ul class="info-list">
-                <li>Сообщения</li>
-                <li>Участники сервера</li>
-                <li>Вебхуки</li>
-                <li>Интеграции и боты</li>
-                <li>Стикеры и эмодзи</li>
-              </ul>
+              <ul class="info-list"><li>Сообщения</li><li>Участники сервера</li><li>Вебхуки</li><li>Интеграции и боты</li><li>Стикеры и эмодзи</li></ul>
             </div>
           </div>
           <div style="display:flex;justify-content:flex-end;gap:12px;margin:0 0 1rem 0">
@@ -884,36 +625,12 @@ document.head.appendChild(s);
             <div class="tools-title">Инструменты</div>
             <div class="tools-subtitle">Дополнительные функции для управления</div>
             <div class="tools-grid">
-              <div class="tool-card" id="toolGuildInfo">
-                <i class="fas fa-info-circle"></i>
-                <h3>Информация о сервере</h3>
-                <p>Просмотр подробной информации о любом сервере</p>
-              </div>
-              <div class="tool-card" id="toolMassClean">
-                <i class="fas fa-broom"></i>
-                <h3>Массовая очистка</h3>
-                <p>Быстрое удаление всех каналов и ролей</p>
-              </div>
-              <div class="tool-card" id="toolTokenChecker">
-                <i class="fas fa-shield-alt"></i>
-                <h3>Проверка токена</h3>
-                <p>Детальная информация о токене и аккаунте</p>
-              </div>
-              <div class="tool-card" id="toolExportConfig">
-                <i class="fas fa-download"></i>
-                <h3>Экспорт структуры</h3>
-                <p>Сохранить структуру сервера в JSON</p>
-              </div>
-              <div class="tool-card" id="toolQuickClone">
-                <i class="fas fa-bolt"></i>
-                <h3>Быстрое клонирование</h3>
-                <p>Клон с предустановленными настройками</p>
-              </div>
-              <div class="tool-card" id="toolPermissions">
-                <i class="fas fa-lock"></i>
-                <h3>Анализатор прав</h3>
-                <p>Проверка прав вашего токена на сервере</p>
-              </div>
+              <div class="tool-card" id="toolGuildInfo"><i class="fas fa-info-circle"></i><h3>Информация о сервере</h3><p>Просмотр подробной информации о любом сервере</p></div>
+              <div class="tool-card" id="toolMassClean"><i class="fas fa-broom"></i><h3>Массовая очистка</h3><p>Быстрое удаление всех каналов и ролей</p></div>
+              <div class="tool-card" id="toolTokenChecker"><i class="fas fa-shield-alt"></i><h3>Проверка токена</h3><p>Детальная информация о токене и аккаунте</p></div>
+              <div class="tool-card" id="toolExportConfig"><i class="fas fa-download"></i><h3>Экспорт структуры</h3><p>Сохранить структуру сервера в JSON</p></div>
+              <div class="tool-card" id="toolQuickClone"><i class="fas fa-bolt"></i><h3>Быстрое клонирование</h3><p>Клон с предустановленными настройками</p></div>
+              <div class="tool-card" id="toolPermissions"><i class="fas fa-lock"></i><h3>Анализатор прав</h3><p>Проверка прав вашего токена на сервере</p></div>
             </div>
           </div>
           <div id="toolResultContainer" style="margin-top:1.5rem"></div>
@@ -922,38 +639,15 @@ document.head.appendChild(s);
           <div class="glass-card">
             <div class="fix-title">История обновлений</div>
             <div class="fix-subtitle">by xolirx • все изменения по датам</div>
-            <div class="fix-group">
-              <div class="fix-date">26 апреля 2026</div>
-              <h3><i class="fas fa-shield-alt"></i> Ultimate обнова: защита + визуал + стабильность</h3>
-              <ul class="info-list" style="padding-left:1rem">
-                <li>Полностью обфусцированный код — защита от копирования</li>
-                <li>Глобальный редизайн: плавные анимации, стекло-эффекты</li>
-                <li>Исправлена ошибка прав доступа (permission_overwrites)</li>
-                <li>Точный прогресс в реальном времени</li>
-                <li>Улучшена обработка rate limit</li>
-                <li>Полная адаптация под телефон и ПК</li>
-              </ul>
-            </div>
-            <div class="fix-group">
-              <div class="fix-date">15 апреля 2026</div>
-              <h3><i class="fas fa-star"></i> Улучшение интерфейса и оптимизация</h3>
-              <ul class="info-list" style="padding-left:1rem">
-                <li>Полностью переработан интерфейс: минимализм</li>
-                <li>Оптимизирована логика клонирования</li>
-                <li>Исправлены ошибки API (bitrate, permissions)</li>
-                <li>Улучшена отмена клонирования</li>
-                <li>Добавлен AbortController для прерывания fetch</li>
-              </ul>
-            </div>
+            <div class="fix-group"><div class="fix-date">26 апреля 2026</div><h3><i class="fas fa-shield-alt"></i> Ultimate обнова: защита + визуал + стабильность</h3><ul class="info-list" style="padding-left:1rem"><li>Полностью обфусцированный код</li><li>Глобальный редизайн: анимации, стекло-эффекты</li><li>Исправлена ошибка прав доступа</li><li>Точный прогресс в реальном времени</li><li>Улучшена обработка rate limit</li><li>Полная адаптация под телефон и ПК</li></ul></div>
+            <div class="fix-group"><div class="fix-date">15 апреля 2026</div><h3><i class="fas fa-star"></i> Улучшение интерфейса и оптимизация</h3><ul class="info-list" style="padding-left:1rem"><li>Полностью переработан интерфейс</li><li>Оптимизирована логика клонирования</li><li>Исправлены ошибки API</li><li>Улучшена отмена клонирования</li></ul></div>
           </div>
         </div>
         <div id="supportContent" class="hidden">
           <div class="glass-card">
             <div class="auth-title">Поддержка</div>
             <div class="auth-subtitle">by xolirx • 2026</div>
-            <div style="text-align:center">
-              <a href="https://t.me/xolirx" target="_blank" class="btn btn-primary"><i class="fab fa-telegram"></i> Telegram (@xolirx)</a>
-            </div>
+            <div style="text-align:center"><a href="https://t.me/xolirx" target="_blank" class="btn btn-primary"><i class="fab fa-telegram"></i> Telegram (@xolirx)</a></div>
             <p style="margin-top:2rem;color:var(--text-secondary);text-align:center;font-size:0.8rem">Отвечаю оперативно. Бесплатные консультации.</p>
           </div>
         </div>
@@ -989,16 +683,11 @@ document.head.appendChild(s);
           <button class="btn btn-primary" id="confirmRulesBtn" disabled>Продолжить</button>
         </div>
       </div>
-    </div>
-    <div id="toolModal" class="modal">
-      <div class="modal-content" id="toolModalContent"></div>
-    </div>
-    `;
+    </div>`;
   }
 
   function init() {
     document.getElementById('app').innerHTML = buildHTML();
-    
     document.querySelectorAll('.nav-link').forEach((l) => {
       l.addEventListener('click', function() {
         document.querySelectorAll('.nav-link').forEach((ln) => ln.classList.remove('active'));
@@ -1006,7 +695,6 @@ document.head.appendChild(s);
         switchSection(this.dataset.section);
       });
     });
-
     $('rule1').addEventListener('change', checkRules);
     $('rule2').addEventListener('change', checkRules);
     $('rule3').addEventListener('change', checkRules);
@@ -1023,69 +711,103 @@ document.head.appendChild(s);
     $('loginBtn').addEventListener('click', authorize);
     $('testTokenBtn').addEventListener('click', testToken);
     $('pasteTokenBtn').addEventListener('click', pasteToken);
-    
     $('toggleTokenVisibility').addEventListener('click', () => {
       let i = $('tokenInput');
       let icon = i.parentElement.querySelector('i');
-      if (i.type === 'password') {
-        i.type = 'text';
-        icon.classList.replace('fa-eye', 'fa-eye-slash');
-      } else {
-        i.type = 'password';
-        icon.classList.replace('fa-eye-slash', 'fa-eye');
-      }
+      if (i.type === 'password') { i.type = 'text'; icon.classList.replace('fa-eye', 'fa-eye-slash'); }
+      else { i.type = 'password'; icon.classList.replace('fa-eye-slash', 'fa-eye'); }
     });
-
     $('toggleEmailBtn').addEventListener('click', toggleEmail);
     $('logoutBtn').addEventListener('click', logout);
-    $('toolGuildInfo').addEventListener('click', toolGuildInfo);
-    $('toolMassClean').addEventListener('click', toolMassClean);
-    $('toolTokenChecker').addEventListener('click', toolTokenChecker);
-    $('toolExportConfig').addEventListener('click', toolExportConfig);
-    $('toolQuickClone').addEventListener('click', toolQuickClone);
-    $('toolPermissions').addEventListener('click', toolPermissions);
-    
-    $('checkUpdateLink').addEventListener('click', (e) => {
-      e.preventDefault();
-      toast('<i class="fas fa-info-circle"></i> У вас актуальная версия (v3.1)');
+    $('toolGuildInfo').addEventListener('click', async () => {
+      let id = prompt('Введите ID сервера:');
+      if (!id) return;
+      $('toolResultContainer').innerHTML = '<div class="glass-card"><div style="text-align:center"><div class="spinner"></div><p>Загрузка...</p></div></div>';
+      try {
+        let r = await fetch(`${cfg.apiBase}/guilds/${id}`, { headers: { 'Authorization': state.token } });
+        if (!r.ok) throw new Error('Сервер не найден');
+        let g = await r.json();
+        let roles = await (await fetch(`${cfg.apiBase}/guilds/${id}/roles`, { headers: { 'Authorization': state.token } })).json();
+        let channels = await (await fetch(`${cfg.apiBase}/guilds/${id}/channels`, { headers: { 'Authorization': state.token } })).json();
+        $('toolResultContainer').innerHTML = `<div class="glass-card"><h3>${esc(g.name)}</h3><div class="stats-row"><div class="stat-item"><div class="stat-value">${g.approximate_member_count || '?'}</div><div class="stat-label">Участников</div></div><div class="stat-item"><div class="stat-value">${roles.length}</div><div class="stat-label">Ролей</div></div><div class="stat-item"><div class="stat-value">${channels.length}</div><div class="stat-label">Каналов</div></div></div><p style="margin-top:0.8rem;font-size:0.75rem"><strong>ID:</strong> ${g.id}<br><strong>Владелец:</strong> ${g.owner_id}</p></div>`;
+      } catch (e) { $('toolResultContainer').innerHTML = `<div class="glass-card"><p style="color:#ff7b7b">${esc(e.message)}</p></div>`; }
     });
-
+    $('toolMassClean').addEventListener('click', async () => {
+      let id = prompt('Введите ID сервера для очистки:');
+      if (!id || !confirm('ВНИМАНИЕ! Все каналы и роли будут удалены. Продолжить?')) return;
+      $('toolResultContainer').innerHTML = '<div class="glass-card"><div style="text-align:center"><div class="spinner"></div><p>Очистка...</p></div></div>';
+      let cleaned = 0;
+      try {
+        let channels = await (await fetch(`${cfg.apiBase}/guilds/${id}/channels`, { headers: { 'Authorization': state.token } })).json();
+        for (let ch of channels) { try { await fetch(`${cfg.apiBase}/channels/${ch.id}`, { method: 'DELETE', headers: { 'Authorization': state.token } }); cleaned++; await sleep(200); } catch (e) {} }
+        let roles = await (await fetch(`${cfg.apiBase}/guilds/${id}/roles`, { headers: { 'Authorization': state.token } })).json();
+        for (let r of roles) { if (r.name !== '@everyone' && !r.managed) { try { await fetch(`${cfg.apiBase}/guilds/${id}/roles/${r.id}`, { method: 'DELETE', headers: { 'Authorization': state.token } }); cleaned++; await sleep(200); } catch (e) {} } }
+        $('toolResultContainer').innerHTML = `<div class="glass-card"><p style="color:#7fe07f"><i class="fas fa-check-circle"></i> Очищено: ${cleaned} объектов</p></div>`;
+      } catch (e) { $('toolResultContainer').innerHTML = `<div class="glass-card"><p style="color:#ff7b7b">${esc(e.message)}</p></div>`; }
+    });
+    $('toolTokenChecker').addEventListener('click', () => {
+      $('toolResultContainer').innerHTML = `<div class="glass-card"><h3><i class="fas fa-shield-alt"></i> Информация о токене</h3><p><strong>Пользователь:</strong> ${esc(state.user?.username || 'неизвестно')}</p><p><strong>ID:</strong> ${state.user?.id || 'неизвестно'}</p><p><strong>Email:</strong> ${state.user?.email || 'не привязан'}</p></div>`;
+    });
+    $('toolExportConfig').addEventListener('click', () => {
+      if (!$('sourceId').value.trim()) { $('toolResultContainer').innerHTML = '<div class="glass-card"><p style="color:#e6b450">Введите ID исходного сервера</p></div>'; return; }
+      $('toolResultContainer').innerHTML = '<div class="glass-card"><div style="text-align:center"><div class="spinner"></div><p>Экспорт...</p></div></div>';
+      let src = $('sourceId').value.trim();
+      Promise.all([
+        fetch(`${cfg.apiBase}/guilds/${src}`, { headers: { 'Authorization': state.token } }),
+        fetch(`${cfg.apiBase}/guilds/${src}/roles`, { headers: { 'Authorization': state.token } }),
+        fetch(`${cfg.apiBase}/guilds/${src}/channels`, { headers: { 'Authorization': state.token } })
+      ]).then(([gr, rr, cr]) => Promise.all([gr.json(), rr.json(), cr.json()]))
+        .then(([guild, roles, channels]) => {
+          let data = { name: guild.name, roles: roles.filter(r => r.name !== '@everyone').map(r => ({ name: r.name, permissions: r.permissions })), channels: channels.map(c => ({ name: c.name, type: c.type })) };
+          let blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+          let a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `server_${src}.json`; a.click();
+          $('toolResultContainer').innerHTML = '<div class="glass-card"><p style="color:#7fe07f"><i class="fas fa-check-circle"></i> Экспортировано</p></div>';
+        }).catch(() => { $('toolResultContainer').innerHTML = '<div class="glass-card"><p style="color:#ff7b7b">Ошибка</p></div>'; });
+    });
+    $('toolQuickClone').addEventListener('click', () => {
+      if ($('sourceId').value && $('targetId').value) showAgreement();
+      else $('toolResultContainer').innerHTML = '<div class="glass-card"><p style="color:#e6b450">Заполните ID серверов на главной</p></div>';
+    });
+    $('toolPermissions').addEventListener('click', async () => {
+      let id = prompt('Введите ID сервера:');
+      if (!id) return;
+      try {
+        let r = await fetch(`${cfg.apiBase}/users/@me/guilds`, { headers: { 'Authorization': state.token } });
+        let guilds = await r.json();
+        let g = guilds.find(g => g.id === id);
+        if (!g) throw new Error('Вы не состоите в этом сервере');
+        let p = BigInt(g.permissions);
+        let checks = ['Администратор:0x8','Управление сервером:0x20','Управление ролями:0x10000000','Управление каналами:0x10','Вебхуки:0x20000000','Приглашения:0x1'];
+        let h = `<div class="glass-card"><h3>Права: ${esc(g.name)}</h3>`;
+        checks.forEach(c => { let [n, b] = c.split(':'); h += `<p>${n}: ${(p & BigInt(b)) === BigInt(b) ? '<span class="badge badge-green">Есть</span>' : '<span class="badge badge-red">Нет</span>'}</p>`; });
+        h += '</div>';
+        $('toolResultContainer').innerHTML = h;
+      } catch (e) { $('toolResultContainer').innerHTML = `<div class="glass-card"><p style="color:#ff7b7b">${esc(e.message)}</p></div>`; }
+    });
+    $('checkUpdateLink').addEventListener('click', (e) => { e.preventDefault(); toast('<i class="fas fa-info-circle"></i> Версия v3.1 актуальна'); });
     document.addEventListener('click', (e) => {
-      let container = $('serverListContainer');
-      if (container && !container.contains(e.target) && e.target !== $('showServersBtn')) {
-        container.classList.add('hidden');
-      }
+      let c = $('serverListContainer');
+      if (c && !c.contains(e.target) && e.target !== $('showServersBtn')) c.classList.add('hidden');
     });
-
-    $('agreementModal').addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
-    });
+    $('agreementModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
   }
 
   window.onload = async () => {
     init();
     setTimeout(() => $('loadingOverlay')?.classList.add('fade-out'), 800);
-    let st = sessionStorage.getItem('discord_token');
-    let su = sessionStorage.getItem('discord_user');
+    let st = sessionStorage.getItem('discord_token'), su = sessionStorage.getItem('discord_user');
     if (st && su) {
-      state.token = st;
-      state.user = JSON.parse(su);
+      state.token = st; state.user = JSON.parse(su);
       $('userName').textContent = state.user.global_name || state.user.username;
       $('userId').textContent = `ID: ${state.user.id}`;
-      if (state.user.email) {
-        $('userEmail').textContent = state.user.email.replace(/./g, '\u2022');
-        $('toggleEmailBtn').innerHTML = '<i class="fas fa-eye"></i> Показать';
-      }
+      if (state.user.email) { $('userEmail').textContent = state.user.email.replace(/./g, '\u2022'); $('toggleEmailBtn').innerHTML = '<i class="fas fa-eye"></i> Показать'; }
       if (state.user.avatar) $('userAvatar').src = `https://cdn.discordapp.com/avatars/${state.user.id}/${state.user.avatar}.png?size=128`;
-      $('authView').classList.add('hidden');
-      $('mainView').classList.remove('hidden');
+      $('authView').classList.add('hidden'); $('mainView').classList.remove('hidden');
       addLog('Сессия восстановлена', 'success');
       await loadGuilds();
     }
     addLog('Discord Cloner Pro v3.1 by xolirx', 'info');
   };
 
-  window.addEventListener('beforeunload', () => {
-    if (state.cloning) return 'Клонирование не завершено. Выйти?';
-  });
+  window.addEventListener('beforeunload', () => { if (state.cloning) return 'Клонирование не завершено. Выйти?'; });
 })();

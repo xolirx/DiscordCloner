@@ -3,6 +3,8 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   build: {
     minify: 'esbuild',
+    cssMinify: true,
+    assetsInlineLimit: 0,
     rollupOptions: {
       output: {
         compact: true,
@@ -12,9 +14,7 @@ export default defineConfig({
           objectShorthand: true
         }
       }
-    },
-    cssMinify: true,
-    assetsInlineLimit: 0
+    }
   },
   server: {
     host: true,
