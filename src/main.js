@@ -1,205 +1,229 @@
-// Внедрение стилей
+// Стили
 const style = document.createElement('style');
 style.textContent = `
 :root {
-  --bg: #060b1a;
-  --card: #0b1121;
-  --card2: #10182b;
-  --accent: #4f7df3;
-  --accent2: #6b93ff;
-  --text: #d0d9f0;
-  --dim: #8892b0;
+  --bg: #000000;
+  --card: #0a0a0a;
+  --card2: #111111;
+  --accent: #7c3aed;
+  --accent2: #9d6ff0;
+  --text: #e4e4e7;
+  --dim: #71717a;
   --border: rgba(255,255,255,0.06);
-  --danger: #ff6b7a;
-  --success: #2ecc71;
-  --warning: #f39c12;
-  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  --danger: #f43f5e;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --shadow: 0 8px 32px rgba(0,0,0,0.6);
+  --glow: 0 0 15px rgba(124,58,237,0.5);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-  font-family:'Segoe UI',system-ui,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  overflow-x:hidden;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-x: hidden;
 }
 .wrapper{
-  display:flex;
-  gap:20px;
-  width:100%;
-  max-width:960px;
-  height:85vh;
-  animation: fadeUp 0.4s ease;
+  display: flex;
+  gap: 16px;
+  width: 100%;
+  max-width: 1200px;
+  height: 90vh;
+  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .left{
-  flex:1;
-  background:var(--card);
-  border-radius:20px;
-  padding:28px 24px;
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-  border:1px solid var(--border);
-  box-shadow:var(--shadow);
-  transition:0.2s;
+  flex: 1;
+  background: var(--card);
+  border-radius: 24px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: 0.2s;
 }
 .right{
-  flex:1;
-  background:var(--card);
-  border-radius:20px;
-  padding:20px 18px;
-  display:flex;
-  flex-direction:column;
-  border:1px solid var(--border);
-  box-shadow:var(--shadow);
+  flex: 1;
+  background: var(--card);
+  border-radius: 24px;
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
 }
 .log-title{
-  font-size:0.9rem;
-  color:var(--dim);
-  margin-bottom:10px;
-  display:flex;
-  align-items:center;
-  gap:8px;
+  font-size: 0.9rem;
+  color: var(--dim);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 .log-box{
-  flex:1;
-  background:rgba(0,0,0,0.25);
-  border-radius:14px;
-  padding:14px;
-  overflow-y:auto;
-  font-family:'JetBrains Mono',monospace;
-  font-size:0.72rem;
-  color:var(--dim);
-  border:1px solid var(--border);
-  scrollbar-width:thin;
+  flex: 1;
+  background: rgba(0,0,0,0.4);
+  border-radius: 16px;
+  padding: 14px;
+  overflow-y: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--dim);
+  border: 1px solid var(--border);
+  scrollbar-width: thin;
 }
-.log-box::-webkit-scrollbar{width:4px}
-.log-box::-webkit-scrollbar-thumb{background:var(--accent);border-radius:4px}
+.log-box::-webkit-scrollbar{width: 4px}
+.log-box::-webkit-scrollbar-thumb{background: var(--accent);border-radius: 4px}
 .log-item{
-  padding:4px 8px;
-  margin:2px 0;
-  border-radius:6px;
-  background:rgba(255,255,255,0.02);
-  transition:0.2s;
-  display:flex;
-  gap:8px;
-  align-items:baseline;
+  padding: 5px 10px;
+  margin: 3px 0;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.02);
+  transition: 0.2s;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
 }
-.log-item:hover{background:rgba(255,255,255,0.05)}
-.log-time{color:var(--dim);font-size:0.65rem;min-width:50px}
-.log-success{color:var(--success)}
-.log-error{color:var(--danger)}
-.log-warning{color:var(--warning)}
+.log-item:hover{background: rgba(255,255,255,0.05)}
+.log-time{color: var(--dim);font-size: 0.65rem;min-width: 50px}
+.log-icon svg{width: 14px;height: 14px;flex-shrink:0;margin-top:2px}
+.log-success .log-icon svg{color: var(--success)}
+.log-error .log-icon svg{color: var(--danger)}
+.log-warning .log-icon svg{color: var(--warning)}
 input,button{
-  width:100%;
-  padding:11px 14px;
-  margin:5px 0;
-  border-radius:12px;
-  border:1px solid var(--border);
-  background:var(--card2);
-  color:var(--text);
-  font-size:0.85rem;
-  transition:0.2s;
+  width: 100%;
+  padding: 12px 16px;
+  margin: 6px 0;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--card2);
+  color: var(--text);
+  font-size: 0.88rem;
+  transition: 0.2s;
+  font-family: inherit;
 }
-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(79,125,243,0.3)}
+input:focus{outline: none;border-color: var(--accent);box-shadow: 0 0 0 2px rgba(124,58,237,0.3)}
 button{
-  cursor:pointer;
-  background:var(--card2);
-  font-weight:500;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
+  cursor: pointer;
+  background: var(--card2);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
 }
-button:hover{background:#1e2a45;border-color:var(--accent)}
-button.primary{background:var(--accent);color:#fff;border:none}
-button.primary:hover{background:var(--accent2)}
-button.danger{background:transparent;border-color:var(--danger);color:var(--danger)}
-button.danger:hover{background:rgba(255,107,122,0.1)}
-.row{display:flex;gap:10px}
-.row button{flex:1}
-.progress{height:4px;background:rgba(255,255,255,0.08);border-radius:2px;margin:8px 0;overflow:hidden}
-.progress-fill{height:100%;background:var(--accent);width:0%;transition:width 0.3s;border-radius:2px}
+button:hover{background: #1c1c1c;border-color: var(--accent);box-shadow: var(--glow)}
+button.primary{background: var(--accent);color: #fff;border: none}
+button.primary:hover{background: var(--accent2);box-shadow: 0 0 20px rgba(124,58,237,0.6)}
+button.danger{background: transparent;border-color: var(--danger);color: var(--danger)}
+button.danger:hover{background: rgba(244,63,94,0.1)}
+.row{display: flex;gap: 10px}
+.row button{flex: 1}
+.progress{height: 4px;background: rgba(255,255,255,0.06);border-radius: 2px;margin: 10px 0;overflow: hidden}
+.progress-fill{height: 100%;background: var(--accent);width: 0%;transition: width 0.3s;border-radius: 2px}
 .server-list{
-  max-height:140px;
-  overflow-y:auto;
-  background:var(--card2);
-  border-radius:10px;
-  margin-top:6px;
-  display:none;
-  border:1px solid var(--border);
+  max-height: 180px;
+  overflow-y: auto;
+  background: var(--card2);
+  border-radius: 12px;
+  margin-top: 6px;
+  display: none;
+  border: 1px solid var(--border);
 }
 .server-item{
-  padding:10px 12px;
-  cursor:pointer;
-  border-bottom:1px solid var(--border);
-  font-size:0.8rem;
-  display:flex;
-  justify-content:space-between;
-  transition:0.2s;
+  padding: 10px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  transition: all 0.15s;
 }
-.server-item:hover{background:rgba(79,125,243,0.15)}
+.server-item:hover{background: rgba(124,58,237,0.15)}
 .toast{
-  position:fixed;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
-  background:var(--card);
-  border:1px solid var(--accent);
-  padding:10px 24px;
-  border-radius:30px;
-  z-index:9999;
-  font-size:0.8rem;
-  box-shadow:0 4px 15px rgba(0,0,0,0.5);
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111;
+  border: 1px solid var(--accent);
+  padding: 10px 24px;
+  border-radius: 30px;
+  z-index: 9999;
+  font-size: 0.8rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.6);
   animation: fadeUp 0.2s ease;
 }
 .status{
-  background:var(--card2);
-  border-radius:10px;
-  padding:8px 14px;
-  margin:6px 0;
-  display:none;
-  align-items:center;
-  gap:10px;
-  border:1px solid var(--border);
+  background: var(--card2);
+  border-radius: 12px;
+  padding: 10px 16px;
+  margin: 6px 0;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--border);
 }
-.status.active{display:flex}
+.status.active{display: flex}
 .spinner{
-  width:16px;height:16px;
-  border:2px solid var(--accent);
-  border-top-color:transparent;
-  border-radius:50%;
-  animation:spin 0.7s linear infinite;
+  width: 16px;height: 16px;
+  border: 2px solid var(--accent);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
 .donate-btn{
-  position:fixed;
-  top:20px;
-  right:20px;
-  width:auto;
-  padding:8px 16px;
-  z-index:100;
-  background:var(--accent);
-  color:#fff;
-  border:none;
-  border-radius:30px;
-  font-size:0.8rem;
-  cursor:pointer;
-  text-decoration:none;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  box-shadow:0 4px 12px rgba(79,125,243,0.4);
-  transition:0.3s;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: auto;
+  padding: 8px 18px;
+  z-index: 100;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 15px rgba(124,58,237,0.4);
+  transition: 0.3s;
+  font-weight: 500;
 }
-.donate-btn:hover{background:var(--accent2);transform:translateY(-2px)}
+.donate-btn:hover{background: var(--accent2);transform: translateY(-2px);box-shadow: 0 6px 20px rgba(124,58,237,0.6)}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  body{padding: 10px;align-items: flex-start}
+  .wrapper{flex-direction: column;height: auto;gap: 12px}
+  .left,.right{width: 100%;flex: none}
+  .right{height: 300px}
+  .donate-btn{top: 10px;right: 10px;padding: 6px 14px;font-size: 0.7rem}
+}
 `;
 document.head.appendChild(style);
+
+// SVG-смайлики
+const SVG_ICONS = {
+  success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`,
+  error: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+  warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`
+};
 
 // Приложение
 (function(){
@@ -215,11 +239,14 @@ document.head.appendChild(style);
 
   const log = (msg, type = 'info') => {
     let box = $('logBox'); if (!box) return;
-    let icons = { success: '✅', error: '❌', warning: '⚠️', info: 'ℹ️' };
     let time = new Date().toLocaleTimeString('ru-RU');
     let div = document.createElement('div');
     div.className = `log-item log-${type}`;
-    div.innerHTML = `<span class="log-time">${time}</span><span>${icons[type]||icons.info} ${msg}</span>`;
+    div.innerHTML = `
+      <span class="log-time">${time}</span>
+      <span class="log-icon">${SVG_ICONS[type] || SVG_ICONS.info}</span>
+      <span style="flex:1">${msg}</span>
+    `;
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
     if (box.children.length > 200) box.removeChild(box.children[0]);
@@ -304,7 +331,7 @@ document.head.appendChild(style);
     if (!guilds.length) await loadGuilds();
     let list = $('serverList');
     if (!guilds.length) {
-      list.innerHTML = '<div style="padding:8px;color:var(--dim)">Нет серверов</div>';
+      list.innerHTML = '<div style="padding:12px;color:var(--dim)">Нет серверов</div>';
       list.style.display = 'block';
       return;
     }
@@ -461,19 +488,21 @@ document.head.appendChild(style);
 
   function buildUI() {
     document.getElementById('app').innerHTML = `
-      <a class="donate-btn" href="https://www.tinkoff.ru/rm/r_AOUzDhUNVZ.xFFkoxrVId/Swdgp93058" target="_blank" rel="noopener">❤️ Поддержать проект</a>
+      <a class="donate-btn" href="https://www.tinkoff.ru/rm/r_AOUzDhUNVZ.xFFkoxrVId/Swdgp93058" target="_blank" rel="noopener">
+        ❤️ Поддержать
+      </a>
       <div class="wrapper">
         <div class="left">
-          <div style="font-size:1.3rem;font-weight:600;color:#fff;margin-bottom:2px">Discord Cloner</div>
-          <div style="font-size:0.7rem;color:var(--dim);margin-bottom:12px">by xolirx</div>
+          <div style="font-size:1.5rem;font-weight:700;color:#fff;letter-spacing:-0.5px;margin-bottom:4px">Discord Cloner</div>
+          <div style="font-size:0.7rem;color:var(--dim);margin-bottom:18px">by xolirx</div>
           <input type="password" id="tokenInput" placeholder="Токен">
           <input id="sourceId" placeholder="Исходный сервер ID">
           <input id="targetId" placeholder="Целевой сервер ID">
-          <button id="showServersBtn"><i class="fas fa-list"></i> Мои сервера</button>
+          <button id="showServersBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg> Мои сервера</button>
           <div id="serverList" class="server-list"></div>
           <div class="row">
-            <button id="cloneBtn" class="primary"><i class="fas fa-copy"></i> Клонировать</button>
-            <button id="cancelBtn" class="danger" disabled><i class="fas fa-times"></i> Отмена</button>
+            <button id="cloneBtn" class="primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Клонировать</button>
+            <button id="cancelBtn" class="danger" disabled><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> Отмена</button>
           </div>
           <div id="cloneStatus" class="status">
             <div class="spinner"></div>
@@ -483,9 +512,9 @@ document.head.appendChild(style);
           <div class="progress"><div class="progress-fill" id="progressBar"></div></div>
         </div>
         <div class="right">
-          <div class="log-title"><i class="fas fa-terminal"></i> Логи</div>
+          <div class="log-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 17"/><line x1="12" y1="5" x2="20" y2="5"/><line x1="12" y1="9" x2="20" y2="9"/><line x1="12" y1="13" x2="16" y2="13"/></svg> Логи</div>
           <div id="logBox" class="log-box"></div>
-          <button id="clearLogsBtn" style="margin-top:10px;width:auto;padding:8px 14px;font-size:0.75rem"><i class="fas fa-eraser"></i> Очистить</button>
+          <button id="clearLogsBtn" style="margin-top:10px;width:auto;padding:8px 14px;font-size:0.75rem"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg> Очистить</button>
         </div>
       </div>`;
   }
