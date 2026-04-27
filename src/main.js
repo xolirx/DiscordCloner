@@ -2,19 +2,19 @@
 const style = document.createElement('style');
 style.textContent = `
 :root {
-  --bg: #000000;
-  --card: #0a0a0a;
-  --card2: #111111;
-  --accent: #7c3aed;
-  --accent2: #9d6ff0;
-  --text: #e4e4e7;
-  --dim: #71717a;
-  --border: rgba(255,255,255,0.06);
+  --bg: #020617;
+  --card-bg: rgba(15, 23, 42, 0.8);
+  --card-border: rgba(148, 163, 184, 0.1);
+  --accent: #8b5cf6;
+  --accent-glow: rgba(139, 92, 246, 0.4);
+  --text: #e2e8f0;
+  --dim: #64748b;
   --danger: #f43f5e;
   --success: #10b981;
   --warning: #f59e0b;
-  --shadow: 0 8px 32px rgba(0,0,0,0.6);
-  --glow: 0 0 15px rgba(124,58,237,0.5);
+  --radius: 20px;
+  --shadow-lg: 0 20px 40px rgba(0,0,0,0.6);
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{
@@ -25,168 +25,170 @@ body{
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 20px;
   overflow-x: hidden;
-  backdrop-filter: blur(2px);
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: radial-gradient(ellipse at top, rgba(139,92,246,0.08), transparent 60%),
+              radial-gradient(ellipse at bottom, rgba(139,92,246,0.04), transparent 60%);
+  pointer-events: none;
 }
 .wrapper{
   display: flex;
-  gap: 16px;
+  gap: 20px;
   width: 100%;
   max-width: 1200px;
-  height: 90vh;
-  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  height: 85vh;
+  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
-.left{
-  flex: 1;
-  background: var(--card);
-  border-radius: 24px;
-  padding: 24px;
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse-glow{0%,100%{opacity:0.5}50%{opacity:1}}
+.left, .right{
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 28px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(10px);
-  transition: 0.2s;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: transform var(--transition), box-shadow var(--transition);
 }
-.right{
-  flex: 1;
-  background: var(--card);
-  border-radius: 24px;
-  padding: 20px 18px;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(10px);
-}
+.left{flex:1.1}
+.right{flex:0.9}
+.left:hover, .right:hover{ box-shadow: 0 25px 50px rgba(0,0,0,0.8); }
 .log-title{
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--dim);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   display: flex;
   align-items: center;
   gap: 8px;
   font-weight: 600;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 .log-box{
-  flex: 1;
+  flex:1;
   background: rgba(0,0,0,0.4);
-  border-radius: 16px;
+  border-radius: 14px;
   padding: 14px;
   overflow-y: auto;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   color: var(--dim);
-  border: 1px solid var(--border);
-  scrollbar-width: thin;
+  border: 1px solid var(--card-border);
   backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
 }
 .log-box::-webkit-scrollbar{width: 4px}
 .log-box::-webkit-scrollbar-thumb{background: var(--accent);border-radius: 4px}
 .log-item{
-  padding: 5px 10px;
-  margin: 3px 0;
+  padding: 6px 10px;
+  margin: 4px 0;
   border-radius: 8px;
   background: rgba(255,255,255,0.02);
-  transition: 0.2s;
+  transition: background var(--transition);
   display: flex;
   gap: 10px;
-  align-items: flex-start;
+  align-items: center;
+  animation: slideIn 0.2s ease-out;
 }
-.log-item:hover{background: rgba(255,255,255,0.05)}
-.log-time{color: var(--dim);font-size: 0.65rem;min-width: 50px}
-.log-icon svg{width: 14px;height: 14px;flex-shrink:0;margin-top:2px}
-.log-success .log-icon svg{color: var(--success)}
-.log-error .log-icon svg{color: var(--danger)}
-.log-warning .log-icon svg{color: var(--warning)}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.log-item:hover{background: rgba(255,255,255,0.06)}
+.log-time{color: var(--dim);font-size:0.65rem;min-width:50px}
+.log-icon svg{width:14px;height:14px;flex-shrink:0}
+.log-success .log-icon svg{color:var(--success)}
+.log-error .log-icon svg{color:var(--danger)}
+.log-warning .log-icon svg{color:var(--warning)}
 input,button{
-  width: 100%;
-  padding: 12px 16px;
-  margin: 6px 0;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: var(--card2);
-  color: var(--text);
-  font-size: 0.88rem;
-  transition: 0.2s;
-  font-family: inherit;
+  width:100%;
+  padding:13px 16px;
+  margin:7px 0;
+  border-radius:14px;
+  border:1px solid var(--card-border);
+  background: rgba(15,23,42,0.6);
+  color:var(--text);
+  font-size:0.88rem;
+  transition: all var(--transition);
+  font-family:inherit;
+  backdrop-filter: blur(5px);
 }
-input:focus{outline: none;border-color: var(--accent);box-shadow: 0 0 0 2px rgba(124,58,237,0.3)}
+input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
 button{
-  cursor: pointer;
-  background: var(--card2);
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.2s;
+  cursor:pointer;
+  background: rgba(15,23,42,0.8);
+  font-weight:500;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
 }
-button:hover{background: #1c1c1c;border-color: var(--accent);box-shadow: var(--glow)}
-button.primary{background: var(--accent);color: #fff;border: none}
-button.primary:hover{background: var(--accent2);box-shadow: 0 0 20px rgba(124,58,237,0.6)}
-button.danger{background: transparent;border-color: var(--danger);color: var(--danger)}
-button.danger:hover{background: rgba(244,63,94,0.1)}
-.row{display: flex;gap: 10px}
-.row button{flex: 1}
-.progress{height: 4px;background: rgba(255,255,255,0.06);border-radius: 2px;margin: 10px 0;overflow: hidden}
-.progress-fill{height: 100%;background: var(--accent);width: 0%;transition: width 0.3s;border-radius: 2px}
+button:hover{background: rgba(30,41,59,0.9);border-color:var(--accent);box-shadow:0 0 15px var(--accent-glow)}
+button.primary{background:linear-gradient(135deg, var(--accent), #7c3aed);color:#fff;border:none}
+button.primary:hover{background:linear-gradient(135deg, #9d6ff0, #8b5cf6);box-shadow:0 0 25px rgba(139,92,246,0.6)}
+button.danger{background:transparent;border-color:var(--danger);color:var(--danger)}
+button.danger:hover{background:rgba(244,63,94,0.1)}
+.row{display:flex;gap:10px}
+.row button{flex:1}
+.progress{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;margin:14px 0;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg, var(--accent), #c084fc);width:0%;transition:width 0.4s ease;border-radius:2px}
 .status{
-  background: var(--card2);
-  border-radius: 12px;
-  padding: 10px 16px;
-  margin: 6px 0;
-  display: none;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid var(--border);
+  background: rgba(15,23,42,0.6);
+  border-radius:12px;
+  padding:10px 16px;
+  margin:8px 0;
+  display:none;
+  align-items:center;
+  gap:10px;
+  border:1px solid var(--card-border);
+  backdrop-filter: blur(5px);
 }
-.status.active{display: flex}
+.status.active{display:flex}
 .spinner{
-  width: 16px;height: 16px;
-  border: 2px solid var(--accent);
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  width:16px;height:16px;
+  border:2px solid rgba(255,255,255,0.2);
+  border-top-color:var(--accent);
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
 .donate-btn{
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: auto;
-  padding: 10px 16px;
-  z-index: 100;
-  background: var(--card);
-  color: #fff;
-  border: 1px solid var(--border);
-  border-radius: 30px;
-  font-size: 0.8rem;
-  cursor: pointer;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  box-shadow: var(--shadow);
-  transition: 0.3s;
-  font-weight: 500;
+  position:fixed;
+  top:24px;
+  right:24px;
+  width:48px;height:48px;
+  z-index:100;
+  background: rgba(15,23,42,0.8);
+  border:1px solid var(--card-border);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  text-decoration:none;
+  box-shadow:0 4px 15px rgba(0,0,0,0.4);
   backdrop-filter: blur(10px);
+  transition: all var(--transition);
 }
-.donate-btn svg { width: 18px; height: 18px; }
-.donate-btn:hover{background: var(--accent);border-color: var(--accent);box-shadow: 0 0 20px rgba(124,58,237,0.6);transform: translateY(-2px)}
-
-/* Адаптив */
-@media (max-width: 768px) {
-  body{padding: 10px;align-items: flex-start}
-  .wrapper{flex-direction: column;height: auto;gap: 12px}
-  .left,.right{width: 100%;flex: none}
-  .right{height: 300px}
-  .donate-btn{top: 10px;right: 10px;padding: 6px 14px;font-size: 0.7rem}
+.donate-btn svg{width:20px;height:20px;color:var(--accent);transition:transform 0.3s}
+.donate-btn:hover{background:var(--accent);border-color:var(--accent);box-shadow:0 0 25px var(--accent-glow)}
+.donate-btn:hover svg{color:#fff;transform:scale(1.1)}
+/* Адаптивность */
+@media (max-width: 768px){
+  body{padding:12px;align-items:flex-start}
+  .wrapper{flex-direction:column;height:auto;gap:16px}
+  .left,.right{width:100%;flex:none;padding:20px}
+  .right{height:320px}
+  .donate-btn{top:12px;right:12px;width:42px;height:42px}
+  .donate-btn svg{width:18px;height:18px}
 }
 `;
 document.head.appendChild(style);
@@ -442,13 +444,13 @@ const SVG_ICONS = {
 
   function buildUI() {
     document.getElementById('app').innerHTML = `
-      <a class="donate-btn" href="https://www.tinkoff.ru/rm/r_AOUzDhUNVZ.xFFkoxrVId/Swdgp93058" target="_blank" rel="noopener">
+      <a class="donate-btn" href="https://www.tinkoff.ru/rm/r_AOUzDhUNVZ.xFFkoxrVId/Swdgp93058" target="_blank" rel="noopener" title="Поддержать проект">
         ${SVG_ICONS.heart}
       </a>
       <div class="wrapper">
         <div class="left">
-          <div style="font-size:1.5rem;font-weight:700;color:#fff;letter-spacing:-0.5px;margin-bottom:4px">Discord Cloner</div>
-          <div style="font-size:0.7rem;color:var(--dim);margin-bottom:18px">by xolirx</div>
+          <div style="font-size:1.8rem;font-weight:700;color:#fff;letter-spacing:-0.5px;margin-bottom:6px;background:linear-gradient(135deg,#e9d5ff,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Discord Cloner</div>
+          <div style="font-size:0.75rem;color:var(--dim);margin-bottom:24px;letter-spacing:1px;">by xolirx</div>
           <input type="password" id="tokenInput" placeholder="Токен">
           <input id="sourceId" placeholder="Исходный сервер ID">
           <input id="targetId" placeholder="Целевой сервер ID">
@@ -458,15 +460,15 @@ const SVG_ICONS = {
           </div>
           <div id="cloneStatus" class="status">
             <div class="spinner"></div>
-            <span id="statusText">Клонирование</span>
-            <span id="progressPercent" style="margin-left:auto">0%</span>
+            <span id="statusText" style="font-weight:500;">Клонирование</span>
+            <span id="progressPercent" style="margin-left:auto;font-weight:600;">0%</span>
           </div>
           <div class="progress"><div class="progress-fill" id="progressBar"></div></div>
         </div>
         <div class="right">
           <div class="log-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 17"/><line x1="12" y1="5" x2="20" y2="5"/><line x1="12" y1="9" x2="20" y2="9"/><line x1="12" y1="13" x2="16" y2="13"/></svg> Логи</div>
           <div id="logBox" class="log-box"></div>
-          <button id="clearLogsBtn" style="margin-top:10px;width:auto;padding:8px 14px;font-size:0.75rem"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg> Очистить</button>
+          <button id="clearLogsBtn" style="margin-top:12px;width:auto;padding:8px 16px;font-size:0.75rem;border-radius:20px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg> Очистить</button>
         </div>
       </div>`;
   }
