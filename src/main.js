@@ -1,4 +1,6 @@
-import './style.css';
+const s = document.createElement('style');
+s.textContent = `@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');*{margin:0;padding:0}...`;
+document.head.appendChild(s);
 
 (function() {
   const cfg = {
