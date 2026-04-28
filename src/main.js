@@ -1,5 +1,10 @@
-const style = document.createElement('style');
-style.textContent = `
+// Полный исправленный код Discord Cloner Pro (финальная версия)
+// Черный дизайн, русский язык, обработка всех типов каналов, анимации, сохранение сессии
+
+(function() {
+  // ------------------------------ СТИЛИ ---------------------------------
+  const style = document.createElement('style');
+  style.textContent = `
 :root {
   --bg-deep: #000000;
   --bg-surface: #0a0a0a;
@@ -77,20 +82,10 @@ body::before {
 }
 
 @keyframes floatParticle {
-  0% {
-    transform: translateY(100vh) rotate(0deg);
-    opacity: 0;
-  }
-  15% {
-    opacity: 0.3;
-  }
-  85% {
-    opacity: 0.3;
-  }
-  100% {
-    transform: translateY(-100vh) rotate(360deg);
-    opacity: 0;
-  }
+  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+  15% { opacity: 0.3; }
+  85% { opacity: 0.3; }
+  100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
 }
 
 .auth-container, .main-container {
@@ -314,13 +309,8 @@ body::before {
   box-shadow: var(--shadow-lg);
 }
 
-.left-panel {
-  flex: 1.2;
-}
-
-.right-panel {
-  flex: 0.8;
-}
+.left-panel { flex: 1.2; }
+.right-panel { flex: 0.8; }
 
 .left-panel:hover, .right-panel:hover {
   border-color: var(--border-active);
@@ -569,9 +559,7 @@ body::before {
   border: 1px solid var(--border-subtle);
 }
 
-.status-card.active {
-  display: block;
-}
+.status-card.active { display: block; }
 
 .status-header {
   display: flex;
@@ -589,9 +577,7 @@ body::before {
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .progress-bar {
   height: 4px;
@@ -617,7 +603,7 @@ body::before {
   left: 0;
   bottom: 0;
   right: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
   animation: shimmer 1.8s infinite;
 }
 
@@ -641,7 +627,7 @@ body::before {
   padding: 8px 12px;
   margin: 6px 0;
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255,255,255,0.02);
   display: flex;
   gap: 12px;
   align-items: center;
@@ -651,18 +637,12 @@ body::before {
 }
 
 @keyframes fadeInLog {
-  from {
-    opacity: 0;
-    transform: translateX(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .log-item:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255,255,255,0.04);
   transform: translateX(4px);
 }
 
@@ -682,20 +662,13 @@ body::before {
   align-items: center;
 }
 
-.log-icon svg {
-  width: 14px;
-  height: 14px;
-}
-
+.log-icon svg { width: 14px; height: 14px; }
 .log-success .log-icon svg { color: var(--success); }
 .log-error .log-icon svg { color: var(--error); }
 .log-warning .log-icon svg { color: var(--warning); }
 .log-info .log-icon svg { color: var(--info); }
 
-.log-item span:last-child {
-  flex: 1;
-  font-weight: 400;
-}
+.log-item span:last-child { flex: 1; font-weight: 400; }
 
 .log-header {
   margin-bottom: 14px;
@@ -720,156 +693,86 @@ body::before {
 
 .log-header button:hover {
   color: var(--text-gray);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255,255,255,0.03);
 }
 
 @media (max-width: 768px) {
-  body {
-    overflow-y: auto;
-  }
-  
-  .wrapper {
-    flex-direction: column;
-    height: auto;
-    gap: 16px;
-  }
-  
-  .left-panel, .right-panel {
-    flex: none;
-    padding: 20px;
-  }
-  
-  .right-panel {
-    height: 380px;
-  }
-  
-  .auth-card {
-    padding: 32px;
-    margin: 16px;
-  }
-  
-  .user-info {
-    padding: 12px;
-  }
-  
-  .user-avatar {
-    width: 44px;
-    height: 44px;
-  }
-  
-  .contact-bar {
-    top: 16px;
-    right: 16px;
-    padding: 6px 12px;
-  }
-  
-  .contact-link {
-    font-size: 0.688rem;
-  }
-  
-  .logo-icon {
-    width: 60px;
-    height: 60px;
-    font-size: 36px;
-  }
-  
-  .logo h1 {
-    font-size: 1.5rem;
-  }
-  
-  .header h2 {
-    font-size: 1.25rem;
-  }
+  body { overflow-y: auto; }
+  .wrapper { flex-direction: column; height: auto; gap: 16px; }
+  .left-panel, .right-panel { flex: none; padding: 20px; }
+  .right-panel { height: 380px; }
+  .auth-card { padding: 32px; margin: 16px; }
+  .user-info { padding: 12px; }
+  .user-avatar { width: 44px; height: 44px; }
+  .contact-bar { top: 16px; right: 16px; padding: 6px 12px; }
+  .contact-link { font-size: 0.688rem; }
+  .logo-icon { width: 60px; height: 60px; font-size: 36px; }
+  .logo h1 { font-size: 1.5rem; }
+  .header h2 { font-size: 1.25rem; }
 }
 
 @media (max-width: 480px) {
-  .stats-grid {
-    gap: 8px;
+  .stats-grid { gap: 8px; }
+  .stat-card { padding: 10px; }
+  .stat-value { font-size: 1.125rem; }
+  .button-group { flex-direction: column; }
+}
+
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-surface); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: #3a3a3a; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #4a4a4a; }
+  `;
+  document.head.appendChild(style);
+
+  // ------------------------------ SVG ИКОНКИ ---------------------------------
+  const SVG_ICONS = {
+    success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>`,
+    error: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+    warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+    info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+    eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
+    eyeOff: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+  };
+
+  // ------------------------------ ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---------------------------------
+  function createParticles() {
+    const particlesDiv = document.createElement('div');
+    particlesDiv.className = 'particles';
+    for (let i = 0; i < 30; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      const size = Math.random() * 2 + 1;
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+      particle.style.left = `${Math.random() * 100}%`;
+      particle.style.animationDelay = `${Math.random() * 20}s`;
+      particle.style.animationDuration = `${Math.random() * 15 + 10}s`;
+      particlesDiv.appendChild(particle);
+    }
+    document.body.appendChild(particlesDiv);
   }
-  
-  .stat-card {
-    padding: 10px;
+
+  function setFavicon() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, 64, 64);
+    ctx.fillStyle = '#8b5cf6';
+    ctx.font = '40px "Segoe UI", "Inter"';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🐱', 32, 32);
+    const link = document.querySelector('link[rel*="icon"]') || document.createElement('link');
+    link.rel = 'icon';
+    link.type = 'image/x-icon';
+    link.href = canvas.toDataURL();
+    document.head.appendChild(link);
   }
-  
-  .stat-value {
-    font-size: 1.125rem;
-  }
-  
-  .button-group {
-    flex-direction: column;
-  }
-}
 
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-surface);
-  border-radius: 2px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #3a3a3a;
-  border-radius: 2px;
-  transition: background var(--transition-fast);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #4a4a4a;
-}
-`;
-
-document.head.appendChild(style);
-
-const SVG_ICONS = {
-  success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>`,
-  error: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
-  warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-  info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
-  eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
-  eyeOff: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
-};
-
-function createParticles() {
-  const particlesDiv = document.createElement('div');
-  particlesDiv.className = 'particles';
-  for (let i = 0; i < 30; i++) {
-    const particle = document.createElement('div');
-    particle.className = 'particle';
-    const size = Math.random() * 2 + 1;
-    particle.style.width = `${size}px`;
-    particle.style.height = `${size}px`;
-    particle.style.left = `${Math.random() * 100}%`;
-    particle.style.animationDelay = `${Math.random() * 20}s`;
-    particle.style.animationDuration = `${Math.random() * 15 + 10}s`;
-    particlesDiv.appendChild(particle);
-  }
-  document.body.appendChild(particlesDiv);
-}
-
-function setFavicon() {
-  const canvas = document.createElement('canvas');
-  canvas.width = 64;
-  canvas.height = 64;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#000000';
-  ctx.fillRect(0, 0, 64, 64);
-  ctx.fillStyle = '#8b5cf6';
-  ctx.font = '40px "Segoe UI", "Inter"';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('🐱', 32, 32);
-  
-  const link = document.querySelector('link[rel*="icon"]') || document.createElement('link');
-  link.rel = 'icon';
-  link.type = 'image/x-icon';
-  link.href = canvas.toDataURL();
-  document.head.appendChild(link);
-}
-
-(function() {
+  // ------------------------------ ОСНОВНОЕ ПРИЛОЖЕНИЕ ---------------------------------
   const API = 'https://discord.com/api/v10';
   let cloning = false, cancel = false, controller = null;
   let authToken = null;
@@ -892,9 +795,7 @@ function setFavicon() {
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
     if (box.children.length > 200) {
-      while (box.children.length > 200) {
-        box.removeChild(box.children[0]);
-      }
+      while (box.children.length > 200) box.removeChild(box.children[0]);
     }
   };
 
@@ -912,10 +813,8 @@ function setFavicon() {
     const userEmailElem = document.getElementById('userEmail');
     const userAvatarImg = document.getElementById('userAvatarImg');
     const userAvatarPlaceholder = document.getElementById('userAvatarPlaceholder');
-    
     if (userNameElem) userNameElem.textContent = user.username;
     if (userEmailElem) userEmailElem.textContent = user.email || 'email не указан';
-    
     if (user.avatar) {
       const avatarUrl = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`;
       if (userAvatarImg) {
@@ -925,8 +824,7 @@ function setFavicon() {
           userAvatarImg.style.display = 'none';
           if (userAvatarPlaceholder) {
             userAvatarPlaceholder.style.display = 'flex';
-            const firstLetter = user.username.charAt(0).toUpperCase();
-            userAvatarPlaceholder.textContent = firstLetter;
+            userAvatarPlaceholder.textContent = user.username.charAt(0).toUpperCase();
           }
         };
       }
@@ -935,8 +833,7 @@ function setFavicon() {
       if (userAvatarImg) userAvatarImg.style.display = 'none';
       if (userAvatarPlaceholder) {
         userAvatarPlaceholder.style.display = 'flex';
-        const firstLetter = user.username.charAt(0).toUpperCase();
-        userAvatarPlaceholder.textContent = firstLetter;
+        userAvatarPlaceholder.textContent = user.username.charAt(0).toUpperCase();
       }
     }
   };
@@ -945,61 +842,38 @@ function setFavicon() {
     if (keepAliveInterval) clearInterval(keepAliveInterval);
     keepAliveInterval = setInterval(async () => {
       if (authToken && document.visibilityState === 'visible') {
-        try {
-          await fetch(`${API}/users/@me`, {
-            headers: { 'Authorization': authToken }
-          });
-        } catch (e) {}
+        try { await fetch(`${API}/users/@me`, { headers: { 'Authorization': authToken } }); } catch(e) {}
       }
     }, 240000);
   };
+  const stopKeepAlive = () => { if (keepAliveInterval) { clearInterval(keepAliveInterval); keepAliveInterval = null; } };
 
-  const stopKeepAlive = () => {
-    if (keepAliveInterval) {
-      clearInterval(keepAliveInterval);
-      keepAliveInterval = null;
-    }
-  };
-
+  // ------------------------------ АВТОРИЗАЦИЯ ---------------------------------
   async function authorize() {
     const tokenInput = document.getElementById('authToken');
     if (!tokenInput) return;
-    
     const token = tokenInput.value.trim();
-    if (!token) {
-      showAuthError('Введите токен');
-      return;
-    }
-
+    if (!token) { showAuthError('Введите токен'); return; }
     const authBtn = document.getElementById('authBtn');
     const originalText = authBtn.textContent;
     authBtn.textContent = 'проверка...';
     authBtn.disabled = true;
-
     try {
-      const response = await fetch(`${API}/users/@me`, {
-        headers: { 'Authorization': token }
-      });
-
+      const response = await fetch(`${API}/users/@me`, { headers: { 'Authorization': token } });
       if (!response.ok) {
         if (response.status === 401) throw new Error('Неверный токен');
         throw new Error(`Ошибка ${response.status}`);
       }
-      
       const user = await response.json();
       authToken = token;
       currentUser = user;
-      
       sessionStorage.setItem('discord_token', token);
       sessionStorage.setItem('discord_user', JSON.stringify(user));
       sessionStorage.setItem('lastActive', Date.now().toString());
-      
       startKeepAlive();
       showNotification(`Добро пожаловать, ${user.username}`, 'success');
-      
       const authContainer = document.querySelector('.auth-container');
       const mainContainer = document.querySelector('.main-container');
-      
       if (authContainer && mainContainer) {
         authContainer.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
         authContainer.style.opacity = '0';
@@ -1017,7 +891,6 @@ function setFavicon() {
           initMainUI();
         }, 500);
       }
-      
     } catch (error) {
       showAuthError(error.message);
     } finally {
@@ -1041,36 +914,23 @@ function setFavicon() {
   }
 
   function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    const bgColor = type === 'success' ? 'rgba(16, 185, 129, 0.12)' : (type === 'error' ? 'rgba(239, 68, 68, 0.12)' : 'rgba(59, 130, 246, 0.12)');
-    const borderColor = type === 'success' ? 'rgba(16, 185, 129, 0.3)' : (type === 'error' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(59, 130, 246, 0.3)');
+    const bgColor = type === 'success' ? 'rgba(16,185,129,0.12)' : (type === 'error' ? 'rgba(239,68,68,0.12)' : 'rgba(59,130,246,0.12)');
+    const borderColor = type === 'success' ? 'rgba(16,185,129,0.3)' : (type === 'error' ? 'rgba(239,68,68,0.3)' : 'rgba(59,130,246,0.3)');
     const textColor = type === 'success' ? '#10b981' : (type === 'error' ? '#ef4444' : '#3b82f6');
+    const notification = document.createElement('div');
     notification.style.cssText = `
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      background: ${bgColor};
-      backdrop-filter: blur(12px);
-      border: 1px solid ${borderColor};
-      color: ${textColor};
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 0.813rem;
-      font-weight: 500;
-      z-index: 10000;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-      opacity: 0;
-      transform: translateX(30px);
+      position: fixed; top: 24px; right: 24px;
+      background: ${bgColor}; backdrop-filter: blur(12px);
+      border: 1px solid ${borderColor}; color: ${textColor};
+      padding: 12px 20px; border-radius: 8px;
+      font-size: 0.813rem; font-weight: 500; z-index: 10000;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      opacity: 0; transform: translateX(30px);
       transition: opacity 0.3s ease, transform 0.3s ease;
     `;
     notification.textContent = message;
     document.body.appendChild(notification);
-    
-    requestAnimationFrame(() => {
-      notification.style.opacity = '1';
-      notification.style.transform = 'translateX(0)';
-    });
-    
+    requestAnimationFrame(() => { notification.style.opacity = '1'; notification.style.transform = 'translateX(0)'; });
     setTimeout(() => {
       notification.style.opacity = '0';
       notification.style.transform = 'translateX(30px)';
@@ -1093,42 +953,28 @@ function setFavicon() {
   function initMainUI() {
     const savedSource = localStorage.getItem('lastSourceId') || '';
     const savedTarget = localStorage.getItem('lastTargetId') || '';
-    
     const tokenInput = document.getElementById('tokenInput');
     if (tokenInput) tokenInput.value = authToken;
-    
     const sourceInput = document.getElementById('sourceId');
     const targetInput = document.getElementById('targetId');
     if (sourceInput) sourceInput.value = savedSource;
     if (targetInput) targetInput.value = savedTarget;
-    
     const cloneBtn = document.getElementById('cloneBtn');
     const cancelBtn = document.getElementById('cancelBtn');
     const clearLogsBtn = document.getElementById('clearLogsBtn');
     const logoutBtn = document.getElementById('logoutBtn');
-    
     if (cloneBtn) cloneBtn.addEventListener('click', startClone);
     if (cancelBtn) cancelBtn.addEventListener('click', cancelClone);
     if (clearLogsBtn) clearLogsBtn.addEventListener('click', () => clearLogs('mainLog'));
     if (logoutBtn) logoutBtn.addEventListener('click', logout);
-    
     if (sourceInput) {
-      sourceInput.addEventListener('change', (e) => {
-        localStorage.setItem('lastSourceId', e.target.value);
-      });
-      sourceInput.addEventListener('input', (e) => {
-        localStorage.setItem('lastSourceId', e.target.value);
-      });
+      sourceInput.addEventListener('change', (e) => localStorage.setItem('lastSourceId', e.target.value));
+      sourceInput.addEventListener('input', (e) => localStorage.setItem('lastSourceId', e.target.value));
     }
     if (targetInput) {
-      targetInput.addEventListener('change', (e) => {
-        localStorage.setItem('lastTargetId', e.target.value);
-      });
-      targetInput.addEventListener('input', (e) => {
-        localStorage.setItem('lastTargetId', e.target.value);
-      });
+      targetInput.addEventListener('change', (e) => localStorage.setItem('lastTargetId', e.target.value));
+      targetInput.addEventListener('input', (e) => localStorage.setItem('lastTargetId', e.target.value));
     }
-    
     if (currentUser) {
       updateUserInfo(currentUser);
       log(`авторизация выполнена: ${currentUser.username}`, 'success', 'mainLog');
@@ -1143,88 +989,111 @@ function setFavicon() {
     authToken = null;
     currentUser = null;
     showNotification('выход выполнен', 'success');
-    setTimeout(() => {
-      location.reload();
-    }, 1000);
+    setTimeout(() => location.reload(), 1000);
   }
 
   function clearLogs(logId) {
     const box = document.getElementById(logId);
-    if (box) {
-      while (box.firstChild) {
-        box.removeChild(box.firstChild);
+    if (box) { while (box.firstChild) box.removeChild(box.firstChild); }
+  }
+
+  // ------------------------------ РАБОТА С ДИСКОРД API ---------------------------------
+  async function apiRequest(url, opts = {}, retries = 3) {
+    if (!authToken) throw new Error('не авторизован');
+    if (cancel) throw new Error('CANCELLED');
+    const signal = controller?.signal;
+    for (let i = 0; i < retries; i++) {
+      if (cancel) throw new Error('CANCELLED');
+      try {
+        const headers = { 'Authorization': authToken, 'Content-Type': 'application/json', ...opts.headers };
+        const res = await fetch(url, { ...opts, headers, signal });
+        if (res.status === 429) {
+          const retryAfter = parseInt(res.headers.get('Retry-After')) || 2;
+          await sleep(retryAfter * 1000);
+          continue;
+        }
+        if (!res.ok && i === retries - 1) {
+          let errorText = await res.text().catch(() => 'unknown error');
+          if (errorText.length > 200) errorText = errorText.substring(0, 200) + '...';
+          throw new Error(`HTTP ${res.status}: ${errorText}`);
+        }
+        if (!res.ok) { await sleep(1000 * (i + 1)); continue; }
+        return res;
+      } catch (e) {
+        if (e.name === 'AbortError') throw new Error('CANCELLED');
+        if (i === retries - 1) throw e;
+        await sleep(1000 * (i + 1));
       }
     }
   }
 
-  async function copyGuildIcon(srcGuildId, targetGuildId, token) {
+  async function copyGuildIcon(srcId, tgtId, token) {
     try {
-      const srcGuildRes = await fetch(`${API}/guilds/${srcGuildId}`, {
-        headers: { 'Authorization': token }
-      });
+      const srcGuildRes = await fetch(`${API}/guilds/${srcId}`, { headers: { 'Authorization': token } });
       const srcGuild = await srcGuildRes.json();
-      
-      if (!srcGuild.icon) {
-        log(`исходный сервер не имеет иконки`, 'info', 'mainLog');
-        return false;
-      }
-      
-      const iconUrl = `https://cdn.discordapp.com/icons/${srcGuildId}/${srcGuild.icon}.png?size=256`;
+      if (!srcGuild.icon) { log(`исходный сервер не имеет иконки`, 'info', 'mainLog'); return false; }
+      const iconUrl = `https://cdn.discordapp.com/icons/${srcId}/${srcGuild.icon}.png?size=256`;
       const iconRes = await fetch(iconUrl);
-      
-      if (!iconRes.ok) {
-        throw new Error('не удалось загрузить иконку');
-      }
-      
+      if (!iconRes.ok) throw new Error('не удалось загрузить иконку');
       const blob = await iconRes.blob();
-      
-      if (blob.size > 262144) {
-        log(`иконка превышает 256 кб, пропуск`, 'warning', 'mainLog');
-        return false;
-      }
-      
-      const base64 = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(blob);
-      });
-      
+      if (blob.size > 262144) { log(`иконка превышает 256 кб, пропуск`, 'warning', 'mainLog'); return false; }
+      const base64 = await new Promise((resolve) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.readAsDataURL(blob); });
       const base64Data = base64.split(',')[1];
-      
-      const updateRes = await fetch(`${API}/guilds/${targetGuildId}`, {
+      const updateRes = await fetch(`${API}/guilds/${tgtId}`, {
         method: 'PATCH',
-        headers: {
-          'Authorization': token,
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Authorization': token, 'Content-Type': 'application/json' },
         body: JSON.stringify({ icon: base64Data })
       });
-      
-      if (updateRes.ok) {
-        log(`иконка сервера скопирована`, 'success', 'mainLog');
-        return true;
-      } else {
-        throw new Error(`ошибка установки иконки: ${updateRes.status}`);
-      }
-    } catch (e) {
-      log(`ошибка копирования иконки: ${e.message}`, 'warning', 'mainLog');
-      return false;
-    }
+      if (updateRes.ok) { log(`иконка сервера скопирована`, 'success', 'mainLog'); return true; }
+      else throw new Error(`ошибка установки иконки: ${updateRes.status}`);
+    } catch (e) { log(`ошибка копирования иконки: ${e.message}`, 'warning', 'mainLog'); return false; }
   }
 
-  function buildChannelData(ch, targetId, roleMap, catMap, srcGuildId) {
+  // Нормализация типа канала с учётом возможностей целевого сервера
+  function normalizeChannelType(originalType, targetFeatures = []) {
+    if (originalType === 5 && !targetFeatures.includes('COMMUNITY')) return 0;
+    if (originalType === 13 && !targetFeatures.includes('STAGE_CHANNELS')) return 2;
+    if (originalType === 15 && !targetFeatures.includes('FORUM_CHANNELS')) return 0;
+    return originalType;
+  }
+
+  // Создание канала с повторной попыткой при ошибке типа
+  async function createChannelWithRetry(guildId, body, targetFeatures, maxRetries = 2) {
+    let lastError = null;
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      try {
+        const resp = await apiRequest(`${API}/guilds/${guildId}/channels`, { method: 'POST', body: JSON.stringify(body) });
+        return await resp.json();
+      } catch (e) {
+        lastError = e;
+        if (e.message.includes('400') || e.message.includes('50024') || e.message.includes('50035')) {
+          if (body.type !== undefined && body.type !== 0) {
+            const originalType = body.type;
+            body.type = 0;
+            log(`ошибка создания канала (тип ${originalType}), пробуем как текстовый`, 'warning', 'mainLog');
+            continue;
+          }
+        }
+        throw e;
+      }
+    }
+    throw lastError;
+  }
+
+  function buildChannelData(ch, targetId, roleMap, catMap, srcGuildId, targetFeatures) {
+    let channelType = normalizeChannelType(ch.type, targetFeatures);
     const data = {
       name: ch.name.substring(0, 100),
-      type: ch.type,
+      type: channelType,
       position: ch.position,
       permission_overwrites: sanitizeOverwrites(ch.permission_overwrites, targetId, roleMap, srcGuildId)
     };
-    if (ch.type === 0 || ch.type === 5) {
+    if (channelType === 0 || channelType === 5) {
       if (ch.topic) data.topic = ch.topic.substring(0, 1024);
       if (ch.rate_limit_per_user) data.rate_limit_per_user = Math.min(ch.rate_limit_per_user, 21600);
       if (ch.nsfw) data.nsfw = true;
     }
-    if (ch.type === 2) {
+    if (channelType === 2) {
       data.bitrate = Math.min(Math.max(ch.bitrate || 64000, 8000), 96000);
       data.user_limit = ch.user_limit ? Math.min(Math.max(ch.user_limit, 0), 99) : 0;
     }
@@ -1249,42 +1118,6 @@ function setFavicon() {
     }).filter(o => o !== null);
   }
 
-  async function apiRequest(url, opts = {}, retries = 3) {
-    if (!authToken) throw new Error('не авторизован');
-    if (cancel) throw new Error('CANCELLED');
-    const signal = controller?.signal;
-    
-    for (let i = 0; i < retries; i++) {
-      if (cancel) throw new Error('CANCELLED');
-      try {
-        const headers = { 'Authorization': authToken, 'Content-Type': 'application/json', ...opts.headers };
-        const res = await fetch(url, { ...opts, headers, signal });
-        
-        if (res.status === 429) {
-          const retryAfter = parseInt(res.headers.get('Retry-After')) || 2;
-          await sleep(retryAfter * 1000);
-          continue;
-        }
-        
-        if (!res.ok && i === retries - 1) {
-          const errorData = await res.text().catch(() => 'unknown error');
-          throw new Error(`HTTP ${res.status}: ${errorData.substring(0, 100)}`);
-        }
-        
-        if (!res.ok) {
-          await sleep(1000 * (i + 1));
-          continue;
-        }
-        
-        return res;
-      } catch (e) {
-        if (e.name === 'AbortError') throw new Error('CANCELLED');
-        if (i === retries - 1) throw e;
-        await sleep(1000 * (i + 1));
-      }
-    }
-  }
-
   function resetClone() {
     cloning = false;
     cancel = false;
@@ -1293,12 +1126,9 @@ function setFavicon() {
     const cancelBtn = document.getElementById('cancelBtn');
     const cloneStatus = document.getElementById('cloneStatus');
     const progressBar = document.getElementById('progressBar');
-    
     if (cloneBtn) cloneBtn.disabled = false;
     if (cancelBtn) cancelBtn.disabled = true;
-    if (cloneStatus && cloneStatus.classList.contains('active')) {
-      cloneStatus.classList.remove('active');
-    }
+    if (cloneStatus && cloneStatus.classList.contains('active')) cloneStatus.classList.remove('active');
     if (progressBar) progressBar.style.width = '0%';
   }
 
@@ -1314,15 +1144,11 @@ function setFavicon() {
 
   async function startClone() {
     if (cloning) return;
-    
     const sourceInput = document.getElementById('sourceId');
     const targetInput = document.getElementById('targetId');
-    
     if (!sourceInput || !targetInput) return;
-    
     const src = sourceInput.value.trim();
     const tgt = targetInput.value.trim();
-    
     if (!/^\d{17,20}$/.test(src) || !/^\d{17,20}$/.test(tgt)) {
       log('ошибка: неверный формат id сервера', 'error', 'mainLog');
       return;
@@ -1331,191 +1157,139 @@ function setFavicon() {
       log('ошибка: исходный и целевой серверы совпадают', 'error', 'mainLog');
       return;
     }
-    
     cloning = true;
     cancel = false;
     controller = new AbortController();
-    
     const cloneBtn = document.getElementById('cloneBtn');
     const cancelBtn = document.getElementById('cancelBtn');
     const cloneStatus = document.getElementById('cloneStatus');
     const progressBar = document.getElementById('progressBar');
     const progressPercent = document.getElementById('progressPercent');
     const statusText = document.getElementById('statusText');
-    
     if (cloneBtn) cloneBtn.disabled = true;
     if (cancelBtn) cancelBtn.disabled = false;
     if (cloneStatus) cloneStatus.classList.add('active');
     if (progressBar) progressBar.style.width = '0%';
-    
     const stats = { roles: 0, channels: 0, errors: 0 };
-    
     try {
       if (statusText) statusText.textContent = 'проверка прав';
       if (progressPercent) progressPercent.textContent = '0%';
-      
       const meGuildsRes = await apiRequest(`${API}/users/@me/guilds`);
       const meGuilds = await meGuildsRes.json();
       const tgtGuild = meGuilds.find(g => g.id === tgt);
-      
-      if (!tgtGuild || !(BigInt(tgtGuild.permissions) & 0x8n)) {
-        throw new Error('требуются права администратора на целевом сервере');
-      }
-      
+      if (!tgtGuild || !(BigInt(tgtGuild.permissions) & 0x8n)) throw new Error('требуются права администратора на целевом сервере');
+      // Получаем features целевого сервера
+      const targetGuildFull = await (await apiRequest(`${API}/guilds/${tgt}`)).json();
+      const targetFeatures = targetGuildFull.features || [];
       const srcGuildRes = await apiRequest(`${API}/guilds/${src}`);
       const srcGuild = await srcGuildRes.json();
       log(`исходный сервер: ${srcGuild.name}`, 'success', 'mainLog');
-      
       await copyGuildIcon(src, tgt, authToken);
-      
       if (statusText) statusText.textContent = 'очистка каналов';
-      const channelsRes = await apiRequest(`${API}/guilds/${tgt}/channels`);
-      let channels = await channelsRes.json();
-      
+      let channels = await (await apiRequest(`${API}/guilds/${tgt}/channels`)).json();
       for (let i = 0; i < channels.length; i++) {
         if (cancel) throw new Error('CANCELLED');
         try {
           await apiRequest(`${API}/channels/${channels[i].id}`, { method: 'DELETE' });
           log(`удалён канал: ${channels[i].name || channels[i].id}`, 'warning', 'mainLog');
-        } catch (e) {
-          stats.errors++;
-          log(`ошибка удаления: ${e.message}`, 'error', 'mainLog');
-        }
+        } catch (e) { stats.errors++; log(`ошибка удаления: ${e.message}`, 'error', 'mainLog'); }
         await sleep(200);
-        const pct = Math.min(10, ((i + 1) / Math.max(channels.length, 1)) * 10);
-        if (progressBar) progressBar.style.width = pct + '%';
-        if (progressPercent) progressPercent.textContent = Math.floor(pct) + '%';
+        const pct = Math.min(10, ((i+1)/Math.max(channels.length,1))*10);
+        if (progressBar) progressBar.style.width = pct+'%';
+        if (progressPercent) progressPercent.textContent = Math.floor(pct)+'%';
         updateStats(stats);
       }
-      
       if (statusText) statusText.textContent = 'очистка ролей';
-      const rolesRes = await apiRequest(`${API}/guilds/${tgt}/roles`);
-      let roles = await rolesRes.json();
-      const delRoles = roles.filter(r => r.name !== '@everyone' && !r.managed).sort((a, b) => b.position - a.position);
-      
-      for (let i = 0; i < delRoles.length; i++) {
+      let roles = await (await apiRequest(`${API}/guilds/${tgt}/roles`)).json();
+      const delRoles = roles.filter(r => r.name !== '@everyone' && !r.managed).sort((a,b)=>b.position-a.position);
+      for (let i=0; i<delRoles.length; i++) {
         if (cancel) throw new Error('CANCELLED');
-        try {
-          await apiRequest(`${API}/guilds/${tgt}/roles/${delRoles[i].id}`, { method: 'DELETE' });
-        } catch (e) {}
+        try { await apiRequest(`${API}/guilds/${tgt}/roles/${delRoles[i].id}`, { method: 'DELETE' }); } catch(e) {}
         await sleep(150);
       }
-      
       if (progressBar) progressBar.style.width = '15%';
       if (progressPercent) progressPercent.textContent = '15%';
-      
       if (statusText) statusText.textContent = 'настройка сервера';
       await apiRequest(`${API}/guilds/${tgt}`, { method: 'PATCH', body: JSON.stringify({ name: srcGuild.name }) });
       log(`название скопировано: ${srcGuild.name}`, 'success', 'mainLog');
-      
       if (progressBar) progressBar.style.width = '25%';
       if (progressPercent) progressPercent.textContent = '25%';
-      
       if (statusText) statusText.textContent = 'создание ролей';
-      const srcRolesRes = await apiRequest(`${API}/guilds/${src}/roles`);
-      const srcRoles = await srcRolesRes.json();
-      const rolesToCreate = srcRoles.filter(r => r.name !== '@everyone' && !r.managed).sort((a, b) => b.position - a.position);
+      const srcRoles = await (await apiRequest(`${API}/guilds/${src}/roles`)).json();
+      const rolesToCreate = srcRoles.filter(r => r.name !== '@everyone' && !r.managed).sort((a,b)=>b.position-a.position);
       const roleMap = {};
-      
-      for (let i = 0; i < rolesToCreate.length; i++) {
+      for (let i=0; i<rolesToCreate.length; i++) {
         if (cancel) throw new Error('CANCELLED');
         const r = rolesToCreate[i];
         try {
-          const body = JSON.stringify({
-            name: r.name.substring(0, 100),
-            color: r.color || 0,
-            hoist: !!r.hoist,
-            mentionable: !!r.mentionable,
-            permissions: String(r.permissions || 0)
-          });
+          const body = JSON.stringify({ name: r.name.substring(0,100), color: r.color||0, hoist: !!r.hoist, mentionable: !!r.mentionable, permissions: String(r.permissions||0) });
           const resp = await apiRequest(`${API}/guilds/${tgt}/roles`, { method: 'POST', body });
           const newRole = await resp.json();
           roleMap[r.id] = newRole.id;
           stats.roles++;
           log(`роль создана: ${r.name}`, 'success', 'mainLog');
-        } catch (e) {
-          stats.errors++;
-          log(`ошибка роли ${r.name}: ${e.message}`, 'error', 'mainLog');
-        }
+        } catch(e) { stats.errors++; log(`ошибка роли ${r.name}: ${e.message}`, 'error', 'mainLog'); }
         await sleep(250);
-        const pct = 25 + ((i + 1) / Math.max(rolesToCreate.length, 1)) * 30;
-        if (progressBar) progressBar.style.width = pct + '%';
-        if (progressPercent) progressPercent.textContent = Math.floor(pct) + '%';
+        const pct = 25 + ((i+1)/Math.max(rolesToCreate.length,1))*30;
+        if (progressBar) progressBar.style.width = pct+'%';
+        if (progressPercent) progressPercent.textContent = Math.floor(pct)+'%';
         updateStats(stats);
       }
-      
       log(`создано ролей: ${stats.roles}`, 'info', 'mainLog');
-      
       if (statusText) statusText.textContent = 'создание каналов';
-      const srcChannelsRes = await apiRequest(`${API}/guilds/${src}/channels`);
-      const srcChannels = await srcChannelsRes.json();
-      const categories = srcChannels.filter(c => c.type === 4).sort((a, b) => a.position - b.position);
-      const others = srcChannels.filter(c => c.type !== 4).sort((a, b) => a.position - b.position);
+      const srcChannels = await (await apiRequest(`${API}/guilds/${src}/channels`)).json();
+      const categories = srcChannels.filter(c=>c.type===4).sort((a,b)=>a.position-b.position);
+      const others = srcChannels.filter(c=>c.type!==4).sort((a,b)=>a.position-b.position);
       const catMap = {};
       let createdCount = 0;
       const total = categories.length + others.length;
-      
-      for (let i = 0; i < categories.length; i++) {
+      for (let i=0; i<categories.length; i++) {
         if (cancel) throw new Error('CANCELLED');
         const c = categories[i];
         try {
-          const body = buildChannelData(c, tgt, roleMap, catMap, srcGuild.id);
+          const body = buildChannelData(c, tgt, roleMap, catMap, srcGuild.id, targetFeatures);
           const resp = await apiRequest(`${API}/guilds/${tgt}/channels`, { method: 'POST', body: JSON.stringify(body) });
           const ch = await resp.json();
           catMap[c.id] = ch.id;
-          createdCount++;
-          stats.channels++;
+          createdCount++; stats.channels++;
           log(`категория создана: ${c.name}`, 'success', 'mainLog');
-        } catch (e) {
-          stats.errors++;
-          log(`ошибка категории ${c.name}: ${e.message}`, 'error', 'mainLog');
-        }
+        } catch(e) { stats.errors++; log(`ошибка категории ${c.name}: ${e.message}`, 'error', 'mainLog'); }
         await sleep(250);
         updateStats(stats);
       }
-      
-      for (let i = 0; i < others.length; i++) {
+      for (let i=0; i<others.length; i++) {
         if (cancel) throw new Error('CANCELLED');
         const c = others[i];
         try {
-          const body = buildChannelData(c, tgt, roleMap, catMap, srcGuild.id);
-          await apiRequest(`${API}/guilds/${tgt}/channels`, { method: 'POST', body: JSON.stringify(body) });
-          createdCount++;
-          stats.channels++;
+          let body = buildChannelData(c, tgt, roleMap, catMap, srcGuild.id, targetFeatures);
+          await createChannelWithRetry(tgt, body, targetFeatures);
+          createdCount++; stats.channels++;
           log(`канал создан: ${c.name}`, 'success', 'mainLog');
-        } catch (e) {
-          stats.errors++;
-          log(`ошибка канала ${c.name}: ${e.message}`, 'error', 'mainLog');
-        }
+        } catch(e) { stats.errors++; log(`ошибка канала ${c.name}: ${e.message}`, 'error', 'mainLog'); }
         await sleep(200);
-        const pct = 60 + ((categories.length + i + 1) / Math.max(total, 1)) * 40;
-        if (progressBar) progressBar.style.width = pct + '%';
-        if (progressPercent) progressPercent.textContent = Math.floor(pct) + '%';
+        const pct = 60 + ((categories.length + i + 1)/Math.max(total,1))*40;
+        if (progressBar) progressBar.style.width = pct+'%';
+        if (progressPercent) progressPercent.textContent = Math.floor(pct)+'%';
         updateStats(stats);
       }
-      
       if (progressBar) progressBar.style.width = '100%';
       if (progressPercent) progressPercent.textContent = '100%';
       log(`клонирование завершено успешно`, 'success', 'mainLog');
       log(`статистика: ${stats.roles} ролей, ${stats.channels} каналов`, 'info', 'mainLog');
-      if (stats.errors > 0) {
-        log(`ошибок: ${stats.errors}`, 'warning', 'mainLog');
-      }
+      if (stats.errors>0) log(`ошибок: ${stats.errors}`, 'warning', 'mainLog');
       showNotification('клонирование завершено', 'success');
-      
-    } catch (e) {
-      if (e.message === 'CANCELLED') {
+    } catch(e) {
+      if (e.message==='CANCELLED') {
         log('процесс отменён пользователем', 'warning', 'mainLog');
         showNotification('клонирование отменено', 'info');
       } else {
         log(`критическая ошибка: ${e.message}`, 'error', 'mainLog');
         showNotification('ошибка при клонировании', 'error');
       }
-    } finally {
-      resetClone();
-    }
+    } finally { resetClone(); }
   }
 
+  // ------------------------------ ФОРМИРОВАНИЕ HTML ---------------------------------
   createParticles();
   setFavicon();
 
@@ -1529,35 +1303,25 @@ function setFavicon() {
       </div>
       <div class="auth-card">
         <div class="logo">
-          <div class="logo-icon">
-            🐱
-          </div>
+          <div class="logo-icon">🐱</div>
           <h1>discord cloner</h1>
           <p>профессиональный инструмент для клонирования</p>
         </div>
-        
         <div class="input-group">
           <label>токен авторизации</label>
           <div class="input-wrapper">
             <input type="password" id="authToken" placeholder="введите ваш discord токен">
-            <button class="toggle-password" id="togglePasswordBtn" type="button">
-              ${SVG_ICONS.eye}
-            </button>
+            <button class="toggle-password" id="togglePasswordBtn" type="button">${SVG_ICONS.eye}</button>
           </div>
-          <div id="authError" style="color: #ef4444; font-size: 0.688rem; margin-top: 4px; display: none;"></div>
+          <div id="authError" style="color:#ef4444; font-size:0.688rem; margin-top:4px; display:none;"></div>
         </div>
-        
-        <button class="btn btn-primary" id="authBtn">
-          авторизоваться
-        </button>
-        
-        <div style="margin-top: 24px; text-align: center; font-size: 0.688rem; color: #4a4a4a;">
+        <button class="btn btn-primary" id="authBtn">авторизоваться</button>
+        <div style="margin-top:24px; text-align:center; font-size:0.688rem; color:#4a4a4a;">
           <p>разработчик: xolirx</p>
           <p>версия 2.0.0</p>
         </div>
       </div>
     </div>
-    
     <div class="main-container">
       <div class="contact-bar">
         <a href="https://t.me/xolirx" target="_blank" class="contact-link">
@@ -1569,8 +1333,8 @@ function setFavicon() {
         <div class="left-panel">
           <div class="user-info" id="userInfo">
             <div class="user-avatar">
-              <img id="userAvatarImg" style="display: none;" alt="avatar">
-              <div id="userAvatarPlaceholder" class="user-avatar-placeholder" style="display: flex;"></div>
+              <img id="userAvatarImg" style="display:none;" alt="avatar">
+              <div id="userAvatarPlaceholder" class="user-avatar-placeholder" style="display:flex;"></div>
             </div>
             <div class="user-details">
               <div class="user-name" id="userName">загрузка...</div>
@@ -1578,95 +1342,52 @@ function setFavicon() {
               <div class="user-badge">авторизован</div>
             </div>
           </div>
-          
           <div class="header">
             <h2>discord cloner pro</h2>
             <div class="developer">xolirx — профессиональное издание</div>
           </div>
-          
           <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-value" id="rolesCount">0</div>
-              <div class="stat-label">создано ролей</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="channelsCount">0</div>
-              <div class="stat-label">создано каналов</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="errorsCount">0</div>
-              <div class="stat-label">ошибок</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="statusIcon">●</div>
-              <div class="stat-label">статус системы</div>
-            </div>
+            <div class="stat-card"><div class="stat-value" id="rolesCount">0</div><div class="stat-label">создано ролей</div></div>
+            <div class="stat-card"><div class="stat-value" id="channelsCount">0</div><div class="stat-label">создано каналов</div></div>
+            <div class="stat-card"><div class="stat-value" id="errorsCount">0</div><div class="stat-label">ошибок</div></div>
+            <div class="stat-card"><div class="stat-value" id="statusIcon">●</div><div class="stat-label">статус системы</div></div>
           </div>
-          
           <input type="hidden" id="tokenInput">
           <input class="input-modern" id="sourceId" placeholder="id исходного сервера">
           <input class="input-modern" id="targetId" placeholder="id целевого сервера">
-          
           <div class="button-group">
             <button class="btn btn-primary" id="cloneBtn">начать клонирование</button>
             <button class="btn btn-secondary" id="cancelBtn" disabled>отмена</button>
           </div>
-          
           <div class="status-card" id="cloneStatus">
-            <div class="status-header">
-              <div class="spinner"></div>
-              <span id="statusText">инициализация</span>
-              <span id="progressPercent" style="margin-left: auto; font-weight: 600;">0%</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill" id="progressBar"></div>
-            </div>
+            <div class="status-header"><div class="spinner"></div><span id="statusText">инициализация</span><span id="progressPercent" style="margin-left:auto; font-weight:600;">0%</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div>
           </div>
-          
-          <button class="btn btn-danger" id="logoutBtn" style="margin-top: 20px;">выйти</button>
+          <button class="btn btn-danger" id="logoutBtn" style="margin-top:20px;">выйти</button>
         </div>
-        
         <div class="right-panel">
-          <div class="log-header">
-            <span>журнал событий</span>
-            <button id="clearLogsBtn">очистить</button>
-          </div>
+          <div class="log-header"><span>журнал событий</span><button id="clearLogsBtn">очистить</button></div>
           <div id="mainLog" class="log-box"></div>
         </div>
       </div>
     </div>
   `;
 
+  // ------------------------------ НАСТРОЙКА ОБРАБОТЧИКОВ ---------------------------------
   const toggleBtn = document.getElementById('togglePasswordBtn');
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', togglePasswordVisibility);
-  }
-
+  if (toggleBtn) toggleBtn.addEventListener('click', togglePasswordVisibility);
   const authBtn = document.getElementById('authBtn');
   const authTokenInput = document.getElementById('authToken');
-  
   if (authBtn) authBtn.addEventListener('click', authorize);
-  if (authTokenInput) {
-    authTokenInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') authorize();
-    });
-  }
-  
+  if (authTokenInput) authTokenInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') authorize(); });
   const savedToken = sessionStorage.getItem('discord_token');
   const savedUser = sessionStorage.getItem('discord_user');
   const lastActive = sessionStorage.getItem('lastActive');
-  
-  if (savedToken && savedUser && lastActive) {
-    const now = Date.now();
-    const lastActiveTime = parseInt(lastActive);
-    if (now - lastActiveTime < 86400000) {
-      authToken = savedToken;
-      currentUser = JSON.parse(savedUser);
-      const authTokenInputField = document.getElementById('authToken');
-      if (authTokenInputField) authTokenInputField.value = savedToken;
-      setTimeout(() => authorize(), 100);
-    } else {
-      sessionStorage.clear();
-    }
-  }
+  if (savedToken && savedUser && lastActive && (Date.now() - parseInt(lastActive) < 86400000)) {
+    authToken = savedToken;
+    currentUser = JSON.parse(savedUser);
+    const authTokenInputField = document.getElementById('authToken');
+    if (authTokenInputField) authTokenInputField.value = savedToken;
+    setTimeout(() => authorize(), 100);
+  } else if (savedToken) sessionStorage.clear();
 })();
