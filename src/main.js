@@ -171,18 +171,13 @@ body::before {
   margin: 0 auto 20px;
   box-shadow: var(--shadow-lg);
   transition: all var(--transition-base);
+  font-size: 44px;
 }
 
 .logo-icon:hover {
   transform: scale(1.05);
   border-color: var(--accent);
   box-shadow: 0 0 25px rgba(139, 92, 246, 0.2);
-}
-
-.logo-icon svg {
-  width: 40px;
-  height: 40px;
-  color: var(--text-white);
 }
 
 .logo h1 {
@@ -215,9 +210,15 @@ body::before {
   color: var(--text-gray);
 }
 
-.input-group input {
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper input {
   width: 100%;
-  padding: 14px 16px;
+  padding: 14px 48px 14px 16px;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
@@ -227,35 +228,47 @@ body::before {
   transition: all var(--transition-fast);
 }
 
-.input-group input:focus {
+.input-wrapper input:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
-.input-group input.error {
+.input-wrapper input.error {
   border-color: var(--error);
   animation: shake 0.3s var(--transition-fast);
+}
+
+.toggle-password {
+  position: absolute;
+  right: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.toggle-password svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--text-dim);
+  stroke-width: 1.5;
+  transition: all var(--transition-fast);
+}
+
+.toggle-password:hover svg {
+  stroke: var(--accent);
 }
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-6px); }
   80% { transform: translateX(6px); }
-}
-
-.toggle-password {
-  position: absolute;
-  right: 14px;
-  bottom: 14px;
-  cursor: pointer;
-  color: var(--text-dim);
-  font-size: 1rem;
-  transition: all var(--transition-fast);
-}
-
-.toggle-password:hover {
-  color: var(--text-gray);
 }
 
 .btn {
@@ -338,7 +351,7 @@ body::before {
 }
 
 .contact-bar {
-  position: absolute;
+  position: fixed;
   top: 24px;
   right: 24px;
   z-index: 100;
@@ -369,10 +382,6 @@ body::before {
 
 .contact-link:hover {
   color: var(--accent);
-}
-
-.contact-link span {
-  letter-spacing: 0.5px;
 }
 
 .user-info {
@@ -796,11 +805,7 @@ body::before {
   .logo-icon {
     width: 60px;
     height: 60px;
-  }
-  
-  .logo-icon svg {
-    width: 30px;
-    height: 30px;
+    font-size: 32px;
   }
   
   .logo h1 {
@@ -849,6 +854,10 @@ body::before {
 ::-webkit-scrollbar-thumb:hover {
   background: #4a4a4a;
 }
+
+.favicon {
+  display: none;
+}
 `;
 
 document.head.appendChild(style);
@@ -858,7 +867,9 @@ const SVG_ICONS = {
   success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>`,
   error: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
   warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-  info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`
+  info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`,
+  eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
+  eyeOff: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
 };
 
 function createParticles() {
@@ -876,6 +887,26 @@ function createParticles() {
     particlesDiv.appendChild(particle);
   }
   document.body.appendChild(particlesDiv);
+}
+
+function setFavicon() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#000000';
+  ctx.fillRect(0, 0, 64, 64);
+  ctx.fillStyle = '#8b5cf6';
+  ctx.font = '48px "Segoe UI", "Inter"';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🐱‍👤', 32, 32);
+  
+  const link = document.createElement('link');
+  link.rel = 'icon';
+  link.type = 'image/x-icon';
+  link.href = canvas.toDataURL();
+  document.head.appendChild(link);
 }
 
 (async function() {
@@ -960,7 +991,7 @@ function createParticles() {
           });
         } catch (e) {}
       }
-    }, 300000);
+    }, 240000);
   };
 
   const stopKeepAlive = () => {
@@ -1071,6 +1102,18 @@ function createParticles() {
     }, 3000);
   }
 
+  function togglePasswordVisibility() {
+    const input = document.getElementById('authToken');
+    const eyeIcon = document.getElementById('eyeIcon');
+    if (input.type === 'password') {
+      input.type = 'text';
+      if (eyeIcon) eyeIcon.innerHTML = SVG_ICONS.eyeOff;
+    } else {
+      input.type = 'password';
+      if (eyeIcon) eyeIcon.innerHTML = SVG_ICONS.eye;
+    }
+  }
+
   function initMainUI() {
     const savedSource = localStorage.getItem('lastSourceId') || '';
     const savedTarget = localStorage.getItem('lastTargetId') || '';
@@ -1113,19 +1156,6 @@ function createParticles() {
     if (currentUser) {
       updateUserInfo(currentUser);
       log(`авторизация выполнена: ${currentUser.username}`, 'success', 'mainLog');
-    }
-    
-    const statusIcon = document.getElementById('statusIcon');
-    if (statusIcon) {
-      setInterval(() => {
-        if (cloning) {
-          statusIcon.style.opacity = '0.5';
-          statusIcon.style.animation = 'pulse 1s infinite';
-        } else {
-          statusIcon.style.opacity = '1';
-          statusIcon.style.animation = 'none';
-        }
-      }, 500);
     }
   }
 
@@ -1511,6 +1541,7 @@ function createParticles() {
   }
 
   createParticles();
+  setFavicon();
 
   document.body.innerHTML = `
     <div class="auth-container">
@@ -1523,7 +1554,7 @@ function createParticles() {
       <div class="auth-card">
         <div class="logo">
           <div class="logo-icon">
-            ${SVG_ICONS.discord}
+            🐱‍👤
           </div>
           <h1>discord cloner</h1>
           <p>профессиональный инструмент для клонирования</p>
@@ -1531,9 +1562,11 @@ function createParticles() {
         
         <div class="input-group">
           <label>токен авторизации</label>
-          <div style="position: relative;">
+          <div class="input-wrapper">
             <input type="password" id="authToken" placeholder="введите ваш discord токен">
-            <span class="toggle-password" onclick="window.togglePasswordVisibility('authToken')">◉</span>
+            <button class="toggle-password" id="togglePasswordBtn" type="button">
+              ${SVG_ICONS.eye}
+            </button>
           </div>
           <div id="authError" style="color: #ef4444; font-size: 0.688rem; margin-top: 4px; display: none;"></div>
         </div>
@@ -1599,8 +1632,8 @@ function createParticles() {
           <input class="input-modern" id="targetId" placeholder="id целевого сервера">
           
           <div class="button-group">
-            <button class="btn btn-primary" id="cloneBtn">▶ начать клонирование</button>
-            <button class="btn btn-secondary" id="cancelBtn" disabled>■ отмена</button>
+            <button class="btn btn-primary" id="cloneBtn">начать клонирование</button>
+            <button class="btn btn-secondary" id="cancelBtn" disabled>отмена</button>
           </div>
           
           <div class="status-card" id="cloneStatus">
@@ -1614,7 +1647,7 @@ function createParticles() {
             </div>
           </div>
           
-          <button class="btn btn-danger" id="logoutBtn" style="margin-top: 20px;">✖ выйти</button>
+          <button class="btn btn-danger" id="logoutBtn" style="margin-top: 20px;">выйти</button>
         </div>
         
         <div class="right-panel">
@@ -1628,12 +1661,10 @@ function createParticles() {
     </div>
   `;
 
-  window.togglePasswordVisibility = function(inputId) {
-    const input = document.getElementById(inputId);
-    if (input) {
-      input.type = input.type === 'password' ? 'text' : 'password';
-    }
-  };
+  const toggleBtn = document.getElementById('togglePasswordBtn');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', togglePasswordVisibility);
+  }
 
   const authBtn = document.getElementById('authBtn');
   const authTokenInput = document.getElementById('authToken');
