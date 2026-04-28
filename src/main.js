@@ -7,7 +7,7 @@ style.textContent = `
   --bg-card: rgba(8, 8, 8, 0.96);
   --border-subtle: rgba(255, 255, 255, 0.04);
   --border-medium: rgba(255, 255, 255, 0.06);
-  --border-active: rgba(139, 92, 246, 0.2);
+  --border-active: rgba(139, 92, 246, 0.25);
   --accent: #8b5cf6;
   --accent-dark: #7c3aed;
   --accent-glow: rgba(139, 92, 246, 0.12);
@@ -27,8 +27,9 @@ style.textContent = `
   --radius-md: 10px;
   --radius-lg: 14px;
   --radius-xl: 20px;
-  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-base: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --transition-fast: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 * {
@@ -42,7 +43,7 @@ body {
   background: var(--bg-deep);
   color: var(--text-white);
   min-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
   position: relative;
 }
 
@@ -70,7 +71,7 @@ body::before {
 
 .particle {
   position: absolute;
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(139, 92, 246, 0.08);
   border-radius: 2px;
   animation: floatParticle 25s infinite linear;
 }
@@ -103,14 +104,14 @@ body::before {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  animation: fadeInUp 0.8s var(--transition-base);
+  animation: fadeInUp 0.8s var(--transition-slow);
 }
 
 .main-container {
   display: none;
   padding: 20px;
   height: 100vh;
-  animation: fadeInUp 0.8s var(--transition-base);
+  animation: fadeInUp 0.8s var(--transition-slow);
 }
 
 @keyframes fadeInUp {
@@ -144,7 +145,7 @@ body::before {
   max-width: 480px;
   width: 100%;
   box-shadow: var(--shadow-xl), var(--shadow-glow);
-  transition: transform var(--transition-base), box-shadow var(--transition-base);
+  transition: all var(--transition-base);
 }
 
 .auth-card:hover {
@@ -159,45 +160,46 @@ body::before {
 }
 
 .logo-icon {
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 80px;
   background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
-  border: 1px solid var(--border-medium);
+  border: 2px solid var(--border-medium);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 20px;
   box-shadow: var(--shadow-lg);
-  animation: logoPulse 2s ease-in-out infinite;
+  transition: all var(--transition-base);
 }
 
-@keyframes logoPulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.15);
-  }
-  50% {
-    box-shadow: 0 0 0 15px rgba(139, 92, 246, 0);
-  }
+.logo-icon:hover {
+  transform: scale(1.05);
+  border-color: var(--accent);
+  box-shadow: 0 0 25px rgba(139, 92, 246, 0.2);
 }
 
 .logo-icon svg {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   color: var(--text-white);
 }
 
 .logo h1 {
-  font-size: 1.75rem;
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 700;
   letter-spacing: -0.5px;
   margin-bottom: 8px;
-  color: var(--text-white);
+  background: linear-gradient(135deg, #ffffff, #a0a0a0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .logo p {
   color: var(--text-dim);
-  font-size: 0.813rem;
+  font-size: 0.875rem;
+  font-weight: 400;
 }
 
 .input-group {
@@ -208,7 +210,7 @@ body::before {
 .input-group label {
   display: block;
   margin-bottom: 8px;
-  font-size: 0.813rem;
+  font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-gray);
 }
@@ -221,6 +223,7 @@ body::before {
   border-radius: var(--radius-md);
   color: var(--text-white);
   font-size: 0.875rem;
+  font-weight: 400;
   transition: all var(--transition-fast);
 }
 
@@ -232,7 +235,7 @@ body::before {
 
 .input-group input.error {
   border-color: var(--error);
-  animation: shake 0.3s ease;
+  animation: shake 0.3s var(--transition-fast);
 }
 
 @keyframes shake {
@@ -248,7 +251,7 @@ body::before {
   cursor: pointer;
   color: var(--text-dim);
   font-size: 1rem;
-  transition: color var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .toggle-password:hover {
@@ -261,7 +264,7 @@ body::before {
   border: none;
   border-radius: var(--radius-md);
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-base);
   position: relative;
@@ -304,7 +307,7 @@ body::before {
 
 .wrapper {
   display: flex;
-  gap: 20px;
+  gap: 24px;
   max-width: 1400px;
   margin: 0 auto;
   height: calc(100vh - 40px);
@@ -334,6 +337,44 @@ body::before {
   box-shadow: var(--shadow-xl), var(--shadow-glow);
 }
 
+.contact-bar {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+  background: var(--bg-elevated);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 8px 16px;
+  transition: all var(--transition-base);
+}
+
+.contact-bar:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
+}
+
+.contact-link {
+  color: var(--text-gray);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color var(--transition-fast);
+}
+
+.contact-link:hover {
+  color: var(--accent);
+}
+
+.contact-link span {
+  letter-spacing: 0.5px;
+}
+
 .user-info {
   display: flex;
   align-items: center;
@@ -343,6 +384,12 @@ body::before {
   border-radius: var(--radius-lg);
   margin-bottom: 24px;
   border: 1px solid var(--border-subtle);
+  transition: all var(--transition-fast);
+}
+
+.user-info:hover {
+  border-color: var(--border-active);
+  transform: translateX(4px);
 }
 
 .user-avatar {
@@ -353,6 +400,12 @@ body::before {
   border: 2px solid var(--accent);
   overflow: hidden;
   flex-shrink: 0;
+  transition: all var(--transition-base);
+}
+
+.user-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
 }
 
 .user-avatar img {
@@ -370,7 +423,7 @@ body::before {
   background: linear-gradient(135deg, var(--accent), var(--accent-dark));
   color: white;
   font-size: 24px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .user-details {
@@ -379,7 +432,7 @@ body::before {
 }
 
 .user-name {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 1rem;
   color: var(--text-white);
   margin-bottom: 4px;
@@ -390,6 +443,7 @@ body::before {
 
 .user-email {
   font-size: 0.75rem;
+  font-weight: 400;
   color: var(--text-dim);
   white-space: nowrap;
   overflow: hidden;
@@ -403,6 +457,7 @@ body::before {
   border-radius: 12px;
   padding: 2px 8px;
   font-size: 0.625rem;
+  font-weight: 500;
   color: var(--accent);
   margin-top: 4px;
 }
@@ -413,16 +468,20 @@ body::before {
 }
 
 .header h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
+  font-size: 1.75rem;
+  font-weight: 700;
   letter-spacing: -0.5px;
   margin-bottom: 6px;
-  color: var(--text-white);
+  background: linear-gradient(135deg, #ffffff, #a0a0a0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .header .developer {
   color: var(--text-dim);
   font-size: 0.688rem;
+  font-weight: 500;
   letter-spacing: 1px;
 }
 
@@ -443,19 +502,20 @@ body::before {
 }
 
 .stat-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
   border-color: var(--accent);
   box-shadow: var(--shadow-sm);
 }
 
 .stat-value {
-  font-size: 1.375rem;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: 700;
   color: var(--accent);
 }
 
 .stat-label {
   font-size: 0.688rem;
+  font-weight: 500;
   color: var(--text-dim);
   margin-top: 4px;
 }
@@ -467,7 +527,8 @@ body::before {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   color: var(--text-white);
-  font-size: 0.813rem;
+  font-size: 0.875rem;
+  font-weight: 400;
   margin-bottom: 14px;
   transition: all var(--transition-fast);
 }
@@ -480,6 +541,7 @@ body::before {
 
 .input-modern::placeholder {
   color: var(--text-dim);
+  font-weight: 400;
 }
 
 .button-group {
@@ -523,7 +585,7 @@ body::before {
 
 .status-card.active {
   display: block;
-  animation: slideInDown 0.4s ease;
+  animation: slideInDown 0.4s var(--transition-base);
 }
 
 @keyframes slideInDown {
@@ -569,7 +631,7 @@ body::before {
   height: 100%;
   background: linear-gradient(90deg, var(--accent), var(--accent-dark));
   border-radius: 2px;
-  transition: width 0.4s ease;
+  transition: width 0.5s var(--transition-base);
   position: relative;
   overflow: hidden;
 }
@@ -581,7 +643,7 @@ body::before {
   left: 0;
   bottom: 0;
   right: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
   animation: shimmer 1.8s infinite;
 }
 
@@ -602,21 +664,22 @@ body::before {
 }
 
 .log-item {
-  padding: 8px 10px;
-  margin: 4px 0;
+  padding: 8px 12px;
+  margin: 6px 0;
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.02);
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
-  animation: slideInRight 0.25s ease;
+  animation: slideInRight 0.3s var(--transition-base);
   word-break: break-word;
+  transition: all var(--transition-fast);
 }
 
 @keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateX(-12px);
+    transform: translateX(-15px);
   }
   to {
     opacity: 1;
@@ -626,12 +689,13 @@ body::before {
 
 .log-item:hover {
   background: rgba(255, 255, 255, 0.04);
-  transform: translateX(2px);
+  transform: translateX(4px);
 }
 
 .log-time {
   color: var(--text-dim);
   font-size: 0.625rem;
+  font-weight: 400;
   min-width: 55px;
   flex-shrink: 0;
 }
@@ -641,6 +705,7 @@ body::before {
   display: inline-flex;
   width: 16px;
   height: 16px;
+  align-items: center;
 }
 
 .log-icon svg {
@@ -655,6 +720,7 @@ body::before {
 
 .log-item span:last-child {
   flex: 1;
+  font-weight: 400;
 }
 
 .log-header {
@@ -663,6 +729,7 @@ body::before {
   justify-content: space-between;
   align-items: center;
   font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .log-header button {
@@ -671,7 +738,8 @@ body::before {
   color: var(--text-dim);
   cursor: pointer;
   font-size: 0.688rem;
-  transition: color var(--transition-fast);
+  font-weight: 500;
+  transition: all var(--transition-fast);
   padding: 4px 8px;
   border-radius: var(--radius-sm);
 }
@@ -689,10 +757,12 @@ body::before {
   .wrapper {
     flex-direction: column;
     height: auto;
+    gap: 16px;
   }
   
   .left-panel, .right-panel {
     flex: none;
+    padding: 20px;
   }
   
   .right-panel {
@@ -712,6 +782,52 @@ body::before {
     width: 44px;
     height: 44px;
   }
+  
+  .contact-bar {
+    top: 16px;
+    right: 16px;
+    padding: 6px 12px;
+  }
+  
+  .contact-link {
+    font-size: 0.688rem;
+  }
+  
+  .logo-icon {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .logo-icon svg {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .logo h1 {
+    font-size: 1.5rem;
+  }
+  
+  .header h2 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    gap: 8px;
+  }
+  
+  .stat-card {
+    padding: 10px;
+  }
+  
+  .stat-value {
+    font-size: 1.125rem;
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
 }
 
 ::-webkit-scrollbar {
@@ -727,21 +843,11 @@ body::before {
 ::-webkit-scrollbar-thumb {
   background: #3a3a3a;
   border-radius: 2px;
+  transition: background var(--transition-fast);
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #4a4a4a;
-}
-
-.loading-skeleton {
-  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-elevated) 50%, var(--bg-surface) 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-}
-
-@keyframes loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
 }
 `;
 
@@ -749,16 +855,16 @@ document.head.appendChild(style);
 
 const SVG_ICONS = {
   discord: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9c0 3.5-2 6-6 6s-6-2.5-6-6 2-6 6-6 6 2.5 6 6z"/><path d="M12 3v3"/><path d="M12 15v6"/><path d="M8 21h8"/><circle cx="12" cy="9" r="2"/></svg>`,
-  success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>`,
-  error: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
-  warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
-  info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`
+  success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>`,
+  error: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+  warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
+  info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`
 };
 
 function createParticles() {
   const particlesDiv = document.createElement('div');
   particlesDiv.className = 'particles';
-  for (let i = 0; i < 35; i++) {
+  for (let i = 0; i < 30; i++) {
     const particle = document.createElement('div');
     particle.className = 'particle';
     const size = Math.random() * 2 + 1;
@@ -777,6 +883,7 @@ function createParticles() {
   let cloning = false, cancel = false, controller = null;
   let authToken = null;
   let currentUser = null;
+  let keepAliveInterval = null;
 
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   
@@ -793,7 +900,11 @@ function createParticles() {
     `;
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
-    if (box.children.length > 200) box.removeChild(box.children[0]);
+    if (box.children.length > 200) {
+      while (box.children.length > 200) {
+        box.removeChild(box.children[0]);
+      }
+    }
   };
 
   const updateStats = (stats) => {
@@ -819,6 +930,14 @@ function createParticles() {
       if (userAvatarImg) {
         userAvatarImg.src = avatarUrl;
         userAvatarImg.style.display = 'block';
+        userAvatarImg.onerror = () => {
+          userAvatarImg.style.display = 'none';
+          if (userAvatarPlaceholder) {
+            userAvatarPlaceholder.style.display = 'flex';
+            const firstLetter = user.username.charAt(0).toUpperCase();
+            userAvatarPlaceholder.textContent = firstLetter;
+          }
+        };
       }
       if (userAvatarPlaceholder) userAvatarPlaceholder.style.display = 'none';
     } else {
@@ -831,8 +950,31 @@ function createParticles() {
     }
   };
 
+  const startKeepAlive = () => {
+    if (keepAliveInterval) clearInterval(keepAliveInterval);
+    keepAliveInterval = setInterval(async () => {
+      if (authToken) {
+        try {
+          await fetch(`${API}/users/@me`, {
+            headers: { 'Authorization': authToken }
+          });
+        } catch (e) {}
+      }
+    }, 300000);
+  };
+
+  const stopKeepAlive = () => {
+    if (keepAliveInterval) {
+      clearInterval(keepAliveInterval);
+      keepAliveInterval = null;
+    }
+  };
+
   async function authorize() {
-    const token = document.getElementById('authToken').value.trim();
+    const tokenInput = document.getElementById('authToken');
+    if (!tokenInput) return;
+    
+    const token = tokenInput.value.trim();
     if (!token) {
       showAuthError('Введите токен');
       return;
@@ -859,20 +1001,20 @@ function createParticles() {
       
       sessionStorage.setItem('discord_token', token);
       sessionStorage.setItem('discord_user', JSON.stringify(user));
+      sessionStorage.setItem('lastActive', Date.now().toString());
       
+      startKeepAlive();
       showNotification(`Добро пожаловать, ${user.username}`, 'success');
       
       const authContainer = document.querySelector('.auth-container');
       const mainContainer = document.querySelector('.main-container');
       
-      if (authContainer) {
-        authContainer.style.animation = 'fadeOut 0.5s ease forwards';
+      if (authContainer && mainContainer) {
+        authContainer.style.animation = 'fadeOut 0.5s var(--transition-slow) forwards';
         setTimeout(() => {
           authContainer.style.display = 'none';
-          if (mainContainer) {
-            mainContainer.style.display = 'block';
-            initMainUI();
-          }
+          mainContainer.style.display = 'block';
+          initMainUI();
         }, 500);
       }
       
@@ -900,9 +1042,9 @@ function createParticles() {
 
   function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
-    const bgColor = type === 'success' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)';
-    const borderColor = type === 'success' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)';
-    const textColor = type === 'success' ? '#10b981' : '#ef4444';
+    const bgColor = type === 'success' ? 'rgba(16, 185, 129, 0.12)' : (type === 'error' ? 'rgba(239, 68, 68, 0.12)' : 'rgba(59, 130, 246, 0.12)');
+    const borderColor = type === 'success' ? 'rgba(16, 185, 129, 0.3)' : (type === 'error' ? 'rgba(239, 68, 68, 0.3)' : 'rgba(59, 130, 246, 0.3)');
+    const textColor = type === 'success' ? '#10b981' : (type === 'error' ? '#ef4444' : '#3b82f6');
     notification.style.cssText = `
       position: fixed;
       top: 24px;
@@ -914,13 +1056,19 @@ function createParticles() {
       padding: 12px 20px;
       border-radius: 8px;
       font-size: 0.813rem;
+      font-weight: 500;
       z-index: 10000;
-      animation: slideInRight 0.3s ease;
+      animation: slideInRight 0.3s var(--transition-base);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     `;
     notification.textContent = message;
     document.body.appendChild(notification);
-    setTimeout(() => notification.remove(), 3000);
+    setTimeout(() => {
+      notification.style.opacity = '0';
+      notification.style.transform = 'translateX(30px)';
+      notification.style.transition = 'all 0.3s var(--transition-base)';
+      setTimeout(() => notification.remove(), 300);
+    }, 3000);
   }
 
   function initMainUI() {
@@ -949,9 +1097,15 @@ function createParticles() {
       sourceInput.addEventListener('change', (e) => {
         localStorage.setItem('lastSourceId', e.target.value);
       });
+      sourceInput.addEventListener('input', (e) => {
+        localStorage.setItem('lastSourceId', e.target.value);
+      });
     }
     if (targetInput) {
       targetInput.addEventListener('change', (e) => {
+        localStorage.setItem('lastTargetId', e.target.value);
+      });
+      targetInput.addEventListener('input', (e) => {
         localStorage.setItem('lastTargetId', e.target.value);
       });
     }
@@ -960,9 +1114,23 @@ function createParticles() {
       updateUserInfo(currentUser);
       log(`авторизация выполнена: ${currentUser.username}`, 'success', 'mainLog');
     }
+    
+    const statusIcon = document.getElementById('statusIcon');
+    if (statusIcon) {
+      setInterval(() => {
+        if (cloning) {
+          statusIcon.style.opacity = '0.5';
+          statusIcon.style.animation = 'pulse 1s infinite';
+        } else {
+          statusIcon.style.opacity = '1';
+          statusIcon.style.animation = 'none';
+        }
+      }, 500);
+    }
   }
 
   function logout() {
+    stopKeepAlive();
     sessionStorage.clear();
     localStorage.removeItem('lastSourceId');
     localStorage.removeItem('lastTargetId');
@@ -976,7 +1144,66 @@ function createParticles() {
 
   function clearLogs(logId) {
     const box = document.getElementById(logId);
-    if (box) box.innerHTML = '';
+    if (box) {
+      while (box.firstChild) {
+        box.removeChild(box.firstChild);
+      }
+    }
+  }
+
+  async function copyGuildIcon(srcGuildId, targetGuildId, token) {
+    try {
+      const srcGuildRes = await fetch(`${API}/guilds/${srcGuildId}`, {
+        headers: { 'Authorization': token }
+      });
+      const srcGuild = await srcGuildRes.json();
+      
+      if (!srcGuild.icon) {
+        log(`исходный сервер не имеет иконки`, 'info', 'mainLog');
+        return false;
+      }
+      
+      const iconUrl = `https://cdn.discordapp.com/icons/${srcGuildId}/${srcGuild.icon}.png?size=256`;
+      const iconRes = await fetch(iconUrl);
+      
+      if (!iconRes.ok) {
+        throw new Error('не удалось загрузить иконку');
+      }
+      
+      const blob = await iconRes.blob();
+      
+      if (blob.size > 262144) {
+        log(`иконка превышает 256 кб, пропуск`, 'warning', 'mainLog');
+        return false;
+      }
+      
+      const base64 = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
+      
+      const base64Data = base64.split(',')[1];
+      
+      const updateRes = await fetch(`${API}/guilds/${targetGuildId}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ icon: base64Data })
+      });
+      
+      if (updateRes.ok) {
+        log(`иконка сервера скопирована`, 'success', 'mainLog');
+        return true;
+      } else {
+        throw new Error(`ошибка установки иконки: ${updateRes.status}`);
+      }
+    } catch (e) {
+      log(`ошибка копирования иконки: ${e.message}`, 'warning', 'mainLog');
+      return false;
+    }
   }
 
   function buildChannelData(ch, targetId, roleMap, catMap, srcGuildId) {
@@ -1054,6 +1281,7 @@ function createParticles() {
 
   function resetClone() {
     cloning = false;
+    cancel = false;
     controller = null;
     const cloneBtn = document.getElementById('cloneBtn');
     const cancelBtn = document.getElementById('cancelBtn');
@@ -1062,7 +1290,9 @@ function createParticles() {
     
     if (cloneBtn) cloneBtn.disabled = false;
     if (cancelBtn) cancelBtn.disabled = true;
-    if (cloneStatus) cloneStatus.classList.remove('active');
+    if (cloneStatus && cloneStatus.classList.contains('active')) {
+      cloneStatus.classList.remove('active');
+    }
     if (progressBar) progressBar.style.width = '0%';
   }
 
@@ -1070,7 +1300,7 @@ function createParticles() {
     if (cloning) {
       cancel = true;
       if (controller) controller.abort();
-      log('процесс остановлен', 'warning', 'mainLog');
+      log('процесс остановлен пользователем', 'warning', 'mainLog');
       const cancelBtn = document.getElementById('cancelBtn');
       if (cancelBtn) cancelBtn.disabled = true;
     }
@@ -1088,7 +1318,7 @@ function createParticles() {
     const tgt = targetInput.value.trim();
     
     if (!/^\d{17,20}$/.test(src) || !/^\d{17,20}$/.test(tgt)) {
-      log('ошибка: неверный формат ID сервера', 'error', 'mainLog');
+      log('ошибка: неверный формат id сервера', 'error', 'mainLog');
       return;
     }
     if (src === tgt) {
@@ -1130,6 +1360,8 @@ function createParticles() {
       const srcGuild = await srcGuildRes.json();
       log(`исходный сервер: ${srcGuild.name}`, 'success', 'mainLog');
       
+      await copyGuildIcon(src, tgt, authToken);
+      
       if (statusText) statusText.textContent = 'очистка каналов';
       const channelsRes = await apiRequest(`${API}/guilds/${tgt}/channels`);
       let channels = await channelsRes.json();
@@ -1169,29 +1401,6 @@ function createParticles() {
       if (statusText) statusText.textContent = 'настройка сервера';
       await apiRequest(`${API}/guilds/${tgt}`, { method: 'PATCH', body: JSON.stringify({ name: srcGuild.name }) });
       log(`название скопировано: ${srcGuild.name}`, 'success', 'mainLog');
-      
-      if (srcGuild.icon) {
-        try {
-          const iconRes = await fetch(`https://cdn.discordapp.com/icons/${src}/${srcGuild.icon}.png?size=256`);
-          if (iconRes.ok) {
-            const blob = await iconRes.blob();
-            if (blob.size <= 262144) {
-              const base64 = await new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.readAsDataURL(blob);
-              });
-              const base64Data = base64.split(',')[1];
-              await apiRequest(`${API}/guilds/${tgt}`, { method: 'PATCH', body: JSON.stringify({ icon: base64Data }) });
-              log(`иконка скопирована`, 'success', 'mainLog');
-            } else {
-              log(`иконка превышает 256 кб`, 'warning', 'mainLog');
-            }
-          }
-        } catch(e) {
-          log(`ошибка копирования иконки: ${e.message}`, 'warning', 'mainLog');
-        }
-      }
       
       if (progressBar) progressBar.style.width = '25%';
       if (progressPercent) progressPercent.textContent = '25%';
@@ -1290,7 +1499,7 @@ function createParticles() {
       
     } catch (e) {
       if (e.message === 'CANCELLED') {
-        log('процесс отменён', 'warning', 'mainLog');
+        log('процесс отменён пользователем', 'warning', 'mainLog');
         showNotification('клонирование отменено', 'info');
       } else {
         log(`критическая ошибка: ${e.message}`, 'error', 'mainLog');
@@ -1305,6 +1514,12 @@ function createParticles() {
 
   document.body.innerHTML = `
     <div class="auth-container">
+      <div class="contact-bar">
+        <a href="https://t.me/xolirx" target="_blank" class="contact-link">
+          <span>●</span>
+          <span>@xolirx</span>
+        </a>
+      </div>
       <div class="auth-card">
         <div class="logo">
           <div class="logo-icon">
@@ -1335,6 +1550,12 @@ function createParticles() {
     </div>
     
     <div class="main-container">
+      <div class="contact-bar">
+        <a href="https://t.me/xolirx" target="_blank" class="contact-link">
+          <span>●</span>
+          <span>@xolirx</span>
+        </a>
+      </div>
       <div class="wrapper">
         <div class="left-panel">
           <div class="user-info" id="userInfo">
@@ -1351,7 +1572,7 @@ function createParticles() {
           
           <div class="header">
             <h2>discord cloner pro</h2>
-            <div class="developer">xolirx • профессиональное издание</div>
+            <div class="developer">xolirx — профессиональное издание</div>
           </div>
           
           <div class="stats-grid">
@@ -1386,7 +1607,7 @@ function createParticles() {
             <div class="status-header">
               <div class="spinner"></div>
               <span id="statusText">инициализация</span>
-              <span id="progressPercent" style="margin-left: auto; font-weight: 500;">0%</span>
+              <span id="progressPercent" style="margin-left: auto; font-weight: 600;">0%</span>
             </div>
             <div class="progress-bar">
               <div class="progress-fill" id="progressBar"></div>
@@ -1426,11 +1647,19 @@ function createParticles() {
   
   const savedToken = sessionStorage.getItem('discord_token');
   const savedUser = sessionStorage.getItem('discord_user');
+  const lastActive = sessionStorage.getItem('lastActive');
   
-  if (savedToken && savedUser) {
-    authToken = savedToken;
-    currentUser = JSON.parse(savedUser);
-    document.getElementById('authToken').value = savedToken;
-    setTimeout(() => authorize(), 100);
+  if (savedToken && savedUser && lastActive) {
+    const now = Date.now();
+    const lastActiveTime = parseInt(lastActive);
+    if (now - lastActiveTime < 86400000) {
+      authToken = savedToken;
+      currentUser = JSON.parse(savedUser);
+      const authTokenInputField = document.getElementById('authToken');
+      if (authTokenInputField) authTokenInputField.value = savedToken;
+      setTimeout(() => authorize(), 100);
+    } else {
+      sessionStorage.clear();
+    }
   }
 })();
