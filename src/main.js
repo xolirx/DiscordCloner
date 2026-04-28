@@ -647,13 +647,18 @@ body::before {
   align-items: center;
   word-break: break-word;
   transition: all var(--transition-fast);
-  opacity: 0;
-  transform: translateX(-10px);
+  animation: fadeInLog 0.2s ease-out;
 }
 
-.log-item.show {
-  opacity: 1;
-  transform: translateX(0);
+@keyframes fadeInLog {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .log-item:hover {
@@ -827,9 +832,6 @@ const SVG_ICONS = {
   eyeOff: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
 };
 
-let animationFrameId = null;
-let isInitialized = false;
-
 function createParticles() {
   const particlesDiv = document.createElement('div');
   particlesDiv.className = 'particles';
@@ -868,23 +870,13 @@ function setFavicon() {
 }
 
 (function() {
-  if (isInitialized) return;
-  isInitialized = true;
-  
   const API = 'https://discord.com/api/v10';
   let cloning = false, cancel = false, controller = null;
   let authToken = null;
   let currentUser = null;
   let keepAliveInterval = null;
-  let logAnimationQueue = [];
 
   const sleep = ms => new Promise(r => setTimeout(r, ms));
-  
-  const animateLogItem = (element) => {
-    requestAnimationFrame(() => {
-      element.classList.add('show');
-    });
-  };
   
   const log = (msg, type = 'info', targetLog = 'mainLog') => {
     const box = document.getElementById(targetLog);
@@ -898,15 +890,11 @@ function setFavicon() {
       <span>${msg}</span>
     `;
     box.appendChild(div);
-    
-    requestAnimationFrame(() => {
-      div.classList.add('show');
-      box.scrollTop = box.scrollHeight;
-    });
-    
+    box.scrollTop = box.scrollHeight;
     if (box.children.length > 200) {
-      const firstChild = box.children[0];
-      if (firstChild) firstChild.remove();
+      while (box.children.length > 200) {
+        box.removeChild(box.children[0]);
+      }
     }
   };
 
@@ -1163,9 +1151,8 @@ function setFavicon() {
   function clearLogs(logId) {
     const box = document.getElementById(logId);
     if (box) {
-      const items = box.children;
-      for (let i = items.length - 1; i >= 0; i--) {
-        items[i].remove();
+      while (box.firstChild) {
+        box.removeChild(box.firstChild);
       }
     }
   }
