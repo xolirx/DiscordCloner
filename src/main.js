@@ -4,18 +4,21 @@ style.textContent = `
   --bg-deep: #000000;
   --bg-surface: #0a0a0a;
   --bg-elevated: #111111;
-  --bg-card: rgba(10, 10, 10, 0.95);
-  --border-subtle: rgba(255, 255, 255, 0.05);
-  --border-medium: rgba(255, 255, 255, 0.08);
-  --accent-glow: rgba(139, 92, 246, 0.15);
+  --bg-card: rgba(8, 8, 8, 0.96);
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --border-medium: rgba(255, 255, 255, 0.06);
+  --border-active: rgba(139, 92, 246, 0.2);
+  --accent: #8b5cf6;
+  --accent-dark: #7c3aed;
+  --accent-glow: rgba(139, 92, 246, 0.12);
   --text-white: #ffffff;
   --text-gray: #a0a0a0;
-  --text-dim: #5a5a5a;
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.7);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.8);
-  --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.1);
+  --text-dim: #4a4a4a;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.7);
+  --shadow-glow: 0 0 30px rgba(139, 92, 246, 0.05);
   --success: #10b981;
   --error: #ef4444;
   --warning: #f59e0b;
@@ -26,7 +29,6 @@ style.textContent = `
   --radius-xl: 20px;
   --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
@@ -51,9 +53,8 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: 
-    radial-gradient(circle at 30% 40%, rgba(139, 92, 246, 0.03) 0%, transparent 60%),
-    radial-gradient(circle at 70% 60%, rgba(139, 92, 246, 0.02) 0%, transparent 60%);
+  background: radial-gradient(circle at 30% 40%, rgba(139, 92, 246, 0.02) 0%, transparent 60%),
+              radial-gradient(circle at 70% 60%, rgba(139, 92, 246, 0.01) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -69,7 +70,7 @@ body::before {
 
 .particle {
   position: absolute;
-  background: rgba(139, 92, 246, 0.15);
+  background: rgba(139, 92, 246, 0.1);
   border-radius: 2px;
   animation: floatParticle 25s infinite linear;
 }
@@ -80,10 +81,10 @@ body::before {
     opacity: 0;
   }
   15% {
-    opacity: 0.4;
+    opacity: 0.3;
   }
   85% {
-    opacity: 0.4;
+    opacity: 0.3;
   }
   100% {
     transform: translateY(-100vh) rotate(360deg);
@@ -123,6 +124,17 @@ body::before {
   }
 }
 
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
 .auth-card {
   background: var(--bg-card);
   backdrop-filter: blur(24px);
@@ -137,8 +149,8 @@ body::before {
 
 .auth-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(139, 92, 246, 0.15);
-  border-color: rgba(139, 92, 246, 0.15);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(139, 92, 246, 0.08);
+  border-color: var(--border-active);
 }
 
 .logo {
@@ -162,7 +174,7 @@ body::before {
 
 @keyframes logoPulse {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.2);
+    box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.15);
   }
   50% {
     box-shadow: 0 0 0 15px rgba(139, 92, 246, 0);
@@ -214,8 +226,8 @@ body::before {
 
 .input-group input:focus {
   outline: none;
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
 }
 
 .input-group input.error {
@@ -264,8 +276,8 @@ body::before {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-md), 0 0 20px rgba(139, 92, 246, 0.1);
-  border-color: rgba(139, 92, 246, 0.3);
+  box-shadow: var(--shadow-md), 0 0 20px var(--accent-glow);
+  border-color: var(--accent);
 }
 
 .btn-primary:active {
@@ -280,7 +292,7 @@ body::before {
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: rgba(139, 92, 246, 0.2);
+  background: rgba(139, 92, 246, 0.15);
   transform: translate(-50%, -50%);
   transition: width 0.5s, height 0.5s;
 }
@@ -318,8 +330,81 @@ body::before {
 }
 
 .left-panel:hover, .right-panel:hover {
-  border-color: rgba(139, 92, 246, 0.15);
+  border-color: var(--border-active);
   box-shadow: var(--shadow-xl), var(--shadow-glow);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+  border: 1px solid var(--border-subtle);
+}
+
+.user-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+  border: 2px solid var(--accent);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: white;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.user-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-white);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-email {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-badge {
+  display: inline-block;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 0.625rem;
+  color: var(--accent);
+  margin-top: 4px;
 }
 
 .header {
@@ -344,7 +429,7 @@ body::before {
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  gap: 12px;
   margin-bottom: 28px;
 }
 
@@ -359,14 +444,14 @@ body::before {
 
 .stat-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(139, 92, 246, 0.2);
+  border-color: var(--accent);
   box-shadow: var(--shadow-sm);
 }
 
 .stat-value {
   font-size: 1.375rem;
   font-weight: 600;
-  color: #8b5cf6;
+  color: var(--accent);
 }
 
 .stat-label {
@@ -389,8 +474,12 @@ body::before {
 
 .input-modern:focus {
   outline: none;
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.08);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.input-modern::placeholder {
+  color: var(--text-dim);
 }
 
 .button-group {
@@ -406,7 +495,7 @@ body::before {
 }
 
 .btn-secondary:hover {
-  border-color: rgba(139, 92, 246, 0.3);
+  border-color: var(--accent);
   transform: translateY(-2px);
   box-shadow: var(--shadow-sm);
 }
@@ -459,7 +548,7 @@ body::before {
   width: 18px;
   height: 18px;
   border: 2px solid var(--border-medium);
-  border-top-color: #8b5cf6;
+  border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -478,7 +567,7 @@ body::before {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+  background: linear-gradient(90deg, var(--accent), var(--accent-dark));
   border-radius: 2px;
   transition: width 0.4s ease;
   position: relative;
@@ -492,7 +581,7 @@ body::before {
   left: 0;
   bottom: 0;
   right: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
   animation: shimmer 1.8s infinite;
 }
 
@@ -521,6 +610,7 @@ body::before {
   gap: 10px;
   align-items: center;
   animation: slideInRight 0.25s ease;
+  word-break: break-word;
 }
 
 @keyframes slideInRight {
@@ -543,12 +633,29 @@ body::before {
   color: var(--text-dim);
   font-size: 0.625rem;
   min-width: 55px;
+  flex-shrink: 0;
 }
 
-.log-success { border-left: 2px solid var(--success); }
-.log-error { border-left: 2px solid var(--error); }
-.log-warning { border-left: 2px solid var(--warning); }
-.log-info { border-left: 2px solid var(--info); }
+.log-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+}
+
+.log-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.log-success .log-icon svg { color: var(--success); }
+.log-error .log-icon svg { color: var(--error); }
+.log-warning .log-icon svg { color: var(--warning); }
+.log-info .log-icon svg { color: var(--info); }
+
+.log-item span:last-child {
+  flex: 1;
+}
 
 .log-header {
   margin-bottom: 14px;
@@ -565,13 +672,20 @@ body::before {
   cursor: pointer;
   font-size: 0.688rem;
   transition: color var(--transition-fast);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
 }
 
 .log-header button:hover {
   color: var(--text-gray);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 @media (max-width: 768px) {
+  body {
+    overflow-y: auto;
+  }
+  
   .wrapper {
     flex-direction: column;
     height: auto;
@@ -588,6 +702,15 @@ body::before {
   .auth-card {
     padding: 32px;
     margin: 16px;
+  }
+  
+  .user-info {
+    padding: 12px;
+  }
+  
+  .user-avatar {
+    width: 44px;
+    height: 44px;
   }
 }
 
@@ -609,6 +732,17 @@ body::before {
 ::-webkit-scrollbar-thumb:hover {
   background: #4a4a4a;
 }
+
+.loading-skeleton {
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-elevated) 50%, var(--bg-surface) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 `;
 
 document.head.appendChild(style);
@@ -624,7 +758,7 @@ const SVG_ICONS = {
 function createParticles() {
   const particlesDiv = document.createElement('div');
   particlesDiv.className = 'particles';
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 35; i++) {
     const particle = document.createElement('div');
     particle.className = 'particle';
     const size = Math.random() * 2 + 1;
@@ -638,10 +772,11 @@ function createParticles() {
   document.body.appendChild(particlesDiv);
 }
 
-(function() {
+(async function() {
   const API = 'https://discord.com/api/v10';
   let cloning = false, cancel = false, controller = null;
   let authToken = null;
+  let currentUser = null;
 
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   
@@ -654,7 +789,7 @@ function createParticles() {
     div.innerHTML = `
       <span class="log-time">${time}</span>
       <span class="log-icon">${SVG_ICONS[type] || SVG_ICONS.info}</span>
-      <span style="flex:1">${msg}</span>
+      <span>${msg}</span>
     `;
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
@@ -662,11 +797,38 @@ function createParticles() {
   };
 
   const updateStats = (stats) => {
-    const elements = ['rolesCount', 'channelsCount', 'errorsCount'];
-    elements.forEach(el => {
-      const elem = document.getElementById(el);
-      if (elem) elem.textContent = stats[el.replace('Count', '')] || 0;
-    });
+    const rolesElem = document.getElementById('rolesCount');
+    const channelsElem = document.getElementById('channelsCount');
+    const errorsElem = document.getElementById('errorsCount');
+    if (rolesElem) rolesElem.textContent = stats.roles || 0;
+    if (channelsElem) channelsElem.textContent = stats.channels || 0;
+    if (errorsElem) errorsElem.textContent = stats.errors || 0;
+  };
+
+  const updateUserInfo = (user) => {
+    const userNameElem = document.getElementById('userName');
+    const userEmailElem = document.getElementById('userEmail');
+    const userAvatarImg = document.getElementById('userAvatarImg');
+    const userAvatarPlaceholder = document.getElementById('userAvatarPlaceholder');
+    
+    if (userNameElem) userNameElem.textContent = user.username;
+    if (userEmailElem) userEmailElem.textContent = user.email || 'email не указан';
+    
+    if (user.avatar) {
+      const avatarUrl = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`;
+      if (userAvatarImg) {
+        userAvatarImg.src = avatarUrl;
+        userAvatarImg.style.display = 'block';
+      }
+      if (userAvatarPlaceholder) userAvatarPlaceholder.style.display = 'none';
+    } else {
+      if (userAvatarImg) userAvatarImg.style.display = 'none';
+      if (userAvatarPlaceholder) {
+        userAvatarPlaceholder.style.display = 'flex';
+        const firstLetter = user.username.charAt(0).toUpperCase();
+        userAvatarPlaceholder.textContent = firstLetter;
+      }
+    }
   };
 
   async function authorize() {
@@ -686,24 +848,33 @@ function createParticles() {
         headers: { 'Authorization': token }
       });
 
-      if (!response.ok) throw new Error('Неверный токен');
+      if (!response.ok) {
+        if (response.status === 401) throw new Error('Неверный токен');
+        throw new Error(`Ошибка ${response.status}`);
+      }
       
       const user = await response.json();
       authToken = token;
+      currentUser = user;
       
       sessionStorage.setItem('discord_token', token);
       sessionStorage.setItem('discord_user', JSON.stringify(user));
       
       showNotification(`Добро пожаловать, ${user.username}`, 'success');
       
-      setTimeout(() => {
-        document.querySelector('.auth-container').style.animation = 'fadeOut 0.5s ease forwards';
+      const authContainer = document.querySelector('.auth-container');
+      const mainContainer = document.querySelector('.main-container');
+      
+      if (authContainer) {
+        authContainer.style.animation = 'fadeOut 0.5s ease forwards';
         setTimeout(() => {
-          document.querySelector('.auth-container').style.display = 'none';
-          document.querySelector('.main-container').style.display = 'block';
-          initMainUI();
+          authContainer.style.display = 'none';
+          if (mainContainer) {
+            mainContainer.style.display = 'block';
+            initMainUI();
+          }
         }, 500);
-      }, 1000);
+      }
       
     } catch (error) {
       showAuthError(error.message);
@@ -715,13 +886,15 @@ function createParticles() {
 
   function showAuthError(message) {
     const input = document.getElementById('authToken');
-    input.classList.add('error');
+    if (input) input.classList.add('error');
     const errorDiv = document.getElementById('authError');
-    errorDiv.textContent = message;
-    errorDiv.style.display = 'block';
+    if (errorDiv) {
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+    }
     setTimeout(() => {
-      input.classList.remove('error');
-      errorDiv.style.display = 'none';
+      if (input) input.classList.remove('error');
+      if (errorDiv) errorDiv.style.display = 'none';
     }, 3000);
   }
 
@@ -729,6 +902,7 @@ function createParticles() {
     const notification = document.createElement('div');
     const bgColor = type === 'success' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)';
     const borderColor = type === 'success' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)';
+    const textColor = type === 'success' ? '#10b981' : '#ef4444';
     notification.style.cssText = `
       position: fixed;
       top: 24px;
@@ -736,7 +910,7 @@ function createParticles() {
       background: ${bgColor};
       backdrop-filter: blur(12px);
       border: 1px solid ${borderColor};
-      color: ${type === 'success' ? '#10b981' : '#ef4444'};
+      color: ${textColor};
       padding: 12px 20px;
       border-radius: 8px;
       font-size: 0.813rem;
@@ -753,25 +927,38 @@ function createParticles() {
     const savedSource = localStorage.getItem('lastSourceId') || '';
     const savedTarget = localStorage.getItem('lastTargetId') || '';
     
-    document.getElementById('tokenInput').value = authToken;
-    document.getElementById('sourceId').value = savedSource;
-    document.getElementById('targetId').value = savedTarget;
+    const tokenInput = document.getElementById('tokenInput');
+    if (tokenInput) tokenInput.value = authToken;
     
-    document.getElementById('cloneBtn').addEventListener('click', startClone);
-    document.getElementById('cancelBtn').addEventListener('click', cancelClone);
-    document.getElementById('clearLogsBtn').addEventListener('click', () => clearLogs('mainLog'));
-    document.getElementById('logoutBtn').addEventListener('click', logout);
+    const sourceInput = document.getElementById('sourceId');
+    const targetInput = document.getElementById('targetId');
+    if (sourceInput) sourceInput.value = savedSource;
+    if (targetInput) targetInput.value = savedTarget;
     
-    document.getElementById('sourceId').addEventListener('change', (e) => {
-      localStorage.setItem('lastSourceId', e.target.value);
-    });
-    document.getElementById('targetId').addEventListener('change', (e) => {
-      localStorage.setItem('lastTargetId', e.target.value);
-    });
+    const cloneBtn = document.getElementById('cloneBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const clearLogsBtn = document.getElementById('clearLogsBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
     
-    const user = JSON.parse(sessionStorage.getItem('discord_user'));
-    if (user) {
-      log(`система: авторизация выполнена [${user.username}]`, 'success', 'mainLog');
+    if (cloneBtn) cloneBtn.addEventListener('click', startClone);
+    if (cancelBtn) cancelBtn.addEventListener('click', cancelClone);
+    if (clearLogsBtn) clearLogsBtn.addEventListener('click', () => clearLogs('mainLog'));
+    if (logoutBtn) logoutBtn.addEventListener('click', logout);
+    
+    if (sourceInput) {
+      sourceInput.addEventListener('change', (e) => {
+        localStorage.setItem('lastSourceId', e.target.value);
+      });
+    }
+    if (targetInput) {
+      targetInput.addEventListener('change', (e) => {
+        localStorage.setItem('lastTargetId', e.target.value);
+      });
+    }
+    
+    if (currentUser) {
+      updateUserInfo(currentUser);
+      log(`авторизация выполнена: ${currentUser.username}`, 'success', 'mainLog');
     }
   }
 
@@ -779,6 +966,8 @@ function createParticles() {
     sessionStorage.clear();
     localStorage.removeItem('lastSourceId');
     localStorage.removeItem('lastTargetId');
+    authToken = null;
+    currentUser = null;
     showNotification('выход выполнен', 'success');
     setTimeout(() => {
       location.reload();
@@ -827,25 +1016,33 @@ function createParticles() {
     }).filter(o => o !== null);
   }
 
-  async function api(url, opts = {}, retries = 3) {
+  async function apiRequest(url, opts = {}, retries = 3) {
     if (!authToken) throw new Error('не авторизован');
     if (cancel) throw new Error('CANCELLED');
     const signal = controller?.signal;
+    
     for (let i = 0; i < retries; i++) {
       if (cancel) throw new Error('CANCELLED');
       try {
         const headers = { 'Authorization': authToken, 'Content-Type': 'application/json', ...opts.headers };
         const res = await fetch(url, { ...opts, headers, signal });
+        
         if (res.status === 429) {
-          const r = parseInt(res.headers.get('Retry-After')) || 2;
-          await sleep(r * 1000);
+          const retryAfter = parseInt(res.headers.get('Retry-After')) || 2;
+          await sleep(retryAfter * 1000);
           continue;
         }
+        
         if (!res.ok && i === retries - 1) {
-          const errorData = await res.text();
+          const errorData = await res.text().catch(() => 'unknown error');
           throw new Error(`HTTP ${res.status}: ${errorData.substring(0, 100)}`);
         }
-        if (!res.ok) { await sleep(1000 * (i + 1)); continue; }
+        
+        if (!res.ok) {
+          await sleep(1000 * (i + 1));
+          continue;
+        }
+        
         return res;
       } catch (e) {
         if (e.name === 'AbortError') throw new Error('CANCELLED');
@@ -858,25 +1055,37 @@ function createParticles() {
   function resetClone() {
     cloning = false;
     controller = null;
-    document.getElementById('cloneBtn').disabled = false;
-    document.getElementById('cancelBtn').disabled = true;
-    document.getElementById('cloneStatus').classList.remove('active');
-    document.getElementById('progressBar').style.width = '0%';
+    const cloneBtn = document.getElementById('cloneBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const cloneStatus = document.getElementById('cloneStatus');
+    const progressBar = document.getElementById('progressBar');
+    
+    if (cloneBtn) cloneBtn.disabled = false;
+    if (cancelBtn) cancelBtn.disabled = true;
+    if (cloneStatus) cloneStatus.classList.remove('active');
+    if (progressBar) progressBar.style.width = '0%';
   }
 
   function cancelClone() {
     if (cloning) {
       cancel = true;
-      controller?.abort();
-      log('система: процесс остановлен', 'warning', 'mainLog');
-      document.getElementById('cancelBtn').disabled = true;
+      if (controller) controller.abort();
+      log('процесс остановлен', 'warning', 'mainLog');
+      const cancelBtn = document.getElementById('cancelBtn');
+      if (cancelBtn) cancelBtn.disabled = true;
     }
   }
 
   async function startClone() {
     if (cloning) return;
-    const src = document.getElementById('sourceId').value.trim();
-    const tgt = document.getElementById('targetId').value.trim();
+    
+    const sourceInput = document.getElementById('sourceId');
+    const targetInput = document.getElementById('targetId');
+    
+    if (!sourceInput || !targetInput) return;
+    
+    const src = sourceInput.value.trim();
+    const tgt = targetInput.value.trim();
     
     if (!/^\d{17,20}$/.test(src) || !/^\d{17,20}$/.test(tgt)) {
       log('ошибка: неверный формат ID сервера', 'error', 'mainLog');
@@ -890,32 +1099,45 @@ function createParticles() {
     cloning = true;
     cancel = false;
     controller = new AbortController();
-    document.getElementById('cloneBtn').disabled = true;
-    document.getElementById('cancelBtn').disabled = false;
-    document.getElementById('cloneStatus').classList.add('active');
-    document.getElementById('progressBar').style.width = '0%';
+    
+    const cloneBtn = document.getElementById('cloneBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const cloneStatus = document.getElementById('cloneStatus');
+    const progressBar = document.getElementById('progressBar');
+    const progressPercent = document.getElementById('progressPercent');
+    const statusText = document.getElementById('statusText');
+    
+    if (cloneBtn) cloneBtn.disabled = true;
+    if (cancelBtn) cancelBtn.disabled = false;
+    if (cloneStatus) cloneStatus.classList.add('active');
+    if (progressBar) progressBar.style.width = '0%';
     
     const stats = { roles: 0, channels: 0, errors: 0 };
     
     try {
-      document.getElementById('statusText').textContent = 'проверка прав';
-      document.getElementById('progressPercent').textContent = '0%';
+      if (statusText) statusText.textContent = 'проверка прав';
+      if (progressPercent) progressPercent.textContent = '0%';
       
-      const meGuilds = await (await api(`${API}/users/@me/guilds`)).json();
+      const meGuildsRes = await apiRequest(`${API}/users/@me/guilds`);
+      const meGuilds = await meGuildsRes.json();
       const tgtGuild = meGuilds.find(g => g.id === tgt);
+      
       if (!tgtGuild || !(BigInt(tgtGuild.permissions) & 0x8n)) {
         throw new Error('требуются права администратора на целевом сервере');
       }
       
-      const srcGuild = await (await api(`${API}/guilds/${src}`)).json();
+      const srcGuildRes = await apiRequest(`${API}/guilds/${src}`);
+      const srcGuild = await srcGuildRes.json();
       log(`исходный сервер: ${srcGuild.name}`, 'success', 'mainLog');
       
-      document.getElementById('statusText').textContent = 'очистка каналов';
-      let channels = await (await api(`${API}/guilds/${tgt}/channels`)).json();
+      if (statusText) statusText.textContent = 'очистка каналов';
+      const channelsRes = await apiRequest(`${API}/guilds/${tgt}/channels`);
+      let channels = await channelsRes.json();
+      
       for (let i = 0; i < channels.length; i++) {
         if (cancel) throw new Error('CANCELLED');
         try {
-          await api(`${API}/channels/${channels[i].id}`, { method: 'DELETE' });
+          await apiRequest(`${API}/channels/${channels[i].id}`, { method: 'DELETE' });
           log(`удалён канал: ${channels[i].name || channels[i].id}`, 'warning', 'mainLog');
         } catch (e) {
           stats.errors++;
@@ -923,27 +1145,29 @@ function createParticles() {
         }
         await sleep(200);
         const pct = Math.min(10, ((i + 1) / Math.max(channels.length, 1)) * 10);
-        document.getElementById('progressBar').style.width = pct + '%';
-        document.getElementById('progressPercent').textContent = Math.floor(pct) + '%';
+        if (progressBar) progressBar.style.width = pct + '%';
+        if (progressPercent) progressPercent.textContent = Math.floor(pct) + '%';
         updateStats(stats);
       }
       
-      document.getElementById('statusText').textContent = 'очистка ролей';
-      let roles = await (await api(`${API}/guilds/${tgt}/roles`)).json();
+      if (statusText) statusText.textContent = 'очистка ролей';
+      const rolesRes = await apiRequest(`${API}/guilds/${tgt}/roles`);
+      let roles = await rolesRes.json();
       const delRoles = roles.filter(r => r.name !== '@everyone' && !r.managed).sort((a, b) => b.position - a.position);
+      
       for (let i = 0; i < delRoles.length; i++) {
         if (cancel) throw new Error('CANCELLED');
         try {
-          await api(`${API}/guilds/${tgt}/roles/${delRoles[i].id}`, { method: 'DELETE' });
+          await apiRequest(`${API}/guilds/${tgt}/roles/${delRoles[i].id}`, { method: 'DELETE' });
         } catch (e) {}
         await sleep(150);
       }
       
-      document.getElementById('progressBar').style.width = '15%';
-      document.getElementById('progressPercent').textContent = '15%';
+      if (progressBar) progressBar.style.width = '15%';
+      if (progressPercent) progressPercent.textContent = '15%';
       
-      document.getElementById('statusText').textContent = 'настройка сервера';
-      await api(`${API}/guilds/${tgt}`, { method: 'PATCH', body: JSON.stringify({ name: srcGuild.name }) });
+      if (statusText) statusText.textContent = 'настройка сервера';
+      await apiRequest(`${API}/guilds/${tgt}`, { method: 'PATCH', body: JSON.stringify({ name: srcGuild.name }) });
       log(`название скопировано: ${srcGuild.name}`, 'success', 'mainLog');
       
       if (srcGuild.icon) {
@@ -952,13 +1176,13 @@ function createParticles() {
           if (iconRes.ok) {
             const blob = await iconRes.blob();
             if (blob.size <= 262144) {
-              const base64 = await new Promise(r => {
+              const base64 = await new Promise((resolve) => {
                 const reader = new FileReader();
-                reader.onloadend = () => r(reader.result);
+                reader.onloadend = () => resolve(reader.result);
                 reader.readAsDataURL(blob);
               });
               const base64Data = base64.split(',')[1];
-              await api(`${API}/guilds/${tgt}`, { method: 'PATCH', body: JSON.stringify({ icon: base64Data }) });
+              await apiRequest(`${API}/guilds/${tgt}`, { method: 'PATCH', body: JSON.stringify({ icon: base64Data }) });
               log(`иконка скопирована`, 'success', 'mainLog');
             } else {
               log(`иконка превышает 256 кб`, 'warning', 'mainLog');
@@ -969,11 +1193,12 @@ function createParticles() {
         }
       }
       
-      document.getElementById('progressBar').style.width = '25%';
-      document.getElementById('progressPercent').textContent = '25%';
+      if (progressBar) progressBar.style.width = '25%';
+      if (progressPercent) progressPercent.textContent = '25%';
       
-      document.getElementById('statusText').textContent = 'создание ролей';
-      const srcRoles = await (await api(`${API}/guilds/${src}/roles`)).json();
+      if (statusText) statusText.textContent = 'создание ролей';
+      const srcRolesRes = await apiRequest(`${API}/guilds/${src}/roles`);
+      const srcRoles = await srcRolesRes.json();
       const rolesToCreate = srcRoles.filter(r => r.name !== '@everyone' && !r.managed).sort((a, b) => b.position - a.position);
       const roleMap = {};
       
@@ -988,7 +1213,7 @@ function createParticles() {
             mentionable: !!r.mentionable,
             permissions: String(r.permissions || 0)
           });
-          const resp = await api(`${API}/guilds/${tgt}/roles`, { method: 'POST', body });
+          const resp = await apiRequest(`${API}/guilds/${tgt}/roles`, { method: 'POST', body });
           const newRole = await resp.json();
           roleMap[r.id] = newRole.id;
           stats.roles++;
@@ -999,15 +1224,16 @@ function createParticles() {
         }
         await sleep(250);
         const pct = 25 + ((i + 1) / Math.max(rolesToCreate.length, 1)) * 30;
-        document.getElementById('progressBar').style.width = pct + '%';
-        document.getElementById('progressPercent').textContent = Math.floor(pct) + '%';
+        if (progressBar) progressBar.style.width = pct + '%';
+        if (progressPercent) progressPercent.textContent = Math.floor(pct) + '%';
         updateStats(stats);
       }
       
       log(`создано ролей: ${stats.roles}`, 'info', 'mainLog');
       
-      document.getElementById('statusText').textContent = 'создание каналов';
-      const srcChannels = await (await api(`${API}/guilds/${src}/channels`)).json();
+      if (statusText) statusText.textContent = 'создание каналов';
+      const srcChannelsRes = await apiRequest(`${API}/guilds/${src}/channels`);
+      const srcChannels = await srcChannelsRes.json();
       const categories = srcChannels.filter(c => c.type === 4).sort((a, b) => a.position - b.position);
       const others = srcChannels.filter(c => c.type !== 4).sort((a, b) => a.position - b.position);
       const catMap = {};
@@ -1019,7 +1245,7 @@ function createParticles() {
         const c = categories[i];
         try {
           const body = buildChannelData(c, tgt, roleMap, catMap, srcGuild.id);
-          const resp = await api(`${API}/guilds/${tgt}/channels`, { method: 'POST', body: JSON.stringify(body) });
+          const resp = await apiRequest(`${API}/guilds/${tgt}/channels`, { method: 'POST', body: JSON.stringify(body) });
           const ch = await resp.json();
           catMap[c.id] = ch.id;
           createdCount++;
@@ -1038,7 +1264,7 @@ function createParticles() {
         const c = others[i];
         try {
           const body = buildChannelData(c, tgt, roleMap, catMap, srcGuild.id);
-          await api(`${API}/guilds/${tgt}/channels`, { method: 'POST', body: JSON.stringify(body) });
+          await apiRequest(`${API}/guilds/${tgt}/channels`, { method: 'POST', body: JSON.stringify(body) });
           createdCount++;
           stats.channels++;
           log(`канал создан: ${c.name}`, 'success', 'mainLog');
@@ -1048,13 +1274,13 @@ function createParticles() {
         }
         await sleep(200);
         const pct = 60 + ((categories.length + i + 1) / Math.max(total, 1)) * 40;
-        document.getElementById('progressBar').style.width = pct + '%';
-        document.getElementById('progressPercent').textContent = Math.floor(pct) + '%';
+        if (progressBar) progressBar.style.width = pct + '%';
+        if (progressPercent) progressPercent.textContent = Math.floor(pct) + '%';
         updateStats(stats);
       }
       
-      document.getElementById('progressBar').style.width = '100%';
-      document.getElementById('progressPercent').textContent = '100%';
+      if (progressBar) progressBar.style.width = '100%';
+      if (progressPercent) progressPercent.textContent = '100%';
       log(`клонирование завершено успешно`, 'success', 'mainLog');
       log(`статистика: ${stats.roles} ролей, ${stats.channels} каналов`, 'info', 'mainLog');
       if (stats.errors > 0) {
@@ -1064,7 +1290,7 @@ function createParticles() {
       
     } catch (e) {
       if (e.message === 'CANCELLED') {
-        log('процесс отменён пользователем', 'warning', 'mainLog');
+        log('процесс отменён', 'warning', 'mainLog');
         showNotification('клонирование отменено', 'info');
       } else {
         log(`критическая ошибка: ${e.message}`, 'error', 'mainLog');
@@ -1076,32 +1302,6 @@ function createParticles() {
   }
 
   createParticles();
-  
-  const styleSheet = document.createElement("style");
-  styleSheet.textContent = `
-    @keyframes fadeOut {
-      from {
-        opacity: 1;
-        transform: scale(1);
-      }
-      to {
-        opacity: 0;
-        transform: scale(0.96);
-      }
-    }
-    
-    @keyframes fadeInRight {
-      from {
-        opacity: 0;
-        transform: translateX(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-  `;
-  document.head.appendChild(styleSheet);
 
   document.body.innerHTML = `
     <div class="auth-container">
@@ -1111,25 +1311,25 @@ function createParticles() {
             ${SVG_ICONS.discord}
           </div>
           <h1>discord cloner</h1>
-          <p>professional server cloning tool</p>
+          <p>профессиональный инструмент для клонирования</p>
         </div>
         
         <div class="input-group">
-          <label>authentication token</label>
+          <label>токен авторизации</label>
           <div style="position: relative;">
-            <input type="password" id="authToken" placeholder="enter your discord token">
+            <input type="password" id="authToken" placeholder="введите ваш discord токен">
             <span class="toggle-password" onclick="window.togglePasswordVisibility('authToken')">◉</span>
           </div>
           <div id="authError" style="color: #ef4444; font-size: 0.688rem; margin-top: 4px; display: none;"></div>
         </div>
         
         <button class="btn btn-primary" id="authBtn">
-          authenticate
+          авторизоваться
         </button>
         
-        <div style="margin-top: 24px; text-align: center; font-size: 0.688rem; color: #5a5a5a;">
-          <p>developed by xolirx</p>
-          <p>version 2.0.0</p>
+        <div style="margin-top: 24px; text-align: center; font-size: 0.688rem; color: #4a4a4a;">
+          <p>разработчик: xolirx</p>
+          <p>версия 2.0.0</p>
         </div>
       </div>
     </div>
@@ -1137,43 +1337,55 @@ function createParticles() {
     <div class="main-container">
       <div class="wrapper">
         <div class="left-panel">
+          <div class="user-info" id="userInfo">
+            <div class="user-avatar">
+              <img id="userAvatarImg" style="display: none;" alt="avatar">
+              <div id="userAvatarPlaceholder" class="user-avatar-placeholder" style="display: flex;"></div>
+            </div>
+            <div class="user-details">
+              <div class="user-name" id="userName">загрузка...</div>
+              <div class="user-email" id="userEmail">загрузка...</div>
+              <div class="user-badge">авторизован</div>
+            </div>
+          </div>
+          
           <div class="header">
             <h2>discord cloner pro</h2>
-            <div class="developer">xolirx • enterprise edition</div>
+            <div class="developer">xolirx • профессиональное издание</div>
           </div>
           
           <div class="stats-grid">
             <div class="stat-card">
               <div class="stat-value" id="rolesCount">0</div>
-              <div class="stat-label">roles created</div>
+              <div class="stat-label">создано ролей</div>
             </div>
             <div class="stat-card">
               <div class="stat-value" id="channelsCount">0</div>
-              <div class="stat-label">channels created</div>
+              <div class="stat-label">создано каналов</div>
             </div>
             <div class="stat-card">
               <div class="stat-value" id="errorsCount">0</div>
-              <div class="stat-label">errors</div>
+              <div class="stat-label">ошибок</div>
             </div>
             <div class="stat-card">
               <div class="stat-value" id="statusIcon">●</div>
-              <div class="stat-label">system status</div>
+              <div class="stat-label">статус системы</div>
             </div>
           </div>
           
           <input type="hidden" id="tokenInput">
-          <input class="input-modern" id="sourceId" placeholder="source guild id">
-          <input class="input-modern" id="targetId" placeholder="target guild id">
+          <input class="input-modern" id="sourceId" placeholder="id исходного сервера">
+          <input class="input-modern" id="targetId" placeholder="id целевого сервера">
           
           <div class="button-group">
-            <button class="btn btn-primary" id="cloneBtn">▶ start cloning</button>
-            <button class="btn btn-secondary" id="cancelBtn" disabled>■ cancel</button>
+            <button class="btn btn-primary" id="cloneBtn">▶ начать клонирование</button>
+            <button class="btn btn-secondary" id="cancelBtn" disabled>■ отмена</button>
           </div>
           
           <div class="status-card" id="cloneStatus">
             <div class="status-header">
               <div class="spinner"></div>
-              <span id="statusText">initializing</span>
+              <span id="statusText">инициализация</span>
               <span id="progressPercent" style="margin-left: auto; font-weight: 500;">0%</span>
             </div>
             <div class="progress-bar">
@@ -1181,13 +1393,13 @@ function createParticles() {
             </div>
           </div>
           
-          <button class="btn btn-danger" id="logoutBtn" style="margin-top: 20px;">✖ logout</button>
+          <button class="btn btn-danger" id="logoutBtn" style="margin-top: 20px;">✖ выйти</button>
         </div>
         
         <div class="right-panel">
           <div class="log-header">
-            <span>event log</span>
-            <button id="clearLogsBtn">clear</button>
+            <span>журнал событий</span>
+            <button id="clearLogsBtn">очистить</button>
           </div>
           <div id="mainLog" class="log-box"></div>
         </div>
@@ -1197,20 +1409,27 @@ function createParticles() {
 
   window.togglePasswordVisibility = function(inputId) {
     const input = document.getElementById(inputId);
-    if (input.type === 'password') {
-      input.type = 'text';
-    } else {
-      input.type = 'password';
+    if (input) {
+      input.type = input.type === 'password' ? 'text' : 'password';
     }
   };
 
-  document.getElementById('authBtn').addEventListener('click', authorize);
-  document.getElementById('authToken').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') authorize();
-  });
+  const authBtn = document.getElementById('authBtn');
+  const authTokenInput = document.getElementById('authToken');
+  
+  if (authBtn) authBtn.addEventListener('click', authorize);
+  if (authTokenInput) {
+    authTokenInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') authorize();
+    });
+  }
   
   const savedToken = sessionStorage.getItem('discord_token');
-  if (savedToken) {
+  const savedUser = sessionStorage.getItem('discord_user');
+  
+  if (savedToken && savedUser) {
+    authToken = savedToken;
+    currentUser = JSON.parse(savedUser);
     document.getElementById('authToken').value = savedToken;
     setTimeout(() => authorize(), 100);
   }
