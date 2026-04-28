@@ -104,36 +104,12 @@ body::before {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  animation: fadeInUp 0.8s var(--transition-slow);
 }
 
 .main-container {
   display: none;
   padding: 20px;
   height: 100vh;
-  animation: fadeInUp 0.8s var(--transition-slow);
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-    transform: scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: scale(0.96);
-  }
 }
 
 .auth-card {
@@ -171,7 +147,8 @@ body::before {
   margin: 0 auto 20px;
   box-shadow: var(--shadow-lg);
   transition: all var(--transition-base);
-  font-size: 44px;
+  font-size: 48px;
+  line-height: 1;
 }
 
 .logo-icon:hover {
@@ -594,18 +571,6 @@ body::before {
 
 .status-card.active {
   display: block;
-  animation: slideInDown 0.4s var(--transition-base);
-}
-
-@keyframes slideInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .status-header {
@@ -640,7 +605,7 @@ body::before {
   height: 100%;
   background: linear-gradient(90deg, var(--accent), var(--accent-dark));
   border-radius: 2px;
-  transition: width 0.5s var(--transition-base);
+  transition: width 0.3s ease;
   position: relative;
   overflow: hidden;
 }
@@ -680,20 +645,15 @@ body::before {
   display: flex;
   gap: 12px;
   align-items: center;
-  animation: slideInRight 0.3s var(--transition-base);
   word-break: break-word;
   transition: all var(--transition-fast);
+  opacity: 0;
+  transform: translateX(-10px);
 }
 
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(-15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.log-item.show {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .log-item:hover {
@@ -805,7 +765,7 @@ body::before {
   .logo-icon {
     width: 60px;
     height: 60px;
-    font-size: 32px;
+    font-size: 36px;
   }
   
   .logo h1 {
@@ -854,16 +814,11 @@ body::before {
 ::-webkit-scrollbar-thumb:hover {
   background: #4a4a4a;
 }
-
-.favicon {
-  display: none;
-}
 `;
 
 document.head.appendChild(style);
 
 const SVG_ICONS = {
-  discord: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 9c0 3.5-2 6-6 6s-6-2.5-6-6 2-6 6-6 6 2.5 6 6z"/><path d="M12 3v3"/><path d="M12 15v6"/><path d="M8 21h8"/><circle cx="12" cy="9" r="2"/></svg>`,
   success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>`,
   error: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
   warning: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
@@ -871,6 +826,9 @@ const SVG_ICONS = {
   eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
   eyeOff: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
 };
+
+let animationFrameId = null;
+let isInitialized = false;
 
 function createParticles() {
   const particlesDiv = document.createElement('div');
@@ -897,26 +855,36 @@ function setFavicon() {
   ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, 64, 64);
   ctx.fillStyle = '#8b5cf6';
-  ctx.font = '48px "Segoe UI", "Inter"';
+  ctx.font = '40px "Segoe UI", "Inter"';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('🐱‍👤', 32, 32);
+  ctx.fillText('🐱', 32, 32);
   
-  const link = document.createElement('link');
+  const link = document.querySelector('link[rel*="icon"]') || document.createElement('link');
   link.rel = 'icon';
   link.type = 'image/x-icon';
   link.href = canvas.toDataURL();
   document.head.appendChild(link);
 }
 
-(async function() {
+(function() {
+  if (isInitialized) return;
+  isInitialized = true;
+  
   const API = 'https://discord.com/api/v10';
   let cloning = false, cancel = false, controller = null;
   let authToken = null;
   let currentUser = null;
   let keepAliveInterval = null;
+  let logAnimationQueue = [];
 
   const sleep = ms => new Promise(r => setTimeout(r, ms));
+  
+  const animateLogItem = (element) => {
+    requestAnimationFrame(() => {
+      element.classList.add('show');
+    });
+  };
   
   const log = (msg, type = 'info', targetLog = 'mainLog') => {
     const box = document.getElementById(targetLog);
@@ -930,11 +898,15 @@ function setFavicon() {
       <span>${msg}</span>
     `;
     box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
+    
+    requestAnimationFrame(() => {
+      div.classList.add('show');
+      box.scrollTop = box.scrollHeight;
+    });
+    
     if (box.children.length > 200) {
-      while (box.children.length > 200) {
-        box.removeChild(box.children[0]);
-      }
+      const firstChild = box.children[0];
+      if (firstChild) firstChild.remove();
     }
   };
 
@@ -984,7 +956,7 @@ function setFavicon() {
   const startKeepAlive = () => {
     if (keepAliveInterval) clearInterval(keepAliveInterval);
     keepAliveInterval = setInterval(async () => {
-      if (authToken) {
+      if (authToken && document.visibilityState === 'visible') {
         try {
           await fetch(`${API}/users/@me`, {
             headers: { 'Authorization': authToken }
@@ -1041,10 +1013,19 @@ function setFavicon() {
       const mainContainer = document.querySelector('.main-container');
       
       if (authContainer && mainContainer) {
-        authContainer.style.animation = 'fadeOut 0.5s var(--transition-slow) forwards';
+        authContainer.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        authContainer.style.opacity = '0';
+        authContainer.style.transform = 'scale(0.96)';
         setTimeout(() => {
           authContainer.style.display = 'none';
           mainContainer.style.display = 'block';
+          mainContainer.style.opacity = '0';
+          mainContainer.style.transform = 'translateY(20px)';
+          mainContainer.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+          requestAnimationFrame(() => {
+            mainContainer.style.opacity = '1';
+            mainContainer.style.transform = 'translateY(0)';
+          });
           initMainUI();
         }, 500);
       }
@@ -1089,15 +1070,22 @@ function setFavicon() {
       font-size: 0.813rem;
       font-weight: 500;
       z-index: 10000;
-      animation: slideInRight 0.3s var(--transition-base);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transform: translateX(30px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
     `;
     notification.textContent = message;
     document.body.appendChild(notification);
+    
+    requestAnimationFrame(() => {
+      notification.style.opacity = '1';
+      notification.style.transform = 'translateX(0)';
+    });
+    
     setTimeout(() => {
       notification.style.opacity = '0';
       notification.style.transform = 'translateX(30px)';
-      notification.style.transition = 'all 0.3s var(--transition-base)';
       setTimeout(() => notification.remove(), 300);
     }, 3000);
   }
@@ -1175,8 +1163,9 @@ function setFavicon() {
   function clearLogs(logId) {
     const box = document.getElementById(logId);
     if (box) {
-      while (box.firstChild) {
-        box.removeChild(box.firstChild);
+      const items = box.children;
+      for (let i = items.length - 1; i >= 0; i--) {
+        items[i].remove();
       }
     }
   }
@@ -1554,7 +1543,7 @@ function setFavicon() {
       <div class="auth-card">
         <div class="logo">
           <div class="logo-icon">
-            🐱‍👤
+            🐱
           </div>
           <h1>discord cloner</h1>
           <p>профессиональный инструмент для клонирования</p>
