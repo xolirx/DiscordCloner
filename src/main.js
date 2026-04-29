@@ -1,27 +1,29 @@
+// Discord Cloner Pro - финальная версия
+// Черно-белый редизайн, исправлены все ошибки, аватарка грузится корректно
+
 (function() {
-  // ------------------------------ СТИЛИ (улучшенный дизайн) ---------------------------------
+  // ------------------------------ СТИЛИ (черно-белая тема) ---------------------------------
   const style = document.createElement('style');
   style.textContent = `
     :root {
       --bg-deep: #000000;
       --bg-surface: #0a0a0a;
-      --bg-elevated: #111111;
-      --bg-card: rgba(8, 8, 8, 0.96);
-      --border-subtle: rgba(255, 255, 255, 0.05);
-      --border-medium: rgba(255, 255, 255, 0.08);
-      --border-active: rgba(139, 92, 246, 0.3);
-      --accent: #8b5cf6;
-      --accent-dark: #7c3aed;
-      --accent-glow: rgba(139, 92, 246, 0.15);
-      --accent-gradient: linear-gradient(135deg, #8b5cf6, #a78bfa);
+      --bg-elevated: #141414;
+      --bg-card: rgba(10, 10, 10, 0.96);
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-medium: rgba(255, 255, 255, 0.1);
+      --border-active: rgba(255, 255, 255, 0.2);
+      --accent: #ffffff;
+      --accent-dim: #a0a0a0;
+      --accent-glow: rgba(255, 255, 255, 0.08);
       --text-white: #ffffff;
-      --text-gray: #c0c0c0;
+      --text-gray: #b0b0b0;
       --text-dim: #5a5a5a;
-      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
-      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
-      --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
-      --shadow-xl: 0 24px 56px rgba(0, 0, 0, 0.6);
-      --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.2);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
+      --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.7);
+      --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.8);
+      --shadow-glow: 0 0 15px rgba(255, 255, 255, 0.05);
       --success: #10b981;
       --error: #ef4444;
       --warning: #f59e0b;
@@ -30,9 +32,9 @@
       --radius-md: 12px;
       --radius-lg: 16px;
       --radius-xl: 24px;
-      --transition-slow: 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      --transition-base: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      --transition-fast: 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      --transition-slow: 0.5s ease;
+      --transition-base: 0.3s ease;
+      --transition-fast: 0.2s ease;
     }
 
     * {
@@ -57,13 +59,11 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: 
-        radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.03) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.02) 0%, transparent 50%);
+      background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.02) 0%, transparent 60%),
+                  radial-gradient(circle at 80% 70%, rgba(255,255,255,0.01) 0%, transparent 60%);
       pointer-events: none;
     }
 
-    /* Анимированные частицы */
     .particles {
       position: fixed;
       top: 0;
@@ -75,18 +75,17 @@
     }
     .particle {
       position: absolute;
-      background: rgba(139, 92, 246, 0.1);
+      background: rgba(255, 255, 255, 0.08);
       border-radius: 50%;
       animation: floatParticle 20s infinite linear;
     }
     @keyframes floatParticle {
       0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-      20% { opacity: 0.4; }
-      80% { opacity: 0.4; }
+      20% { opacity: 0.3; }
+      80% { opacity: 0.3; }
       100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
     }
 
-    /* Контейнеры */
     .auth-container, .main-container {
       position: relative;
       z-index: 10;
@@ -104,7 +103,6 @@
       height: 100vh;
     }
 
-    /* Карточка авторизации */
     .auth-card {
       background: var(--bg-card);
       backdrop-filter: blur(24px);
@@ -117,18 +115,17 @@
       transition: all var(--transition-base);
     }
     .auth-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8), 0 0 40px rgba(139, 92, 246, 0.15);
+      transform: translateY(-4px);
       border-color: var(--border-active);
+      box-shadow: var(--shadow-xl), 0 0 30px rgba(255,255,255,0.05);
     }
 
-    /* Логотип */
     .logo { text-align: center; margin-bottom: 40px; }
     .logo-icon {
       width: 88px;
       height: 88px;
-      background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
-      border: 2px solid var(--border-medium);
+      background: #111;
+      border: 1px solid var(--border-medium);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -140,17 +137,14 @@
     }
     .logo-icon:hover {
       transform: scale(1.05);
-      border-color: var(--accent);
-      box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+      border-color: var(--accent-dim);
+      box-shadow: 0 0 30px rgba(255,255,255,0.1);
     }
     .logo h1 {
-      font-size: 2.2rem;
-      font-weight: 800;
+      font-size: 2rem;
+      font-weight: 700;
       letter-spacing: -0.5px;
-      background: var(--accent-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--text-white);
     }
     .logo p {
       color: var(--text-dim);
@@ -158,8 +152,7 @@
       margin-top: 8px;
     }
 
-    /* Поля ввода */
-    .input-group { margin-bottom: 24px; position: relative; }
+    .input-group { margin-bottom: 24px; }
     .input-group label {
       display: block;
       margin-bottom: 8px;
@@ -184,8 +177,8 @@
     }
     .input-wrapper input:focus {
       outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
+      border-color: var(--accent-dim);
+      box-shadow: 0 0 0 2px var(--accent-glow);
     }
     .input-wrapper input.error {
       border-color: var(--error);
@@ -194,10 +187,9 @@
     .toggle-password {
       position: absolute;
       right: 14px;
-      cursor: pointer;
       background: none;
       border: none;
-      padding: 0;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -208,7 +200,7 @@
       stroke: var(--text-dim);
       transition: stroke var(--transition-fast);
     }
-    .toggle-password:hover svg { stroke: var(--accent); }
+    .toggle-password:hover svg { stroke: var(--text-white); }
 
     @keyframes shake {
       0%,100% { transform: translateX(0); }
@@ -216,7 +208,6 @@
       80% { transform: translateX(6px); }
     }
 
-    /* Кнопки */
     .btn {
       width: 100%;
       padding: 14px;
@@ -230,14 +221,15 @@
       overflow: hidden;
     }
     .btn-primary {
-      background: linear-gradient(135deg, #1a1a1a, #0f0f0f);
+      background: #1a1a1a;
       color: var(--text-white);
       border: 1px solid var(--border-medium);
     }
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: var(--shadow-md), 0 0 20px var(--accent-glow);
-      border-color: var(--accent);
+      background: #222;
+      border-color: var(--accent-dim);
+      box-shadow: var(--shadow-md);
     }
     .btn-primary::before {
       content: '';
@@ -247,7 +239,7 @@
       width: 0;
       height: 0;
       border-radius: 50%;
-      background: rgba(139, 92, 246, 0.2);
+      background: rgba(255,255,255,0.1);
       transform: translate(-50%, -50%);
       transition: width 0.5s, height 0.5s;
     }
@@ -256,7 +248,6 @@
       height: 200px;
     }
 
-    /* Основная панель */
     .wrapper {
       display: flex;
       gap: 24px;
@@ -278,16 +269,15 @@
     .right-panel { flex: 0.8; }
     .left-panel:hover, .right-panel:hover {
       border-color: var(--border-active);
-      box-shadow: var(--shadow-xl), var(--shadow-glow);
+      box-shadow: var(--shadow-xl);
     }
 
-    /* Контактная панель */
     .contact-bar {
       position: fixed;
       top: 24px;
       right: 24px;
       z-index: 100;
-      background: var(--bg-elevated);
+      background: rgba(20,20,20,0.9);
       backdrop-filter: blur(12px);
       border: 1px solid var(--border-medium);
       border-radius: 40px;
@@ -295,9 +285,8 @@
       transition: all var(--transition-base);
     }
     .contact-bar:hover {
-      border-color: var(--accent);
+      border-color: var(--accent-dim);
       transform: translateY(-2px);
-      box-shadow: var(--shadow-sm);
     }
     .contact-link {
       color: var(--text-gray);
@@ -308,9 +297,8 @@
       align-items: center;
       gap: 10px;
     }
-    .contact-link:hover { color: var(--accent); }
+    .contact-link:hover { color: var(--text-white); }
 
-    /* Информация о пользователе */
     .user-info {
       display: flex;
       align-items: center;
@@ -330,8 +318,8 @@
       width: 60px;
       height: 60px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
-      border: 2px solid var(--accent);
+      background: #1a1a1a;
+      border: 1px solid var(--accent-dim);
       overflow: hidden;
       flex-shrink: 0;
     }
@@ -346,10 +334,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--accent-gradient);
-      color: white;
+      background: #222;
+      color: var(--text-white);
       font-size: 26px;
-      font-weight: 700;
+      font-weight: 600;
     }
     .user-name {
       font-weight: 700;
@@ -362,15 +350,14 @@
     }
     .user-badge {
       display: inline-block;
-      background: rgba(139, 92, 246, 0.15);
+      background: rgba(255,255,255,0.1);
       border-radius: 20px;
       padding: 2px 10px;
       font-size: 0.65rem;
-      color: var(--accent);
+      color: var(--text-gray);
       margin-top: 6px;
     }
 
-    /* Статистика */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -387,13 +374,13 @@
     }
     .stat-card:hover {
       transform: translateY(-4px);
-      border-color: var(--accent);
+      border-color: var(--accent-dim);
       box-shadow: var(--shadow-sm);
     }
     .stat-value {
       font-size: 1.8rem;
       font-weight: 800;
-      color: var(--accent);
+      color: var(--text-white);
     }
     .stat-label {
       font-size: 0.7rem;
@@ -401,10 +388,9 @@
       color: var(--text-dim);
       margin-top: 6px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 1px;
     }
 
-    /* Поля ввода ID */
     .input-modern {
       width: 100%;
       padding: 12px 16px;
@@ -418,11 +404,10 @@
     }
     .input-modern:focus {
       outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
+      border-color: var(--accent-dim);
+      box-shadow: 0 0 0 2px var(--accent-glow);
     }
 
-    /* Группа кнопок */
     .button-group {
       display: flex;
       gap: 12px;
@@ -434,20 +419,19 @@
       border: 1px solid var(--border-medium);
     }
     .btn-secondary:hover {
-      border-color: var(--accent);
+      border-color: var(--accent-dim);
       transform: translateY(-2px);
     }
     .btn-danger {
-      background: rgba(239, 68, 68, 0.1);
+      background: rgba(239,68,68,0.1);
       color: var(--error);
-      border: 1px solid rgba(239, 68, 68, 0.3);
+      border: 1px solid rgba(239,68,68,0.3);
     }
     .btn-danger:hover {
-      background: rgba(239, 68, 68, 0.2);
+      background: rgba(239,68,68,0.2);
       transform: translateY(-2px);
     }
 
-    /* Статус клонирования */
     .status-card {
       background: var(--bg-elevated);
       border-radius: var(--radius-lg);
@@ -456,9 +440,9 @@
       display: none;
       border: 1px solid var(--border-subtle);
     }
-    .status-card.active { display: block; animation: fadeSlide 0.4s ease; }
+    .status-card.active { display: block; animation: fadeSlide 0.3s ease; }
     @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(-10px); }
+      from { opacity: 0; transform: translateY(-8px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .status-header {
@@ -471,40 +455,24 @@
       width: 20px;
       height: 20px;
       border: 2px solid var(--border-medium);
-      border-top-color: var(--accent);
+      border-top-color: var(--text-white);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .progress-bar {
-      height: 6px;
+      height: 4px;
       background: var(--bg-surface);
-      border-radius: 3px;
+      border-radius: 2px;
       overflow: hidden;
     }
     .progress-fill {
       height: 100%;
-      background: var(--accent-gradient);
-      border-radius: 3px;
-      transition: width 0.4s ease;
-      position: relative;
-    }
-    .progress-fill::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      animation: shimmer 1.5s infinite;
-    }
-    @keyframes shimmer {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
+      background: var(--text-white);
+      border-radius: 2px;
+      transition: width 0.3s ease;
     }
 
-    /* Лог-бокс */
     .log-box {
       background: var(--bg-surface);
       border-radius: var(--radius-lg);
@@ -523,16 +491,14 @@
       display: flex;
       gap: 12px;
       align-items: center;
-      animation: logEntry 0.25s ease;
-      transition: all var(--transition-fast);
+      animation: logEntry 0.2s ease;
     }
     @keyframes logEntry {
-      from { opacity: 0; transform: translateX(-12px); }
+      from { opacity: 0; transform: translateX(-8px); }
       to { opacity: 1; transform: translateX(0); }
     }
     .log-item:hover {
       background: rgba(255,255,255,0.05);
-      transform: translateX(4px);
     }
     .log-time {
       color: var(--text-dim);
@@ -545,7 +511,29 @@
     .log-warning .log-icon svg { color: var(--warning); }
     .log-info .log-icon svg { color: var(--info); }
 
-    /* Адаптивность */
+    .log-header {
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .clear-logs-btn {
+      background: transparent;
+      border: 1px solid var(--border-medium);
+      color: var(--text-gray);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .clear-logs-btn:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: var(--accent-dim);
+      color: var(--text-white);
+    }
+
     @media (max-width: 768px) {
       .wrapper { flex-direction: column; height: auto; gap: 16px; }
       .left-panel, .right-panel { flex: none; padding: 20px; }
@@ -563,7 +551,7 @@
   `;
   document.head.appendChild(style);
 
-  // ------------------------------ SVG ИКОНКИ ---------------------------------
+  // ------------------------------ SVG иконки ---------------------------------
   const SVG_ICONS = {
     success: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>`,
     error: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
@@ -573,10 +561,10 @@
     eyeOff: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
   };
 
-  // ------------------------------ ФУНКЦИИ АНИМАЦИЙ ---------------------------------
+  // ------------------------------ Вспомогательные функции ---------------------------------
   function createParticles() {
-    const particlesDiv = document.createElement('div');
-    particlesDiv.className = 'particles';
+    const container = document.createElement('div');
+    container.className = 'particles';
     for (let i = 0; i < 40; i++) {
       const p = document.createElement('div');
       p.className = 'particle';
@@ -586,9 +574,9 @@
       p.style.left = `${Math.random() * 100}%`;
       p.style.animationDelay = `${Math.random() * 20}s`;
       p.style.animationDuration = `${Math.random() * 15 + 10}s`;
-      particlesDiv.appendChild(p);
+      container.appendChild(p);
     }
-    document.body.appendChild(particlesDiv);
+    document.body.appendChild(container);
   }
 
   function setFavicon() {
@@ -596,9 +584,9 @@
     canvas.width = 64;
     canvas.height = 64;
     const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#000000';
+    ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, 64, 64);
-    ctx.fillStyle = '#8b5cf6';
+    ctx.fillStyle = '#fff';
     ctx.font = '40px "Segoe UI"';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -609,14 +597,14 @@
     document.head.appendChild(link);
   }
 
-  // ------------------------------ ОСНОВНОЕ ПРИЛОЖЕНИЕ ---------------------------------
+  // ------------------------------ Основное приложение ---------------------------------
   const API = 'https://discord.com/api/v10';
   let cloning = false, cancel = false, controller = null;
   let authToken = null, currentUser = null;
   let keepAliveInterval = null;
 
   const sleep = ms => new Promise(r => setTimeout(r, ms));
-  
+
   const log = (msg, type = 'info', target = 'mainLog') => {
     const box = document.getElementById(target);
     if (!box) return;
@@ -630,12 +618,12 @@
   };
 
   const updateStats = (stats) => {
-    const roles = document.getElementById('rolesCount');
-    const channels = document.getElementById('channelsCount');
-    const errors = document.getElementById('errorsCount');
-    if (roles) roles.textContent = stats.roles || 0;
-    if (channels) channels.textContent = stats.channels || 0;
-    if (errors) errors.textContent = stats.errors || 0;
+    const rolesEl = document.getElementById('rolesCount');
+    const channelsEl = document.getElementById('channelsCount');
+    const errorsEl = document.getElementById('errorsCount');
+    if (rolesEl) rolesEl.textContent = stats.roles || 0;
+    if (channelsEl) channelsEl.textContent = stats.channels || 0;
+    if (errorsEl) errorsEl.textContent = stats.errors || 0;
   };
 
   const updateUserInfo = (user) => {
@@ -672,10 +660,10 @@
   };
   const stopKeepAlive = () => { if (keepAliveInterval) clearInterval(keepAliveInterval); keepAliveInterval = null; };
 
-  // ------------------------------ АВТОРИЗАЦИЯ ---------------------------------
+  // ------------------------------ Авторизация ---------------------------------
   async function authorize() {
-    const tokenInput = document.getElementById('authToken');
-    const token = tokenInput.value.trim();
+    const input = document.getElementById('authToken');
+    const token = input.value.trim();
     if (!token) { showAuthError('Введите токен'); return; }
     const btn = document.getElementById('authBtn');
     const original = btn.textContent;
@@ -709,8 +697,12 @@
         });
         initMainUI();
       }, 500);
-    } catch (err) { showAuthError(err.message); }
-    finally { btn.textContent = original; btn.disabled = false; }
+    } catch (err) {
+      showAuthError(err.message);
+    } finally {
+      btn.textContent = original;
+      btn.disabled = false;
+    }
   }
 
   function showAuthError(msg) {
@@ -790,7 +782,7 @@
     if (box) while (box.firstChild) box.removeChild(box.firstChild);
   }
 
-  // ------------------------------ РАБОТА С API ---------------------------------
+  // ------------------------------ API запросы ---------------------------------
   async function apiRequest(url, opts = {}, retries = 3) {
     if (!authToken) throw new Error('не авторизован');
     if (cancel) throw new Error('CANCELLED');
@@ -823,23 +815,23 @@
   async function copyGuildIcon(srcId, tgtId) {
     try {
       const srcGuild = await (await fetch(`${API}/guilds/${srcId}`, { headers: { 'Authorization': authToken } })).json();
-      if (!srcGuild.icon) { log(`исходный сервер не имеет иконки`, 'info', 'mainLog'); return false; }
+      if (!srcGuild.icon) { log(`исходный сервер не имеет иконки`, 'info'); return false; }
       const iconRes = await fetch(`https://cdn.discordapp.com/icons/${srcId}/${srcGuild.icon}.png?size=256`);
       if (!iconRes.ok) throw new Error('загрузка иконки');
       const blob = await iconRes.blob();
-      if (blob.size > 262144) { log(`иконка >256KB, пропуск`, 'warning', 'mainLog'); return false; }
+      if (blob.size > 262144) { log(`иконка >256KB, пропуск`, 'warning'); return false; }
       const base64 = await new Promise(r => { const fr = new FileReader(); fr.onloadend = () => r(fr.result); fr.readAsDataURL(blob); });
       const base64Data = base64.split(',')[1];
       const upd = await fetch(`${API}/guilds/${tgtId}`, { method: 'PATCH', headers: { 'Authorization': authToken, 'Content-Type': 'application/json' }, body: JSON.stringify({ icon: base64Data }) });
-      if (upd.ok) { log(`иконка сервера скопирована`, 'success', 'mainLog'); return true; }
+      if (upd.ok) { log(`иконка сервера скопирована`, 'success'); return true; }
       throw new Error(`статус ${upd.status}`);
-    } catch(e) { log(`ошибка копирования иконки: ${e.message}`, 'warning', 'mainLog'); return false; }
+    } catch(e) { log(`ошибка копирования иконки: ${e.message}`, 'warning'); return false; }
   }
 
   function normalizeChannelType(origType, targetFeatures = []) {
-    if (origType === 5 && !targetFeatures.includes('COMMUNITY')) return 0;   // announcement -> text
-    if (origType === 13 && !targetFeatures.includes('STAGE_CHANNELS')) return 2; // stage -> voice
-    if (origType === 15 && !targetFeatures.includes('FORUM_CHANNELS')) return 0; // forum -> text
+    if (origType === 5 && !targetFeatures.includes('COMMUNITY')) return 0;
+    if (origType === 13 && !targetFeatures.includes('STAGE_CHANNELS')) return 2;
+    if (origType === 15 && !targetFeatures.includes('FORUM_CHANNELS')) return 0;
     return origType;
   }
 
@@ -854,7 +846,7 @@
         if ((e.message.includes('400') || e.message.includes('50024') || e.message.includes('50035')) && body.type !== 0) {
           const originalType = body.type;
           body.type = 0;
-          log(`ошибка типа канала (${originalType}), пробуем как текстовый`, 'warning', 'mainLog');
+          log(`ошибка типа канала (${originalType}), пробуем как текстовый`, 'warning');
           continue;
         }
         throw e;
@@ -917,7 +909,7 @@
     if (cloning) {
       cancel = true;
       if (controller) controller.abort();
-      log('процесс остановлен', 'warning', 'mainLog');
+      log('процесс остановлен', 'warning');
       const btn = document.getElementById('cancelBtn');
       if (btn) btn.disabled = true;
     }
@@ -928,10 +920,10 @@
     const src = document.getElementById('sourceId').value.trim();
     const tgt = document.getElementById('targetId').value.trim();
     if (!/^\d{17,20}$/.test(src) || !/^\d{17,20}$/.test(tgt)) {
-      log('ошибка: неверный формат ID сервера', 'error', 'mainLog');
+      log('ошибка: неверный формат ID сервера', 'error');
       return;
     }
-    if (src === tgt) { log('ошибка: серверы совпадают', 'error', 'mainLog'); return; }
+    if (src === tgt) { log('ошибка: серверы совпадают', 'error'); return; }
 
     cloning = true; cancel = false; controller = new AbortController();
     const cloneBtn = document.getElementById('cloneBtn');
@@ -959,7 +951,7 @@
       const targetFeatures = targetFull.features || [];
 
       const srcGuild = await (await apiRequest(`${API}/guilds/${src}`)).json();
-      log(`исходный сервер: ${srcGuild.name}`, 'success', 'mainLog');
+      log(`исходный сервер: ${srcGuild.name}`, 'success');
       await copyGuildIcon(src, tgt);
 
       // Очистка каналов
@@ -969,8 +961,8 @@
         if (cancel) throw new Error('CANCELLED');
         try {
           await apiRequest(`${API}/channels/${channels[i].id}`, { method: 'DELETE' });
-          log(`удалён канал: ${channels[i].name || channels[i].id}`, 'warning', 'mainLog');
-        } catch(e) { stats.errors++; log(`ошибка удаления: ${e.message}`, 'error', 'mainLog'); }
+          log(`удалён канал: ${channels[i].name || channels[i].id}`, 'warning');
+        } catch(e) { stats.errors++; log(`ошибка удаления: ${e.message}`, 'error'); }
         await sleep(200);
         const pct = Math.min(10, ((i+1)/Math.max(channels.length,1))*10);
         progFill.style.width = pct+'%';
@@ -992,7 +984,7 @@
       // Настройка сервера
       statusText.textContent = 'настройка сервера';
       await apiRequest(`${API}/guilds/${tgt}`, { method: 'PATCH', body: JSON.stringify({ name: srcGuild.name }) });
-      log(`название скопировано: ${srcGuild.name}`, 'success', 'mainLog');
+      log(`название скопировано: ${srcGuild.name}`, 'success');
       progFill.style.width = '25%'; progPercent.textContent = '25%';
 
       // Создание ролей
@@ -1012,15 +1004,15 @@
           const nr = await resp.json();
           roleMap[r.id] = nr.id;
           stats.roles++;
-          log(`роль создана: ${r.name}`, 'success', 'mainLog');
-        } catch(e) { stats.errors++; log(`ошибка роли ${r.name}: ${e.message}`, 'error', 'mainLog'); }
+          log(`роль создана: ${r.name}`, 'success');
+        } catch(e) { stats.errors++; log(`ошибка роли ${r.name}: ${e.message}`, 'error'); }
         await sleep(250);
         const pct = 25 + ((i+1)/Math.max(rolesToCreate.length,1))*30;
         progFill.style.width = pct+'%';
         progPercent.textContent = Math.floor(pct)+'%';
         updateStats(stats);
       }
-      log(`создано ролей: ${stats.roles}`, 'info', 'mainLog');
+      log(`создано ролей: ${stats.roles}`, 'info');
 
       // Создание каналов
       statusText.textContent = 'создание каналов';
@@ -1039,8 +1031,8 @@
           const ch = await resp.json();
           catMap[cat.id] = ch.id;
           created++; stats.channels++;
-          log(`категория создана: ${cat.name}`, 'success', 'mainLog');
-        } catch(e) { stats.errors++; log(`ошибка категории ${cat.name}: ${e.message}`, 'error', 'mainLog'); }
+          log(`категория создана: ${cat.name}`, 'success');
+        } catch(e) { stats.errors++; log(`ошибка категории ${cat.name}: ${e.message}`, 'error'); }
         await sleep(250);
         updateStats(stats);
       }
@@ -1052,8 +1044,8 @@
           let body = buildChannelData(ch, tgt, roleMap, catMap, srcGuild.id, targetFeatures);
           await createChannelWithRetry(tgt, body, targetFeatures);
           created++; stats.channels++;
-          log(`канал создан: ${ch.name}`, 'success', 'mainLog');
-        } catch(e) { stats.errors++; log(`ошибка канала ${ch.name}: ${e.message}`, 'error', 'mainLog'); }
+          log(`канал создан: ${ch.name}`, 'success');
+        } catch(e) { stats.errors++; log(`ошибка канала ${ch.name}: ${e.message}`, 'error'); }
         await sleep(200);
         const pct = 60 + ((categories.length + i + 1)/Math.max(total,1))*40;
         progFill.style.width = pct+'%';
@@ -1063,22 +1055,22 @@
 
       progFill.style.width = '100%';
       progPercent.textContent = '100%';
-      log(`клонирование завершено`, 'success', 'mainLog');
-      log(`статистика: ${stats.roles} ролей, ${stats.channels} каналов`, 'info', 'mainLog');
-      if (stats.errors) log(`ошибок: ${stats.errors}`, 'warning', 'mainLog');
+      log(`клонирование завершено`, 'success');
+      log(`статистика: ${stats.roles} ролей, ${stats.channels} каналов`, 'info');
+      if (stats.errors) log(`ошибок: ${stats.errors}`, 'warning');
       showNotification('клонирование завершено', 'success');
     } catch(e) {
       if (e.message === 'CANCELLED') {
-        log('процесс отменён', 'warning', 'mainLog');
+        log('процесс отменён', 'warning');
         showNotification('клонирование отменено', 'info');
       } else {
-        log(`критическая ошибка: ${e.message}`, 'error', 'mainLog');
+        log(`критическая ошибка: ${e.message}`, 'error');
         showNotification('ошибка при клонировании', 'error');
       }
     } finally { resetClone(); }
   }
 
-  // ------------------------------ ЗАПУСК ---------------------------------
+  // ------------------------------ Запуск приложения ---------------------------------
   createParticles();
   setFavicon();
 
@@ -1121,7 +1113,7 @@
           <div class="status-card" id="cloneStatus"><div class="status-header"><div class="spinner"></div><span id="statusText">инициализация</span><span id="progressPercent" style="margin-left:auto; font-weight:600;">0%</span></div><div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div></div>
           <button class="btn btn-danger" id="logoutBtn" style="margin-top:20px;">выйти</button>
         </div>
-        <div class="right-panel"><div class="log-header"><span>журнал событий</span><button id="clearLogsBtn">очистить</button></div><div id="mainLog" class="log-box"></div></div>
+        <div class="right-panel"><div class="log-header"><span>журнал событий</span><button class="clear-logs-btn" id="clearLogsBtn">очистить</button></div><div id="mainLog" class="log-box"></div></div>
       </div>
     </div>
   `;
