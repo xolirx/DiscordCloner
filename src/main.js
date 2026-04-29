@@ -1,8 +1,7 @@
-// Discord Cloner Pro - финальная версия
-// Черно-белый редизайн, исправлены все ошибки, аватарка грузится корректно
+// Discord Cloner Pro - финальная исправленная версия
+// Аватар пользователя загружается корректно, черно-белый дизайн
 
 (function() {
-  // ------------------------------ СТИЛИ (черно-белая тема) ---------------------------------
   const style = document.createElement('style');
   style.textContent = `
     :root {
@@ -13,17 +12,13 @@
       --border-subtle: rgba(255, 255, 255, 0.06);
       --border-medium: rgba(255, 255, 255, 0.1);
       --border-active: rgba(255, 255, 255, 0.2);
-      --accent: #ffffff;
-      --accent-dim: #a0a0a0;
-      --accent-glow: rgba(255, 255, 255, 0.08);
       --text-white: #ffffff;
       --text-gray: #b0b0b0;
       --text-dim: #5a5a5a;
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
-      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
-      --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.7);
-      --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.8);
-      --shadow-glow: 0 0 15px rgba(255, 255, 255, 0.05);
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.5);
+      --shadow-md: 0 4px 16px rgba(0,0,0,0.6);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.7);
+      --shadow-xl: 0 16px 48px rgba(0,0,0,0.8);
       --success: #10b981;
       --error: #ef4444;
       --warning: #f59e0b;
@@ -32,17 +27,8 @@
       --radius-md: 12px;
       --radius-lg: 16px;
       --radius-xl: 24px;
-      --transition-slow: 0.5s ease;
-      --transition-base: 0.3s ease;
-      --transition-fast: 0.2s ease;
     }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--bg-deep);
@@ -51,7 +37,6 @@
       overflow-x: hidden;
       position: relative;
     }
-
     body::before {
       content: '';
       position: fixed;
@@ -63,7 +48,6 @@
                   radial-gradient(circle at 80% 70%, rgba(255,255,255,0.01) 0%, transparent 60%);
       pointer-events: none;
     }
-
     .particles {
       position: fixed;
       top: 0;
@@ -85,7 +69,6 @@
       80% { opacity: 0.3; }
       100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
     }
-
     .auth-container, .main-container {
       position: relative;
       z-index: 10;
@@ -102,7 +85,6 @@
       padding: 20px;
       height: 100vh;
     }
-
     .auth-card {
       background: var(--bg-card);
       backdrop-filter: blur(24px);
@@ -111,15 +93,14 @@
       padding: 48px;
       max-width: 480px;
       width: 100%;
-      box-shadow: var(--shadow-xl), var(--shadow-glow);
-      transition: all var(--transition-base);
+      box-shadow: var(--shadow-xl);
+      transition: all 0.3s ease;
     }
     .auth-card:hover {
       transform: translateY(-4px);
       border-color: var(--border-active);
       box-shadow: var(--shadow-xl), 0 0 30px rgba(255,255,255,0.05);
     }
-
     .logo { text-align: center; margin-bottom: 40px; }
     .logo-icon {
       width: 88px;
@@ -132,12 +113,12 @@
       justify-content: center;
       margin: 0 auto 20px;
       box-shadow: var(--shadow-lg);
-      transition: all var(--transition-base);
+      transition: all 0.3s ease;
       font-size: 52px;
     }
     .logo-icon:hover {
       transform: scale(1.05);
-      border-color: var(--accent-dim);
+      border-color: var(--text-gray);
       box-shadow: 0 0 30px rgba(255,255,255,0.1);
     }
     .logo h1 {
@@ -151,7 +132,6 @@
       font-size: 0.875rem;
       margin-top: 8px;
     }
-
     .input-group { margin-bottom: 24px; }
     .input-group label {
       display: block;
@@ -173,12 +153,12 @@
       border-radius: var(--radius-md);
       color: var(--text-white);
       font-size: 0.875rem;
-      transition: all var(--transition-fast);
+      transition: all 0.2s ease;
     }
     .input-wrapper input:focus {
       outline: none;
-      border-color: var(--accent-dim);
-      box-shadow: 0 0 0 2px var(--accent-glow);
+      border-color: var(--text-gray);
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.05);
     }
     .input-wrapper input.error {
       border-color: var(--error);
@@ -198,16 +178,14 @@
       width: 20px;
       height: 20px;
       stroke: var(--text-dim);
-      transition: stroke var(--transition-fast);
+      transition: stroke 0.2s;
     }
     .toggle-password:hover svg { stroke: var(--text-white); }
-
     @keyframes shake {
       0%,100% { transform: translateX(0); }
       20% { transform: translateX(-6px); }
       80% { transform: translateX(6px); }
     }
-
     .btn {
       width: 100%;
       padding: 14px;
@@ -216,7 +194,7 @@
       font-size: 0.875rem;
       font-weight: 600;
       cursor: pointer;
-      transition: all var(--transition-base);
+      transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
     }
@@ -228,7 +206,7 @@
     .btn-primary:hover {
       transform: translateY(-2px);
       background: #222;
-      border-color: var(--accent-dim);
+      border-color: var(--text-gray);
       box-shadow: var(--shadow-md);
     }
     .btn-primary::before {
@@ -247,7 +225,6 @@
       width: 200px;
       height: 200px;
     }
-
     .wrapper {
       display: flex;
       gap: 24px;
@@ -261,7 +238,7 @@
       border-radius: var(--radius-xl);
       border: 1px solid var(--border-medium);
       padding: 28px;
-      transition: all var(--transition-base);
+      transition: all 0.3s ease;
       overflow-y: auto;
       box-shadow: var(--shadow-lg);
     }
@@ -271,7 +248,6 @@
       border-color: var(--border-active);
       box-shadow: var(--shadow-xl);
     }
-
     .contact-bar {
       position: fixed;
       top: 24px;
@@ -282,10 +258,10 @@
       border: 1px solid var(--border-medium);
       border-radius: 40px;
       padding: 8px 20px;
-      transition: all var(--transition-base);
+      transition: all 0.3s ease;
     }
     .contact-bar:hover {
-      border-color: var(--accent-dim);
+      border-color: var(--text-gray);
       transform: translateY(-2px);
     }
     .contact-link {
@@ -298,7 +274,6 @@
       gap: 10px;
     }
     .contact-link:hover { color: var(--text-white); }
-
     .user-info {
       display: flex;
       align-items: center;
@@ -308,7 +283,7 @@
       border-radius: var(--radius-lg);
       margin-bottom: 28px;
       border: 1px solid var(--border-subtle);
-      transition: all var(--transition-fast);
+      transition: all 0.2s;
     }
     .user-info:hover {
       border-color: var(--border-active);
@@ -319,7 +294,7 @@
       height: 60px;
       border-radius: 50%;
       background: #1a1a1a;
-      border: 1px solid var(--accent-dim);
+      border: 1px solid var(--text-gray);
       overflow: hidden;
       flex-shrink: 0;
     }
@@ -357,7 +332,6 @@
       color: var(--text-gray);
       margin-top: 6px;
     }
-
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -370,11 +344,11 @@
       padding: 16px;
       text-align: center;
       border: 1px solid var(--border-subtle);
-      transition: all var(--transition-fast);
+      transition: all 0.2s;
     }
     .stat-card:hover {
       transform: translateY(-4px);
-      border-color: var(--accent-dim);
+      border-color: var(--text-gray);
       box-shadow: var(--shadow-sm);
     }
     .stat-value {
@@ -390,7 +364,6 @@
       text-transform: uppercase;
       letter-spacing: 1px;
     }
-
     .input-modern {
       width: 100%;
       padding: 12px 16px;
@@ -400,14 +373,13 @@
       color: var(--text-white);
       font-size: 0.875rem;
       margin-bottom: 14px;
-      transition: all var(--transition-fast);
+      transition: all 0.2s;
     }
     .input-modern:focus {
       outline: none;
-      border-color: var(--accent-dim);
-      box-shadow: 0 0 0 2px var(--accent-glow);
+      border-color: var(--text-gray);
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.05);
     }
-
     .button-group {
       display: flex;
       gap: 12px;
@@ -419,7 +391,7 @@
       border: 1px solid var(--border-medium);
     }
     .btn-secondary:hover {
-      border-color: var(--accent-dim);
+      border-color: var(--text-gray);
       transform: translateY(-2px);
     }
     .btn-danger {
@@ -431,7 +403,6 @@
       background: rgba(239,68,68,0.2);
       transform: translateY(-2px);
     }
-
     .status-card {
       background: var(--bg-elevated);
       border-radius: var(--radius-lg);
@@ -472,7 +443,6 @@
       border-radius: 2px;
       transition: width 0.3s ease;
     }
-
     .log-box {
       background: var(--bg-surface);
       border-radius: var(--radius-lg);
@@ -510,7 +480,6 @@
     .log-error .log-icon svg { color: var(--error); }
     .log-warning .log-icon svg { color: var(--warning); }
     .log-info .log-icon svg { color: var(--info); }
-
     .log-header {
       margin-bottom: 16px;
       display: flex;
@@ -526,14 +495,13 @@
       font-size: 0.7rem;
       font-weight: 500;
       cursor: pointer;
-      transition: all var(--transition-fast);
+      transition: all 0.2s;
     }
     .clear-logs-btn:hover {
       background: rgba(255,255,255,0.05);
-      border-color: var(--accent-dim);
+      border-color: var(--text-gray);
       color: var(--text-white);
     }
-
     @media (max-width: 768px) {
       .wrapper { flex-direction: column; height: auto; gap: 16px; }
       .left-panel, .right-panel { flex: none; padding: 20px; }
@@ -561,7 +529,6 @@
     eyeOff: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
   };
 
-  // ------------------------------ Вспомогательные функции ---------------------------------
   function createParticles() {
     const container = document.createElement('div');
     container.className = 'particles';
@@ -630,23 +597,23 @@
     const nameEl = document.getElementById('userName');
     const emailEl = document.getElementById('userEmail');
     const avatarImg = document.getElementById('userAvatarImg');
-    const avatarPlaceholder = document.getElementById('userAvatarPlaceholder');
+    const placeholder = document.getElementById('userAvatarPlaceholder');
     if (nameEl) nameEl.textContent = user.username;
     if (emailEl) emailEl.textContent = user.email || 'email не указан';
     if (user.avatar) {
       const url = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`;
       avatarImg.src = url;
       avatarImg.style.display = 'block';
-      avatarPlaceholder.style.display = 'none';
+      placeholder.style.display = 'none';
       avatarImg.onerror = () => {
         avatarImg.style.display = 'none';
-        avatarPlaceholder.style.display = 'flex';
-        avatarPlaceholder.textContent = user.username.charAt(0).toUpperCase();
+        placeholder.style.display = 'flex';
+        placeholder.textContent = user.username.charAt(0).toUpperCase();
       };
     } else {
       avatarImg.style.display = 'none';
-      avatarPlaceholder.style.display = 'flex';
-      avatarPlaceholder.textContent = user.username.charAt(0).toUpperCase();
+      placeholder.style.display = 'flex';
+      placeholder.textContent = user.username.charAt(0).toUpperCase();
     }
   };
 
@@ -723,16 +690,20 @@
     const notif = document.createElement('div');
     notif.style.cssText = `
       position: fixed; top: 24px; right: 24px; z-index: 1000;
-      background: ${bg}; backdrop-filter: blur(12px); border: 1px solid ${colors[type] + '40'};
+      background: ${bg}; backdrop-filter: blur(12px);
+      border: 1px solid ${colors[type] + '40'};
       color: ${colors[type]}; padding: 12px 24px; border-radius: 12px;
-      font-size: 0.875rem; font-weight: 500; box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-      opacity: 0; transform: translateX(30px); transition: 0.3s;
+      font-size: 0.875rem; font-weight: 500;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      opacity: 0; transform: translateX(30px);
+      transition: 0.3s;
     `;
     notif.textContent = msg;
     document.body.appendChild(notif);
     requestAnimationFrame(() => { notif.style.opacity = '1'; notif.style.transform = 'translateX(0)'; });
     setTimeout(() => {
-      notif.style.opacity = '0'; notif.style.transform = 'translateX(30px)';
+      notif.style.opacity = '0';
+      notif.style.transform = 'translateX(30px)';
       setTimeout(() => notif.remove(), 300);
     }, 3000);
   }
@@ -822,7 +793,11 @@
       if (blob.size > 262144) { log(`иконка >256KB, пропуск`, 'warning'); return false; }
       const base64 = await new Promise(r => { const fr = new FileReader(); fr.onloadend = () => r(fr.result); fr.readAsDataURL(blob); });
       const base64Data = base64.split(',')[1];
-      const upd = await fetch(`${API}/guilds/${tgtId}`, { method: 'PATCH', headers: { 'Authorization': authToken, 'Content-Type': 'application/json' }, body: JSON.stringify({ icon: base64Data }) });
+      const upd = await fetch(`${API}/guilds/${tgtId}`, {
+        method: 'PATCH',
+        headers: { 'Authorization': authToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ icon: base64Data })
+      });
       if (upd.ok) { log(`иконка сервера скопирована`, 'success'); return true; }
       throw new Error(`статус ${upd.status}`);
     } catch(e) { log(`ошибка копирования иконки: ${e.message}`, 'warning'); return false; }
@@ -954,7 +929,6 @@
       log(`исходный сервер: ${srcGuild.name}`, 'success');
       await copyGuildIcon(src, tgt);
 
-      // Очистка каналов
       statusText.textContent = 'очистка каналов';
       let channels = await (await apiRequest(`${API}/guilds/${tgt}/channels`)).json();
       for (let i=0; i<channels.length; i++) {
@@ -970,7 +944,6 @@
         updateStats(stats);
       }
 
-      // Очистка ролей
       statusText.textContent = 'очистка ролей';
       let roles = await (await apiRequest(`${API}/guilds/${tgt}/roles`)).json();
       const delRoles = roles.filter(r => r.name !== '@everyone' && !r.managed).sort((a,b)=>b.position-a.position);
@@ -981,13 +954,11 @@
       }
       progFill.style.width = '15%'; progPercent.textContent = '15%';
 
-      // Настройка сервера
       statusText.textContent = 'настройка сервера';
       await apiRequest(`${API}/guilds/${tgt}`, { method: 'PATCH', body: JSON.stringify({ name: srcGuild.name }) });
       log(`название скопировано: ${srcGuild.name}`, 'success');
       progFill.style.width = '25%'; progPercent.textContent = '25%';
 
-      // Создание ролей
       statusText.textContent = 'создание ролей';
       const srcRoles = await (await apiRequest(`${API}/guilds/${src}/roles`)).json();
       const rolesToCreate = srcRoles.filter(r => r.name !== '@everyone' && !r.managed).sort((a,b)=>b.position-a.position);
@@ -1014,7 +985,6 @@
       }
       log(`создано ролей: ${stats.roles}`, 'info');
 
-      // Создание каналов
       statusText.textContent = 'создание каналов';
       const srcChannels = await (await apiRequest(`${API}/guilds/${src}/channels`)).json();
       const categories = srcChannels.filter(c => c.type === 4).sort((a,b)=>a.position-b.position);
@@ -1070,7 +1040,7 @@
     } finally { resetClone(); }
   }
 
-  // ------------------------------ Запуск приложения ---------------------------------
+  // ------------------------------ Запуск ---------------------------------
   createParticles();
   setFavicon();
 
