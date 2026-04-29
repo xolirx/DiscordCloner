@@ -735,7 +735,7 @@
     });
     if (currentUser) {
       updateUserInfo(currentUser);
-      log(`авторизация выполнена: ${currentUser.username}`, 'success', 'mainLog');
+      log(`Авторизация выполнена: ${currentUser.username}`, 'success', 'mainLog');
     }
   }
 
@@ -755,7 +755,7 @@
 
   // ------------------------------ API запросы ---------------------------------
   async function apiRequest(url, opts = {}, retries = 3) {
-    if (!authToken) throw new Error('не авторизован');
+    if (!authToken) throw new Error('Не авторизован');
     if (cancel) throw new Error('CANCELLED');
     const signal = controller?.signal;
     for (let i = 0; i < retries; i++) {
@@ -1048,16 +1048,16 @@
     <div class="auth-container">
       <div class="contact-bar"><a href="https://t.me/xolirx" target="_blank" class="contact-link"><span>●</span><span>@xolirx</span></a></div>
       <div class="auth-card">
-        <div class="logo"><div class="logo-icon">🐱</div><h1>discord cloner</h1><p>профессиональный инструмент для клонирования</p></div>
+        <div class="logo"><div class="logo-icon">🐱</div><h1>discord cloner</h1><p>Профессиональный инструмент для клонирования</p></div>
         <div class="input-group">
-          <label>токен авторизации</label>
+          <label>Токен авторизации</label>
           <div class="input-wrapper">
-            <input type="password" id="authToken" placeholder="введите ваш discord токен">
+            <input type="password" id="authToken" placeholder="Введите ваш discord токен">
             <button class="toggle-password" id="togglePasswordBtn" type="button">${SVG_ICONS.eye}</button>
           </div>
           <div id="authError" style="color:#ef4444; font-size:0.7rem; margin-top:6px; display:none;"></div>
         </div>
-        <button class="btn btn-primary" id="authBtn">авторизоваться</button>
+        <button class="btn btn-primary" id="authBtn">Авторизоваться</button>
         <div style="margin-top:28px; text-align:center; font-size:0.7rem; color:#5a5a5a;"><p>разработчик: xolirx</p><p>версия 2.1.0</p></div>
       </div>
     </div>
