@@ -1079,11 +1079,11 @@
           <input type="hidden" id="tokenInput">
           <input class="input-modern" id="sourceId" placeholder="id исходного сервера">
           <input class="input-modern" id="targetId" placeholder="id целевого сервера">
-          <div class="button-group"><button class="btn btn-primary" id="cloneBtn">начать клонирование</button><button class="btn btn-secondary" id="cancelBtn" disabled>отмена</button></div>
-          <div class="status-card" id="cloneStatus"><div class="status-header"><div class="spinner"></div><span id="statusText">инициализация</span><span id="progressPercent" style="margin-left:auto; font-weight:600;">0%</span></div><div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div></div>
-          <button class="btn btn-danger" id="logoutBtn" style="margin-top:20px;">выйти</button>
+          <div class="button-group"><button class="btn btn-primary" id="cloneBtn">Начать клонирование</button><button class="btn btn-secondary" id="cancelBtn" disabled>Отмена</button></div>
+          <div class="status-card" id="cloneStatus"><div class="status-header"><div class="spinner"></div><span id="statusText">Инициализация</span><span id="progressPercent" style="margin-left:auto; font-weight:600;">0%</span></div><div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div></div>
+          <button class="btn btn-danger" id="logoutBtn" style="margin-top:20px;">Выйти</button>
         </div>
-        <div class="right-panel"><div class="log-header"><span>журнал событий</span><button class="clear-logs-btn" id="clearLogsBtn">очистить</button></div><div id="mainLog" class="log-box"></div></div>
+        <div class="right-panel"><div class="log-header"><span>Логи</span><button class="clear-logs-btn" id="clearLogsBtn">Очистить</button></div><div id="mainLog" class="log-box"></div></div>
       </div>
     </div>
   `;
