@@ -429,22 +429,41 @@
     document.body.appendChild(container);
   }
 
-  function setFavicon() {
-    const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = 32;
-    const ctx = canvas.getContext('2d');
+function setFavicon() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 64;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    const size = Math.min(img.width, img.height);
+    const sx = (img.width - size) / 2;
+    const sy = (img.height - size) / 2;
+    ctx.drawImage(img, sx, sy, size, size, 0, 0, 64, 64);
+    
+    const link = document.querySelector('link[rel*="icon"]') || document.createElement('link');
+    link.rel = 'icon';
+    link.href = canvas.toDataURL('image/png');
+    document.head.appendChild(link);
+  };
+  img.onerror = () => {
     ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, 32, 32);
+    ctx.fillRect(0, 0, 64, 64);
     ctx.fillStyle = '#fff';
-    ctx.font = '20px "Segoe UI"';
+    ctx.font = '40px "Segoe UI"';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('🐱', 16, 16);
+    ctx.fillText('🐱', 32, 32);
+    
     const link = document.querySelector('link[rel*="icon"]') || document.createElement('link');
     link.rel = 'icon';
     link.href = canvas.toDataURL();
     document.head.appendChild(link);
-  }
+  };
+  img.src = 'https://i.pinimg.com/736x/1f/b8/fa/1fb8fa55b47ce6a294ad9d8c47fb57ac.jpg';
+}
 
   const API = 'https://discord.com/api/v10';
   let authToken = null, currentUser = null;
