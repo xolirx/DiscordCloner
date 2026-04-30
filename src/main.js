@@ -83,10 +83,16 @@
       margin: 0 auto 28px;
       font-size: 36px;
       transition: all var(--transition);
+      overflow: hidden;
     }
     .auth-icon:hover {
       border-color: var(--text-secondary);
       transform: scale(1.05);
+    }
+    .auth-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
     .auth-title {
       text-align: center;
@@ -429,41 +435,41 @@
     document.body.appendChild(container);
   }
 
-function setFavicon() {
-  const canvas = document.createElement('canvas');
-  canvas.width = 64;
-  canvas.height = 64;
-  const ctx = canvas.getContext('2d');
-  
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.onload = () => {
-    const size = Math.min(img.width, img.height);
-    const sx = (img.width - size) / 2;
-    const sy = (img.height - size) / 2;
-    ctx.drawImage(img, sx, sy, size, size, 0, 0, 64, 64);
+  function setFavicon() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
     
-    const link = document.querySelector('link[rel*="icon"]') || document.createElement('link');
-    link.rel = 'icon';
-    link.href = canvas.toDataURL('image/png');
-    document.head.appendChild(link);
-  };
-  img.onerror = () => {
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, 64, 64);
-    ctx.fillStyle = '#fff';
-    ctx.font = '40px "Segoe UI"';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('🐱', 32, 32);
-    
-    const link = document.querySelector('link[rel*="icon"]') || document.createElement('link');
-    link.rel = 'icon';
-    link.href = canvas.toDataURL();
-    document.head.appendChild(link);
-  };
-  img.src = 'https://i.pinimg.com/736x/1f/b8/fa/1fb8fa55b47ce6a294ad9d8c47fb57ac.jpg';
-}
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const size = Math.min(img.width, img.height);
+      const sx = (img.width - size) / 2;
+      const sy = (img.height - size) / 2;
+      ctx.drawImage(img, sx, sy, size, size, 0, 0, 64, 64);
+      
+      const link = document.querySelector('link[rel*="icon"]') || document.createElement('link');
+      link.rel = 'icon';
+      link.href = canvas.toDataURL('image/png');
+      document.head.appendChild(link);
+    };
+    img.onerror = () => {
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, 64, 64);
+      ctx.fillStyle = '#fff';
+      ctx.font = '40px "Segoe UI"';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🐱', 32, 32);
+      
+      const link = document.querySelector('link[rel*="icon"]') || document.createElement('link');
+      link.rel = 'icon';
+      link.href = canvas.toDataURL();
+      document.head.appendChild(link);
+    };
+    img.src = 'https://i.pinimg.com/736x/1f/b8/fa/1fb8fa55b47ce6a294ad9d8c47fb57ac.jpg';
+  }
 
   const API = 'https://discord.com/api/v10';
   let authToken = null, currentUser = null;
@@ -956,7 +962,7 @@ function setFavicon() {
       <div class="auth-screen">
         <a class="contact" href="https://t.me/xolirx" target="_blank">● @xolirx</a>
         <div class="auth-card">
-          <div class="auth-icon">🐱</div>
+          <div class="auth-icon" id="authIconImg"></div>
           <div class="auth-title">Discord Cloner</div>
           <div class="auth-subtitle">Минималистичный клонер серверов</div>
           <div class="field">
@@ -1019,6 +1025,23 @@ function setFavicon() {
         </div>
       </div>
     `);
+
+    // Вставляем картинку в центральную иконку
+    const authIconImg = document.getElementById('authIconImg');
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = 'https://i.pinimg.com/736x/1f/b8/fa/1fb8fa55b47ce6a294ad9d8c47fb57ac.jpg';
+    img.onload = () => {
+      authIconImg.innerHTML = '';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = '50%';
+      authIconImg.appendChild(img);
+    };
+    img.onerror = () => {
+      authIconImg.textContent = '🐱';
+    };
   }
 
   createParticles();
