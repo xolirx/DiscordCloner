@@ -468,7 +468,7 @@
       link.href = canvas.toDataURL();
       document.head.appendChild(link);
     };
-    img.src = 'https://i.pinimg.com/736x/1f/b8/fa/1fb8fa55b47ce6a294ad9d8c47fb57ac.jpg';
+    img.src = 'https://i.yapx.ru/dfzZy.jpg';
   }
 
   const API = 'https://discord.com/api/v10';
@@ -1030,7 +1030,7 @@
     const authIconImg = document.getElementById('authIconImg');
     const img = new Image();
     img.crossOrigin = 'anonymous';
-    img.src = 'https://i.pinimg.com/736x/1f/b8/fa/1fb8fa55b47ce6a294ad9d8c47fb57ac.jpg';
+    img.src = 'https://i.yapx.ru/dfzZy.jpg';
     img.onload = () => {
       authIconImg.innerHTML = '';
       img.style.width = '100%';
