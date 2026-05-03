@@ -888,10 +888,10 @@
           </button>
           <div class="instruction-content">
             <b>Как получить токен:</b><br>
-            1. Откройте Discord в браузере (F12 → Консоль)<br>
-            2. Вставьте и выполните код:<br>
-            <code style="word-break:break-all;color:var(--text);">(webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let c in e.c)m.push(e.c[c])}]),m).find(m=>m?.exports?.default?.getToken!==void 0).exports.default.getToken()</code><br>
-            3. Скопируйте полученный токен и вставьте сюда.
+            1. Откройте Discord в браузере (F12 → Network)<br>
+            2. Вставьте или впишите:<br>
+            <code style="word-break:break-all;color:var(--text);">/api</code><br>
+            3. Найдите файл science, нажмите на него и найдите "authorization", копируйте
           </div>
           <div style="margin-top:24px;text-align:center;font-size:0.62rem;color:var(--text-dim);">
             <p>Разработчик: xolirx</p>
